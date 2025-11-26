@@ -54,7 +54,8 @@ export const createUser = async ({ name, email, password, signature }: CreateUse
   // Not used at the moment, uncomment if required.
   await onCreateUserHook(user).catch((err) => {
     // Todo: (RR7) Add logging.
-    console.error(err);
+    console.error('Error in onCreateUserHook:', err);
+    // Don't throw - organization creation failure shouldn't block user creation
   });
 
   return user;

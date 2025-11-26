@@ -150,16 +150,27 @@ export const emailPasswordRoute = new Hono<HonoAuthContext>()
     const { name, email, password, signature } = c.req.valid('json');
 
     const user = await createUser({ name, email, password, signature }).catch((err) => {
-      console.error(err);
+      console.error('Error creating user:', err);
+      console.error('Error details:', {
+        message: err?.message,
+        code: err?.code,
+        stack: err?.stack,
+      });
       throw err;
     });
 
-    await jobsClient.triggerJob({
-      name: 'send.signup.confirmation.email',
-      payload: {
-        email: user.email,
-      },
-    });
+    // Send confirmation email (don't fail signup if this fails)
+    await jobsClient
+      .triggerJob({
+        name: 'send.signup.confirmation.email',
+        payload: {
+          email: user.email,
+        },
+      })
+      .catch((err) => {
+        console.error('Failed to trigger confirmation email job:', err);
+        // Don't throw - email job failure shouldn't block signup
+      });
 
     return c.text('OK', 201);
   })

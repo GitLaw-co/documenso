@@ -448,16 +448,20 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
 
       const legacyDocumentId = mapSecondaryIdToDocumentId(envelope.secondaryId);
 
-      const { recipients } = await setDocumentRecipients({
-        userId: user.id,
-        teamId: team.id,
-        id: {
-          type: 'documentId',
-          id: legacyDocumentId,
-        },
-        recipients: body.recipients,
-        requestMetadata: metadata,
-      });
+      // Only set recipients if they are provided
+      const recipients =
+        body.recipients && body.recipients.length > 0
+          ? await setDocumentRecipients({
+              userId: user.id,
+              teamId: team.id,
+              id: {
+                type: 'documentId',
+                id: legacyDocumentId,
+              },
+              recipients: body.recipients,
+              requestMetadata: metadata,
+            }).then((result) => result.recipients)
+          : [];
 
       return {
         status: 200,
@@ -1402,14 +1406,37 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
       };
     }
 
+    // Check if document has envelope items (PDF has been processed)
+    if (!envelope.envelopeItems || envelope.envelopeItems.length === 0) {
+      return {
+        status: 409, // Conflict - document not ready
+        body: {
+          message: 'Document is still being processed. Please wait a moment and try again.',
+          code: 'DOCUMENT_PROCESSING',
+        },
+      };
+    }
+
     const firstEnvelopeItemId = envelope.envelopeItems[0].id;
 
     if (!firstEnvelopeItemId) {
-      throw new Error('Missing envelope item ID');
+      return {
+        status: 409,
+        body: {
+          message: 'Document is still being processed. Please wait a moment and try again.',
+          code: 'DOCUMENT_PROCESSING',
+        },
+      };
     }
 
     if (envelope.envelopeItems.length !== 1) {
-      throw new Error('API V1 does not support multiple documents');
+      return {
+        status: 400,
+        body: {
+          message: 'API V1 does not support multiple documents',
+          code: 'MULTIPLE_DOCUMENTS_NOT_SUPPORTED',
+        },
+      };
     }
 
     if (isDocumentCompleted(envelope.status)) {
@@ -1446,7 +1473,7 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
             });
 
             if (!recipient) {
-              throw new Error('Recipient not found');
+              throw new Error(`Recipient ${recipientId} not found in document ${documentId}`);
             }
 
             if (recipient.signingStatus === SigningStatus.SIGNED) {

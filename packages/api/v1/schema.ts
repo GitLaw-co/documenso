@@ -142,14 +142,17 @@ export const ZCreateDocumentMutationSchema = z.object({
       'The ID of the folder to create the document in. If not provided, the document will be created in the root folder.',
     )
     .optional(),
-  recipients: z.array(
-    z.object({
-      name: z.string().min(1),
-      email: z.string().email().min(1),
-      role: z.nativeEnum(RecipientRole).optional().default(RecipientRole.SIGNER),
-      signingOrder: z.number().nullish(),
-    }),
-  ),
+  recipients: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        email: z.string().email().min(1),
+        role: z.nativeEnum(RecipientRole).optional().default(RecipientRole.SIGNER),
+        signingOrder: z.number().nullish(),
+      }),
+    )
+    .optional()
+    .default([]),
   meta: z
     .object({
       subject: z.string(),
