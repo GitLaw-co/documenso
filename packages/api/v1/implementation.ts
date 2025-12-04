@@ -7,7 +7,7 @@ import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { DATE_FORMATS, DEFAULT_DOCUMENT_DATE_FORMAT } from '@documenso/lib/constants/date-formats';
 import '@documenso/lib/constants/time-zones';
 import { DEFAULT_DOCUMENT_TIME_ZONE, TIME_ZONES } from '@documenso/lib/constants/time-zones';
-import { AppError } from '@documenso/lib/errors/app-error';
+import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { createDocumentData } from '@documenso/lib/server-only/document-data/create-document-data';
 import { updateDocumentMeta } from '@documenso/lib/server-only/document-meta/upsert-document-meta';
 import { deleteDocument } from '@documenso/lib/server-only/document/delete-document';
@@ -131,6 +131,9 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
               id: 'asc',
             },
           },
+          envelopeItems: {
+            select: { id: true },
+          },
         },
       });
 
@@ -157,6 +160,9 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
 
       const legacyDocumentId = mapSecondaryIdToDocumentId(envelope.secondaryId);
 
+      // Document is ready for field creation when envelope items exist
+      const isReadyForFields = envelope.envelopeItems.length > 0;
+
       return {
         status: 200,
         body: {
@@ -166,6 +172,7 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
           teamId: envelope.teamId,
           title: envelope.title,
           status: envelope.status,
+          isReadyForFields, // NEW: Indicates if fields can be created
           createdAt: envelope.createdAt,
           updatedAt: envelope.updatedAt,
           completedAt: envelope.completedAt,
@@ -1406,6 +1413,15 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
       };
     }
 
+    // Debug logging
+    logger.info({
+      message: 'createField: Found envelope',
+      documentId,
+      envelopeId: envelope.id,
+      envelopeSecondaryId: envelope.secondaryId,
+      envelopeItemCount: envelope.envelopeItems?.length ?? 0,
+    });
+
     // Check if document has envelope items (PDF has been processed)
     if (!envelope.envelopeItems || envelope.envelopeItems.length === 0) {
       return {
@@ -1462,10 +1478,19 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
             } = fieldData;
 
             if (pageNumber <= 0) {
-              throw new Error('Invalid page number');
+              throw new AppError(AppErrorCode.INVALID_BODY, {
+                message: 'Invalid page number - must be greater than 0',
+              });
             }
 
-            const recipient = await prisma.recipient.findFirst({
+            // Use tx (transaction) instead of prisma to ensure consistency
+            logger.info({
+              message: 'createField: Looking up recipient',
+              recipientId: Number(recipientId),
+              envelopeId: envelope.id,
+            });
+
+            const recipient = await tx.recipient.findFirst({
               where: {
                 id: Number(recipientId),
                 envelopeId: envelope.id,
@@ -1473,11 +1498,32 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
             });
 
             if (!recipient) {
-              throw new Error(`Recipient ${recipientId} not found in document ${documentId}`);
+              // Debug: List all recipients for this envelope
+              const allRecipients = await tx.recipient.findMany({
+                where: { envelopeId: envelope.id },
+                select: { id: true, email: true, envelopeId: true },
+              });
+              logger.error({
+                message: 'createField: Recipient not found',
+                searchedRecipientId: Number(recipientId),
+                searchedEnvelopeId: envelope.id,
+                existingRecipients: allRecipients,
+              });
+              throw new AppError(AppErrorCode.NOT_FOUND, {
+                message: `Recipient ${recipientId} not found in document ${documentId}`,
+              });
             }
 
+            logger.info({
+              message: 'createField: Found recipient',
+              recipientId: recipient.id,
+              recipientEmail: recipient.email,
+            });
+
             if (recipient.signingStatus === SigningStatus.SIGNED) {
-              throw new Error('Recipient has already signed the document');
+              throw new AppError(AppErrorCode.INVALID_REQUEST, {
+                message: 'Recipient has already signed the document',
+              });
             }
 
             const advancedField = ['NUMBER', 'RADIO', 'CHECKBOX', 'DROPDOWN', 'TEXT'].includes(
@@ -1485,13 +1531,16 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
             );
 
             if (advancedField && !fieldMeta) {
-              throw new Error(
-                'Field meta is required for this type of field. Please provide the appropriate field meta object.',
-              );
+              throw new AppError(AppErrorCode.INVALID_BODY, {
+                message:
+                  'Field meta is required for this type of field. Please provide the appropriate field meta object.',
+              });
             }
 
             if (fieldMeta && fieldMeta.type.toLowerCase() !== String(type).toLowerCase()) {
-              throw new Error('Field meta type does not match the field type');
+              throw new AppError(AppErrorCode.INVALID_BODY, {
+                message: 'Field meta type does not match the field type',
+              });
             }
 
             const result = match(type)
@@ -1512,7 +1561,9 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
               .exhaustive();
 
             if (!result.success) {
-              throw new Error('Field meta parsing failed');
+              throw new AppError(AppErrorCode.INVALID_BODY, {
+                message: 'Field meta parsing failed',
+              });
             }
 
             const field = await tx.field.create({
@@ -1580,6 +1631,8 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
         },
       };
     } catch (err) {
+      // Log the actual error for debugging
+      logger.error({ err, documentId, fields }, 'Failed to create fields');
       return AppError.toRestAPIError(err);
     }
   }),

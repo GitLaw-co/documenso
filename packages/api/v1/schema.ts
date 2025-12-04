@@ -56,6 +56,10 @@ export const ZSuccessfulDocumentResponseSchema = z.object({
 });
 
 export const ZSuccessfulGetDocumentResponseSchema = ZSuccessfulDocumentResponseSchema.extend({
+  isReadyForFields: z.boolean().openapi({
+    description:
+      'Indicates if the document is ready for field creation. Will be true once the PDF has been processed.',
+  }),
   recipients: z.lazy(() => z.array(ZSuccessfulRecipientResponseSchema)),
   fields: z.lazy(() =>
     ZFieldSchema.pick({
