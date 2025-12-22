@@ -13,15 +13,15 @@ export function meta({ params: { slug } }: Route.MetaArgs) {
   }
 
   return [
-    { title: 'Documenso - Share' },
-    { description: 'I just signed a document in style with Documenso!' },
+    { title: 'GitLaw - Share' },
+    { description: 'I just signed a document with GitLaw!' },
     {
       property: 'og:title',
-      content: 'Documenso - Join the open source signing revolution',
+      content: 'GitLaw - Document Signed',
     },
     {
       property: 'og:description',
-      content: 'I just signed with Documenso!',
+      content: 'I just signed with GitLaw!',
     },
     {
       property: 'og:type',
@@ -33,7 +33,7 @@ export function meta({ params: { slug } }: Route.MetaArgs) {
     },
     {
       name: 'twitter:site',
-      content: '@documenso',
+      content: '@gitlaw',
     },
     {
       name: 'twitter:card',
@@ -45,7 +45,7 @@ export function meta({ params: { slug } }: Route.MetaArgs) {
     },
     {
       name: 'twitter:description',
-      content: 'I just signed with Documenso!',
+      content: 'I just signed with GitLaw!',
     },
   ];
 }
@@ -70,8 +70,8 @@ export const loader = async ({ request, params: { slug } }: Route.LoaderArgs) =>
     return {};
   }
 
-  // Is hardcoded because this whole meta is hardcoded anyway for Documenso.
-  throw redirect('https://documenso.com');
+  // Redirect non-bot users to GitLaw home page
+  throw redirect('https://git.law');
 };
 
 export default function SharePage() {
