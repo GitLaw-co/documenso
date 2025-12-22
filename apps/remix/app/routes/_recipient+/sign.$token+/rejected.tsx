@@ -1,16 +1,13 @@
 import { Trans } from '@lingui/react/macro';
 import { FieldType } from '@prisma/client';
 import { XCircle } from 'lucide-react';
-import { Link } from 'react-router';
 
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
-import { useOptionalSession } from '@documenso/lib/client-only/providers/session';
 import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document/get-document-by-token';
 import { isRecipientAuthorized } from '@documenso/lib/server-only/document/is-recipient-authorized';
 import { getFieldsForToken } from '@documenso/lib/server-only/field/get-fields-for-token';
 import { getRecipientByToken } from '@documenso/lib/server-only/recipient/get-recipient-by-token';
 import { Badge } from '@documenso/ui/primitives/badge';
-import { Button } from '@documenso/ui/primitives/button';
 
 import { DocumentSigningAuthPageView } from '~/components/general/document-signing/document-signing-auth-page';
 import { truncateTitle } from '~/utils/truncate-title';
@@ -74,9 +71,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 }
 
 export default function RejectedSigningPage({ loaderData }: Route.ComponentProps) {
-  const { sessionData } = useOptionalSession();
-  const user = sessionData?.user;
-
   const { isDocumentAccessValid, recipientReference, truncatedTitle } = loaderData;
 
   if (!isDocumentAccessValid) {
@@ -112,14 +106,6 @@ export default function RejectedSigningPage({ loaderData }: Route.ComponentProps
         <p className="text-muted-foreground mt-2 max-w-[60ch] text-center text-sm">
           <Trans>No further action is required from you at this time.</Trans>
         </p>
-
-        {user && (
-          <Button className="mt-6" asChild>
-            <Link to={`/`}>
-              <Trans>Return Home</Trans>
-            </Link>
-          </Button>
-        )}
       </div>
     </div>
   );

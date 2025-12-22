@@ -89,21 +89,15 @@ export default function WaitingForTurnToSignPage({ loaderData }: Route.Component
           <Trans>Please check your email for updates.</Trans>
         </p>
 
-        <div className="mt-4">
-          {documentPathForEditing ? (
+        {documentPathForEditing && (
+          <div className="mt-4">
             <Button variant="link" asChild>
               <Link to={documentPathForEditing}>
                 <Trans>Were you trying to edit this document instead?</Trans>
               </Link>
             </Button>
-          ) : (
-            <Button variant="link" asChild>
-              <Link to="/">
-                <Trans>Return Home</Trans>
-              </Link>
-            </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

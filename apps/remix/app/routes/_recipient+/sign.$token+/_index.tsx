@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro';
 import { DocumentSigningOrder, DocumentStatus, RecipientRole, SigningStatus } from '@prisma/client';
 import { Clock8 } from 'lucide-react';
-import { Link, redirect } from 'react-router';
+import { redirect } from 'react-router';
 import { getOptionalLoaderContext } from 'server/utils/get-loader-session';
 import { match } from 'ts-pattern';
 
@@ -144,7 +144,11 @@ const handleV1Loader = async ({ params, request }: Route.LoaderArgs) => {
     document.status === DocumentStatus.COMPLETED ||
     recipient.signingStatus === SigningStatus.SIGNED
   ) {
-    throw redirect(documentMeta?.redirectUrl || `/sign/${token}/complete`);
+    throw redirect(
+      documentMeta?.redirectUrl
+        ? `${documentMeta.redirectUrl}?token=${token}`
+        : `/sign/${token}/complete`,
+    );
   }
 
   const [recipientSignature] = await getRecipientSignatures({ recipientId: recipient.id });
@@ -244,7 +248,11 @@ const handleV2Loader = async ({ params, request }: Route.LoaderArgs) => {
   }
 
   if (isCompleted) {
-    throw redirect(envelope.documentMeta.redirectUrl || `/sign/${token}/complete`);
+    throw redirect(
+      envelope.documentMeta.redirectUrl
+        ? `${envelope.documentMeta.redirectUrl}?token=${token}`
+        : `/sign/${token}/complete`,
+    );
   }
 
   return {
@@ -358,25 +366,6 @@ const SigningPageV1 = ({ data }: { data: Awaited<ReturnType<typeof handleV1Loade
           <p className="text-muted-foreground/60 mt-2.5 max-w-[60ch] text-center text-sm font-medium md:text-base">
             <Trans>This document has been cancelled by the owner.</Trans>
           </p>
-
-          {user ? (
-            <Link to="/" className="text-documenso-700 hover:text-documenso-600 mt-36">
-              <Trans>Go Back Home</Trans>
-            </Link>
-          ) : (
-            <p className="text-muted-foreground/60 mt-36 text-sm">
-              <Trans>
-                Want to send slick signing links like this one?{' '}
-                <Link
-                  to="https://documenso.com"
-                  className="text-documenso-700 hover:text-documenso-600"
-                >
-                  Check out Documenso
-                </Link>
-                .
-              </Trans>
-            </p>
-          )}
         </div>
       </div>
     );
@@ -458,25 +447,6 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
           <p className="text-muted-foreground/60 mt-2.5 max-w-[60ch] text-center text-sm font-medium md:text-base">
             <Trans>This document has been cancelled by the owner.</Trans>
           </p>
-
-          {user ? (
-            <Link to="/" className="text-documenso-700 hover:text-documenso-600 mt-36">
-              <Trans>Go Back Home</Trans>
-            </Link>
-          ) : (
-            <p className="text-muted-foreground/60 mt-36 text-sm">
-              <Trans>
-                Want to send slick signing links like this one?{' '}
-                <Link
-                  to="https://documenso.com"
-                  className="text-documenso-700 hover:text-documenso-600"
-                >
-                  Check out Documenso
-                </Link>
-                .
-              </Trans>
-            </p>
-          )}
         </div>
       </div>
     );
