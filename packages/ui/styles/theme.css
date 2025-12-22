@@ -5,43 +5,44 @@
 @layer base {
   :root,
   .dark-mode-disabled {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    /* GitLaw Light Theme - matches front-law colors.css */
+    --background: 130 50% 94%; /* grass-65: #dffbe3 */
+    --foreground: 24 10% 10%; /* stone-900 */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 60 5% 96%; /* stone-100 */
+    --muted-foreground: 0 0% 40%; /* black-alpha-40 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%; /* white */
+    --popover-foreground: 20 15% 4%; /* stone-950 */
 
-    --card: 0 0% 100%;
-    --card-border: 214.3 31.8% 91.4%;
+    --card: 0 0% 100%; /* white */
+    --card-border: 130 30% 75%; /* salad-250 */
     --card-border-tint: 112 205 159;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 24 10% 10%; /* stone-900 */
 
     --field-card: 250 65% 95%;
     --field-card-border: 250 65% 56%;
-    --field-card-foreground: 222.2 47.4% 11.2%;
+    --field-card-foreground: 24 10% 10%;
 
     --widget: 0 0% 97%;
     --widget-foreground: 0 0% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 130 30% 75%; /* salad-250 */
+    --input: 130 50% 94%; /* grass-65 */
 
-    --primary: 250 65% 56%;
+    --primary: 250 65% 41%; /* violetish-700: #5e49d6 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 250 100% 96%; /* violetish-100: #ebe7ff */
+    --secondary-foreground: 250 65% 41%; /* violetish-700 */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 0 0% 100%; /* white */
+    --accent-foreground: 250 65% 41%; /* violetish-700 */
 
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%; /* red-500 */
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 250 65% 56%;
+    --ring: 24 6% 63%; /* stone-400 */
 
     --radius: 0.5rem;
 
@@ -140,41 +141,42 @@
   }
 
   .dark:not(.dark-mode-disabled) {
-    --background: 0 0% 14.9%;
-    --foreground: 0 0% 97%;
+    /* GitLaw Dark Theme - matches front-law dark mode */
+    --background: 0 0% 0%; /* black */
+    --foreground: 60 9% 98%; /* stone-50 */
 
-    --muted: 0 0% 23.4%;
-    --muted-foreground: 0 0% 85%;
+    --muted: 20 6% 25%; /* stone-800 */
+    --muted-foreground: 24 6% 63%; /* stone-400 */
 
-    --popover: 0 0% 14.9%;
-    --popover-foreground: 0 0% 90%;
+    --popover: 20 6% 25%; /* stone-800 */
+    --popover-foreground: 60 9% 98%; /* stone-50 */
 
-    --card: 0 0% 14.9%;
-    --card-border: 0 0% 27.9%;
+    --card: 20 6% 25%; /* stone-800 */
+    --card-border: 0 0% 28%;
     --card-border-tint: 112 205 159;
-    --card-foreground: 0 0% 95%;
+    --card-foreground: 60 9% 98%; /* stone-50 */
 
-    --widget: 0 0% 14.9%;
+    --widget: 20 6% 25%;
     --widget-foreground: 0 0% 18%;
 
-    --border: 0 0% 27.9%;
-    --input: 0 0% 27.9%;
+    --border: 0 0% 10%; /* white-alpha-10 */
+    --input: 0 0% 15%; /* white-alpha-15 */
 
     --field-border: 214.3 31.8% 91.4%;
 
-    --primary: 250 65% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 60 9% 98%; /* stone-50 */
+    --primary-foreground: 20 15% 4%; /* stone-950 */
 
-    --secondary: 0 0% 23.4%;
-    --secondary-foreground: 250 65% 60%;
+    --secondary: 20 6% 25%; /* stone-800 */
+    --secondary-foreground: 60 9% 98%; /* stone-50 */
 
-    --accent: 0 0% 27.9%;
-    --accent-foreground: 250 65% 60%;
+    --accent: 20 6% 25%; /* stone-800 */
+    --accent-foreground: 60 9% 98%; /* stone-50 */
 
-    --destructive: 0 87% 62%;
-    --destructive-foreground: 0 87% 19%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 250 65% 60%;
+    --ring: 24 6% 45%; /* stone-500 */
 
     --radius: 0.5rem;
 
