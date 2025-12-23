@@ -2,20 +2,77 @@ import type { SVGAttributes } from 'react';
 
 export type LogoProps = SVGAttributes<SVGSVGElement>;
 
+/**
+ * GitLaw icon only (no text)
+ * Source: front-law/src/components/ui/logo.tsx (LogoImage)
+ */
 export const BrandingLogoIcon = ({ ...props }: LogoProps) => {
   return (
     <svg
-      width="82"
-      height="82"
-      viewBox="0 0 82 82"
+      width="27"
+      height="27"
+      viewBox="0 0 219 218"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <path
-        d="M50.8058 -2.83376e-05L34.964 15.8418V4.63941H19.1224V27.0434L11.267 19.1882L11.2012 19.1224L0 30.324L15.8418 46.1664V46.1658L15.9082 46.2316H4.70538V62.0729H27.1094H27.1099V46.2316H15.9082L27.1094 35.0303L19.1229 27.0439H34.964V15.8429L46.1653 27.0434L54.0854 19.123H54.0859L62.0071 11.2015L50.8058 -2.83376e-05ZM54.0859 19.123H54.0854V34.964H65.2867L54.0859 46.1658L54.1517 46.2311L62.0724 54.1523H46.2311V65.3536L35.0301 54.1523L19.1881 69.9946L30.3893 81.1959L46.2311 65.3541V76.5562H46.2317H62.0724V54.1528L69.9283 62.0077L69.9941 62.0734L81.1954 50.8716L81.1296 50.8058L65.3536 35.0301L65.2878 34.964H76.4899V19.123H54.0859Z"
-        fill="#29078A"
-      />
+      <g clipPath="url(#clip0_branding_icon)">
+        <rect x="51.5283" y="11.8906" width="43.6011" height="60.1166" fill="currentColor" />
+        <rect x="125.519" y="145.336" width="43.6011" height="60.1166" fill="currentColor" />
+        <rect
+          x="207.436"
+          y="50.211"
+          width="43.6011"
+          height="60.1166"
+          transform="rotate(90 207.436 50.211)"
+          fill="currentColor"
+        />
+        <rect
+          x="136.978"
+          y="0"
+          width="43.6011"
+          height="60.1166"
+          transform="rotate(45 136.978 0)"
+          fill="currentColor"
+        />
+        <rect
+          x="94.698"
+          y="144.68"
+          width="43.6011"
+          height="60.1166"
+          transform="rotate(45 94.698 144.68)"
+          fill="currentColor"
+        />
+        <rect
+          x="0"
+          y="82.359"
+          width="43.6011"
+          height="60.1166"
+          transform="rotate(-45 0 82.359)"
+          fill="currentColor"
+        />
+        <rect
+          x="145.997"
+          y="123.32"
+          width="43.6011"
+          height="60.1166"
+          transform="rotate(-45 145.997 123.32)"
+          fill="currentColor"
+        />
+        <rect
+          x="73.3291"
+          y="123.539"
+          width="43.6011"
+          height="60.1166"
+          transform="rotate(90 73.3291 123.539)"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_branding_icon">
+          <rect width="219.337" height="218.016" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   );
 };

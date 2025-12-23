@@ -100,10 +100,11 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
   const { publicEnv, session, lang, disableAnimations, ...data } =
     useLoaderData<typeof loader>() || {};
 
-  const [theme] = useTheme();
+  // Force light mode - ignore system dark mode preference (matches front-law behavior)
+  const [_theme] = useTheme();
 
   return (
-    <html translate="no" lang={lang} data-theme={theme} className={theme ?? ''}>
+    <html translate="no" lang={lang} data-theme="light" className="light">
       <head>
         <meta charSet="utf-8" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
