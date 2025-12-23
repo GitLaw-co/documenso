@@ -1,8 +1,5 @@
 @import '@documenso/ui/styles/theme.css';
 
-/* Google Fonts - DM Sans (GitLaw main font) */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-
 /* Inter Variable Fonts - kept as fallback */
 @font-face {
   font-family: 'Inter';
