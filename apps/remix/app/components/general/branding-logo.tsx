@@ -1,14 +1,17 @@
-import type { SVGAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 
-export type LogoProps = SVGAttributes<SVGSVGElement>;
+export type LogoProps = HTMLAttributes<HTMLDivElement>;
 
 /**
  * GitLaw full logo (icon + text)
  * Source: front-law/src/components/ui/logo.tsx
  */
-export const BrandingLogo = ({ ...props }: LogoProps) => {
+export const BrandingLogo = ({ className, ...props }: LogoProps) => {
   return (
-    <span className="text-primary inline-flex h-7 items-center gap-1" {...props}>
+    <div
+      className={`inline-flex h-7 items-center gap-1 text-primary ${className ?? ''}`}
+      {...props}
+    >
       {/* LogoImage */}
       <svg width="27" height="27" viewBox="0 0 219 218" fill="none">
         <g clipPath="url(#clip0_logo_image)">
@@ -104,6 +107,6 @@ export const BrandingLogo = ({ ...props }: LogoProps) => {
           fill="currentColor"
         />
       </svg>
-    </span>
+    </div>
   );
 };
