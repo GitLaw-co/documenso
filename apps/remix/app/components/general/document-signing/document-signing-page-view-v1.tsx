@@ -124,7 +124,7 @@ export const DocumentSigningPageViewV1 = ({
     });
 
     if (documentMeta?.redirectUrl) {
-      window.location.href = documentMeta.redirectUrl;
+      window.location.href = `${documentMeta.redirectUrl}?token=${encodeURIComponent(recipient.token)}`;
     } else {
       await navigate(`/sign/${recipient.token}/complete`);
     }
