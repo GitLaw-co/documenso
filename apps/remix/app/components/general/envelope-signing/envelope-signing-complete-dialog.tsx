@@ -111,7 +111,7 @@ export const EnvelopeSignerCompleteDialog = () => {
       }
 
       if (envelope.documentMeta.redirectUrl) {
-        window.location.href = envelope.documentMeta.redirectUrl;
+        window.location.href = `${envelope.documentMeta.redirectUrl}?token=${encodeURIComponent(recipient.token)}`;
       } else {
         await navigate(`/sign/${recipient.token}/complete`);
       }
@@ -189,7 +189,7 @@ export const EnvelopeSignerCompleteDialog = () => {
       }
 
       if (redirectUrl) {
-        window.location.href = redirectUrl;
+        window.location.href = `${redirectUrl}?token=${encodeURIComponent(token)}`;
       } else {
         await navigate(`/sign/${token}/complete`);
       }
