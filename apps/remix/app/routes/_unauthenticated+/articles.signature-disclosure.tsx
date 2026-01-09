@@ -1,8 +1,9 @@
 import { Trans } from '@lingui/react/macro';
-import { Link } from 'react-router';
 
-import { SUPPORT_EMAIL } from '@documenso/lib/constants/app';
+import { GITLAW_HOME_URL } from '@documenso/lib/constants/app';
 import { Button } from '@documenso/ui/primitives/button';
+
+const GITLAW_SUPPORT_EMAIL = 'support@git.law';
 
 export default function SignatureDisclosure() {
   return (
@@ -109,7 +110,7 @@ export default function SignatureDisclosure() {
           <li>
             <Trans>
               You may request a paper copy of any electronically provided document by contacting{' '}
-              <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+              <a href={`mailto:${GITLAW_SUPPORT_EMAIL}`}>{GITLAW_SUPPORT_EMAIL}</a>.
             </Trans>
           </li>
           <li>
@@ -167,16 +168,17 @@ export default function SignatureDisclosure() {
 
         <p>
           <Trans>
-            For questions, contact <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+            For questions, contact{' '}
+            <a href={`mailto:${GITLAW_SUPPORT_EMAIL}`}>{GITLAW_SUPPORT_EMAIL}</a>.
           </Trans>
         </p>
       </article>
 
       <div className="mt-8">
         <Button asChild>
-          <Link to="/">
+          <a href={GITLAW_HOME_URL()}>
             <Trans>Back home</Trans>
-          </Link>
+          </a>
         </Button>
       </div>
     </div>

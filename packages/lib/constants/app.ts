@@ -16,6 +16,8 @@ export const API_V2_URL = '/api/v2';
 
 export const SUPPORT_EMAIL = env('NEXT_PUBLIC_SUPPORT_EMAIL') ?? 'support@documenso.com';
 
+export const GITLAW_HOME_URL = () => env('NEXT_PUBLIC_GITLAW_HOME_URL') ?? 'https://git.law';
+
 export const USE_INTERNAL_URL_BROWSERLESS = () =>
   env('NEXT_PUBLIC_USE_INTERNAL_URL_BROWSERLESS') === 'true';
 
