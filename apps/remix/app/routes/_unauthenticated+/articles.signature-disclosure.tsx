@@ -1,163 +1,184 @@
 import { Trans } from '@lingui/react/macro';
-import { Link } from 'react-router';
 
-import { SUPPORT_EMAIL } from '@documenso/lib/constants/app';
+import { GITLAW_HOME_URL } from '@documenso/lib/constants/app';
 import { Button } from '@documenso/ui/primitives/button';
+
+const GITLAW_SUPPORT_EMAIL = 'support@git.law';
 
 export default function SignatureDisclosure() {
   return (
     <div>
       <article className="prose dark:prose-invert">
         <h1>
-          <Trans>Electronic Signature Disclosure</Trans>
+          <Trans>Electronic Records & Signatures Disclosure</Trans>
         </h1>
 
-        <h2>
-          <Trans>Welcome</Trans>
-        </h2>
+        <p className="text-muted-foreground">
+          <Trans>Last updated: 9th January 2026</Trans>
+        </p>
+
         <p>
           <Trans>
-            Thank you for using Documenso to perform your electronic document signing. The purpose
-            of this disclosure is to inform you about the process, legality, and your rights
-            regarding the use of electronic signatures on our platform. By opting to use an
-            electronic signature, you are agreeing to the terms and conditions outlined below.
+            This disclosure explains how electronic records and electronic signatures work on
+            GitLaw. Please read it carefully before signing.
           </Trans>
         </p>
 
         <h2>
-          <Trans>Acceptance and Consent</Trans>
+          <Trans>1. Consent to Electronic Records & Signatures</Trans>
         </h2>
         <p>
           <Trans>
-            When you use our platform to affix your electronic signature to documents, you are
-            consenting to do so under the Electronic Signatures in Global and National Commerce Act
-            (E-Sign Act) and other applicable laws. This action indicates your agreement to use
-            electronic means to sign documents and receive notifications.
+            By clicking "Agree", "Sign", or otherwise proceeding to sign a document on GitLaw, you
+            consent for this document to:
           </Trans>
-        </p>
-
-        <h2>
-          <Trans>Legality of Electronic Signatures</Trans>
-        </h2>
-        <p>
-          <Trans>
-            An electronic signature provided by you on our platform, achieved through clicking
-            through to a document and entering your name, or any other electronic signing method we
-            provide, is legally binding. It carries the same weight and enforceability as a manual
-            signature written with ink on paper.
-          </Trans>
-        </p>
-
-        <h2>
-          <Trans>System Requirements</Trans>
-        </h2>
-        <p>
-          <Trans>To use our electronic signature service, you must have access to:</Trans>
         </p>
         <ul>
           <li>
-            <Trans>A stable internet connection</Trans>
+            <Trans>receive records and disclosures electronically; and</Trans>
           </li>
           <li>
-            <Trans>An email account</Trans>
-          </li>
-          <li>
-            <Trans>A device capable of accessing, opening, and reading documents</Trans>
-          </li>
-          <li>
-            <Trans>A means to print or download documents for your records</Trans>
+            <Trans>sign documents using electronic signatures.</Trans>
           </li>
         </ul>
 
         <h2>
-          <Trans>Electronic Delivery of Documents</Trans>
+          <Trans>2. Legal Effect</Trans>
         </h2>
         <p>
           <Trans>
-            All documents related to the electronic signing process will be provided to you
-            electronically through our platform or via email. It is your responsibility to ensure
-            that your email address is current and that you can receive and open our emails.
+            Electronic signatures on GitLaw are legally binding and have the same legal effect as
+            handwritten signatures, including under:
+          </Trans>
+        </p>
+        <ul>
+          <li>
+            <Trans>
+              the U.S. Electronic Signatures in Global and National Commerce Act (E-SIGN); and
+            </Trans>
+          </li>
+          <li>
+            <Trans>applicable electronic signature laws in the UK and EU (including eIDAS).</Trans>
+          </li>
+        </ul>
+
+        <h2>
+          <Trans>3. System Requirements</Trans>
+        </h2>
+        <p>
+          <Trans>To use electronic signatures on GitLaw, you must have:</Trans>
+        </p>
+        <ul>
+          <li>
+            <Trans>a device with internet access;</Trans>
+          </li>
+          <li>
+            <Trans>a valid email address;</Trans>
+          </li>
+          <li>
+            <Trans>software capable of viewing PDF or similar documents; and</Trans>
+          </li>
+          <li>
+            <Trans>the ability to download or print documents for your records.</Trans>
+          </li>
+        </ul>
+
+        <h2>
+          <Trans>4. Receiving & Retaining Documents</Trans>
+        </h2>
+        <ul>
+          <li>
+            <Trans>
+              Documents will be provided to you electronically through GitLaw or by email.
+            </Trans>
+          </li>
+          <li>
+            <Trans>You can view, download, and print signed documents at no cost.</Trans>
+          </li>
+          <li>
+            <Trans>
+              GitLaw will retain signed documents and make them available to you electronically for
+              future access.
+            </Trans>
+          </li>
+        </ul>
+
+        <h2>
+          <Trans>5. Paper Copies</Trans>
+        </h2>
+        <ul>
+          <li>
+            <Trans>
+              You may request a paper copy of any electronically provided document by contacting{' '}
+              <a href={`mailto:${GITLAW_SUPPORT_EMAIL}`}>{GITLAW_SUPPORT_EMAIL}</a>.
+            </Trans>
+          </li>
+          <li>
+            <Trans>
+              Paper copies may be subject to a fee covering printing and delivery costs and may
+              delay completion of the transaction.
+            </Trans>
+          </li>
+        </ul>
+
+        <h2>
+          <Trans>6. Withdrawing Consent</Trans>
+        </h2>
+        <ul>
+          <li>
+            <Trans>
+              You may withdraw your consent before completing a signing by declining to sign the
+              document or contacting the document sender.
+            </Trans>
+          </li>
+          <li>
+            <Trans>
+              Withdrawing consent may prevent the document from being completed electronically.
+            </Trans>
+          </li>
+        </ul>
+
+        <h2>
+          <Trans>7. Contact Information & Updates</Trans>
+        </h2>
+        <p>
+          <Trans>
+            You are responsible for keeping your contact information, including your email address,
+            up to date so you can receive documents and notices.
           </Trans>
         </p>
 
         <h2>
-          <Trans>Consent to Electronic Transactions</Trans>
+          <Trans>8. Acknowledgment</Trans>
         </h2>
         <p>
-          <Trans>
-            By using the electronic signature feature, you are consenting to conduct transactions
-            and receive disclosures electronically. You acknowledge that your electronic signature
-            on documents is binding and that you accept the terms outlined in the documents you are
-            signing.
-          </Trans>
+          <Trans>By proceeding, you confirm that:</Trans>
         </p>
+        <ul>
+          <li>
+            <Trans>you can access and read electronic documents;</Trans>
+          </li>
+          <li>
+            <Trans>you can download or print them for your records; and</Trans>
+          </li>
+          <li>
+            <Trans>you consent to electronic records and signatures as described above.</Trans>
+          </li>
+        </ul>
 
-        <h2>
-          <Trans>Withdrawing Consent</Trans>
-        </h2>
         <p>
           <Trans>
-            You have the right to withdraw your consent to use electronic signatures at any time
-            before completing the signing process. To withdraw your consent, please contact the
-            sender of the document. In failing to contact the sender you may reach out to{' '}
-            <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> for assistance. Be aware that
-            withdrawing consent may delay or halt the completion of the related transaction or
-            service.
-          </Trans>
-        </p>
-
-        <h2>
-          <Trans>Updating Your Information</Trans>
-        </h2>
-        <p>
-          <Trans>
-            It is crucial to keep your contact information, especially your email address, up to
-            date with us. Please notify us immediately of any changes to ensure that you continue to
-            receive all necessary communications.
-          </Trans>
-        </p>
-
-        <h2>
-          <Trans>Retention of Documents</Trans>
-        </h2>
-        <p>
-          <Trans>
-            After signing a document electronically, you will be provided the opportunity to view,
-            download, and print the document for your records. It is highly recommended that you
-            retain a copy of all electronically signed documents for your personal records. We will
-            also retain a copy of the signed document for our records however we may not be able to
-            provide you with a copy of the signed document after a certain period of time.
-          </Trans>
-        </p>
-
-        <h2>
-          <Trans>Acknowledgment</Trans>
-        </h2>
-        <p>
-          <Trans>
-            By proceeding to use the electronic signature service provided by Documenso, you affirm
-            that you have read and understood this disclosure. You agree to all terms and conditions
-            related to the use of electronic signatures and electronic transactions as outlined
-            herein.
-          </Trans>
-        </p>
-
-        <h2>
-          <Trans>Contact Information</Trans>
-        </h2>
-        <p>
-          <Trans>
-            For any questions regarding this disclosure, electronic signatures, or any related
-            process, please contact us at: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+            For questions, contact{' '}
+            <a href={`mailto:${GITLAW_SUPPORT_EMAIL}`}>{GITLAW_SUPPORT_EMAIL}</a>.
           </Trans>
         </p>
       </article>
 
       <div className="mt-8">
         <Button asChild>
-          <Link to="/">
+          <a href={GITLAW_HOME_URL()}>
             <Trans>Back home</Trans>
-          </Link>
+          </a>
         </Button>
       </div>
     </div>
