@@ -62,6 +62,7 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
   const { derivedRecipientActionAuth } = useRequiredDocumentSigningAuthContext();
 
   const [open, setOpen] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const form = useForm();
 
@@ -165,7 +166,7 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
           <DialogTitle>Automatically sign fields</DialogTitle>
         </DialogHeader>
 
-        <div className="text-muted-foreground max-w-[50ch]">
+        <div className="max-w-[50ch] text-muted-foreground">
           <p>
             <Trans>
               When you sign a document, we can automatically fill in and sign the following fields
@@ -192,7 +193,11 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
           </ul>
         </div>
 
-        <DocumentSigningDisclosure className="mt-4" />
+        <DocumentSigningDisclosure
+          className="mt-4"
+          checked={consentChecked}
+          onCheckedChange={setConsentChecked}
+        />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -202,6 +207,7 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
                 variant="secondary"
                 onClick={() => {
                   setOpen(false);
+                  setConsentChecked(false);
                 }}
               >
                 <Trans>Cancel</Trans>
@@ -211,7 +217,7 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
                 type="submit"
                 className="min-w-[6rem]"
                 loading={form.formState.isSubmitting}
-                disabled={!autoSignableFields.length}
+                disabled={!autoSignableFields.length || !consentChecked}
               >
                 <Trans>Sign</Trans>
               </Button>
