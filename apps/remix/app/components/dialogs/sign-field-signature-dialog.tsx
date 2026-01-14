@@ -36,6 +36,7 @@ export const SignFieldSignatureDialog = createCallable<
     initialSignature,
   }) => {
     const [localSignature, setLocalSignature] = useState(initialSignature);
+    const [consentChecked, setConsentChecked] = useState(false);
 
     return (
       <Dialog open={true} onOpenChange={(value) => (!value ? call.end(null) : null)}>
@@ -57,7 +58,7 @@ export const SignFieldSignatureDialog = createCallable<
             />
           </div>
 
-          <DocumentSigningDisclosure />
+          <DocumentSigningDisclosure checked={consentChecked} onCheckedChange={setConsentChecked} />
 
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={() => call.end(null)}>
@@ -66,7 +67,7 @@ export const SignFieldSignatureDialog = createCallable<
 
             <Button
               type="button"
-              disabled={!localSignature}
+              disabled={!localSignature || !consentChecked}
               onClick={() => call.end(localSignature || null)}
             >
               <Trans>Sign</Trans>

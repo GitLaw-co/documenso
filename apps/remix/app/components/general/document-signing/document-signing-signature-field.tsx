@@ -78,6 +78,7 @@ export const DocumentSigningSignatureField = ({
 
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [localSignature, setLocalSignature] = useState<string | null>(null);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const state = useMemo<SignatureFieldState>(() => {
     if (!field.inserted) {
@@ -289,7 +290,7 @@ export const DocumentSigningSignatureField = ({
             drawSignatureEnabled={drawSignatureEnabled}
           />
 
-          <DocumentSigningDisclosure />
+          <DocumentSigningDisclosure checked={consentChecked} onCheckedChange={setConsentChecked} />
 
           <DialogFooter>
             <div className="flex w-full flex-1 flex-nowrap gap-4">
@@ -300,6 +301,7 @@ export const DocumentSigningSignatureField = ({
                 onClick={() => {
                   setShowSignatureModal(false);
                   setLocalSignature(null);
+                  setConsentChecked(false);
                 }}
               >
                 <Trans>Cancel</Trans>
@@ -307,7 +309,7 @@ export const DocumentSigningSignatureField = ({
               <Button
                 type="button"
                 className="flex-1"
-                disabled={!localSignature}
+                disabled={!localSignature || !consentChecked}
                 onClick={() => onDialogSignClick()}
               >
                 <Trans>Sign</Trans>
