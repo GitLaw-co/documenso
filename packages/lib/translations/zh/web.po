@@ -690,9 +690,17 @@ msgstr "剩余 1 个免费组织"
 msgid "1 month"
 msgstr "1 个月"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "1. Consent to Electronic Records & Signatures"
+msgstr ""
+
 #: apps/remix/app/components/forms/token.tsx
 msgid "12 months"
 msgstr "12 个月"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "2. Legal Effect"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "2FA"
@@ -705,6 +713,14 @@ msgstr "2FA 重置"
 #: apps/remix/app/components/forms/token.tsx
 msgid "3 months"
 msgstr "3 个月"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "3. System Requirements"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "4. Receiving & Retaining Documents"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "400 Error"
@@ -775,6 +791,10 @@ msgstr "每月 5 个文档"
 msgid "5 Documents a month"
 msgstr "每月 5 个文档"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "5. Paper Copies"
+msgstr ""
+
 #: apps/remix/app/components/general/generic-error-layout.tsx
 msgid "500 Internal Server Error"
 msgstr "500 内部服务器错误"
@@ -783,17 +803,29 @@ msgstr "500 内部服务器错误"
 msgid "6 months"
 msgstr "6 个月"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "6. Withdrawing Consent"
+msgstr ""
+
 #: apps/remix/app/components/forms/token.tsx
 msgid "7 days"
 msgstr "7 天"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "7. Contact Information & Updates"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "8. Acknowledgment"
+msgstr ""
 
 #: apps/remix/app/components/forms/send-confirmation-email.tsx
 msgid "A confirmation email has been sent, and it should arrive in your inbox shortly."
 msgstr "确认邮件已发送，很快就会到达你的收件箱。"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "A device capable of accessing, opening, and reading documents"
-msgstr "能够访问、打开和阅读文档的设备"
+msgid "a device with internet access;"
+msgstr ""
 
 #: packages/lib/jobs/definitions/emails/send-signing-email.handler.ts
 msgid "A document was created by your direct template that requires you to {recipientActionVerb} it."
@@ -817,10 +849,6 @@ msgstr "已移除字段"
 msgctxt "Audit log format"
 msgid "A field was updated"
 msgstr "已更新字段"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "A means to print or download documents for your records"
-msgstr "用于打印或下载文档以作记录的方式"
 
 #: packages/email/templates/organisation-join.tsx
 msgid "A member has joined your organisation on Documenso"
@@ -888,10 +916,6 @@ msgstr "{0} 在 Documenso 上发起了一个使用您邮箱的请求"
 msgid "A secret that will be sent to your URL so you can verify that the request has been sent by Documenso."
 msgstr "一个密钥将被发送到你的 URL，以便你验证该请求确实由 Documenso 发出。"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "A stable internet connection"
-msgstr "稳定的互联网连接"
-
 #: packages/email/templates/team-delete.tsx
 #: packages/email/templates/team-delete.tsx
 msgid "A team you were a part of has been deleted"
@@ -914,6 +938,10 @@ msgstr "用于标识您组织的唯一 URL"
 msgid "A unique URL to identify your team"
 msgstr "用于标识你团队的唯一 URL"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "a valid email address;"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-email-add-dialog.tsx
 msgid "A verification email will be sent to the provided email."
 msgstr "验证邮件将发送到所填写的邮箱。"
@@ -935,10 +963,6 @@ msgstr "接受加入 Documenso 组织的邀请"
 #: packages/email/templates/confirm-team-email.tsx
 msgid "Accept team email request for {teamName} on Documenso"
 msgstr "在 Documenso 上接受 {teamName} 的团队邮箱请求"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Acceptance and Consent"
-msgstr "接受与同意"
 
 #: apps/remix/app/components/dialogs/team-inherit-member-disable-dialog.tsx
 msgid "Access disabled"
@@ -998,10 +1022,6 @@ msgstr "账号重新验证"
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Account unlinked"
 msgstr "账户已取消关联"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Acknowledgment"
-msgstr "确认"
 
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
 #: apps/remix/app/components/tables/document-logs-table.tsx
@@ -1306,10 +1326,6 @@ msgstr "高级设置"
 msgid "Advanced Settings"
 msgstr "高级设置"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "After signing a document electronically, you will be provided the opportunity to view, download, and print the document for your records. It is highly recommended that you retain a copy of all electronically signed documents for your personal records. We will also retain a copy of the signed document for our records however we may not be able to provide you with a copy of the signed document after a certain period of time."
-msgstr "在你以电子方式签署文档后，你将可以查看、下载和打印文档副本以供记录。强烈建议你保留所有电子签署文档的副本作为个人记录。我们也会保留一份已签署文档的副本以作记录，但在一段时间之后，我们可能无法再向你提供该已签署文档的副本。"
-
 #: packages/lib/constants/template.ts
 msgid "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 msgstr "提交后，将自动生成一个文档并添加到您的“文档”页面。您还会收到一封电子邮件通知。"
@@ -1338,10 +1354,6 @@ msgstr "所有文档均已完成！"
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "All documents have been processed. Any new documents that are sent or received will show here."
 msgstr "所有文档都已处理。之后发送或接收的新文档将显示在这里。"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "All documents related to the electronic signing process will be provided to you electronically through our platform or via email. It is your responsibility to ensure that your email address is current and that you can receive and open our emails."
-msgstr "与电子签署流程相关的所有文档都将通过我们的平台或电子邮件的方式提供给你。你有责任确保你的邮箱地址为最新状态，并且能够接收和打开我们发送的邮件。"
 
 #: apps/remix/app/components/tables/organisation-email-domains-table.tsx
 msgid "All email domains have been synced successfully"
@@ -1431,14 +1443,6 @@ msgstr "金额"
 #: packages/email/templates/document-super-delete.tsx
 msgid "An admin has deleted your document \"{documentName}\"."
 msgstr "管理员已删除您的文档“{documentName}”。"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "An electronic signature provided by you on our platform, achieved through clicking through to a document and entering your name, or any other electronic signing method we provide, is legally binding. It carries the same weight and enforceability as a manual signature written with ink on paper."
-msgstr "你在我们平台上提供的电子签名——无论是通过点击文档并输入姓名，还是通过我们提供的其他任何电子签署方式——都具有法律效力，其效力和可执行性与纸质手写签名完全相同。"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "An email account"
-msgstr "一个邮箱账号"
 
 #: apps/remix/app/components/dialogs/organisation-member-invite-dialog.tsx
 msgid "An email containing an invitation will be sent to each member."
@@ -1755,6 +1759,10 @@ msgstr "API 令牌"
 msgid "App Version"
 msgstr "应用版本"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "applicable electronic signature laws in the UK and EU (including eIDAS)."
+msgstr ""
+
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document/document-page-view-button.tsx
@@ -1849,7 +1857,6 @@ msgstr "确定要删除此团队吗？"
 #: apps/remix/app/components/dialogs/team-inherit-member-enable-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/teams/team-email-usage.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Are you sure?"
@@ -2107,6 +2114,10 @@ msgstr "接受此请求，即表示您授予 {0} 以下权限："
 msgid "By accepting this request, you will be granting <0>{teamName}</0> access to:"
 msgstr "接受此请求后，您将授予 <0>{teamName}</0> 以下访问权限："
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "By clicking \"Agree\", \"Sign\", or otherwise proceeding to sign a document on GitLaw, you consent for this document to:"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 msgid "By deleting this document, the following will occur:"
 msgstr "删除此文档将会产生以下后果："
@@ -2115,21 +2126,13 @@ msgstr "删除此文档将会产生以下后果："
 msgid "By enabling 2FA, you will be required to enter a code from your authenticator app every time you sign in using email password."
 msgstr "启用 2FA 后，每次使用邮箱和密码登录时，您都需要输入来自验证器应用的验证码。"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "By proceeding to use the electronic signature service provided by Documenso, you affirm that you have read and understood this disclosure. You agree to all terms and conditions related to the use of electronic signatures and electronic transactions as outlined herein."
-msgstr "继续使用 Documenso 提供的电子签署服务，即表示你已阅读并理解本披露内容。你同意本文件中关于使用电子签名及电子交易的所有条款和条件。"
-
-#: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
-msgid "By proceeding with your electronic signature, you acknowledge and consent that it will be used to sign the given document and holds the same legal validity as a handwritten signature. By completing the electronic signing process, you affirm your understanding and acceptance of these conditions."
-msgstr "继续进行电子签署，即表示你确认并同意你的电子签名将用于签署相应文档，并具有与手写签名相同的法律效力。完成电子签署流程即代表你理解并接受这些条款。"
-
 #: apps/remix/app/components/forms/signup.tsx
 msgid "By proceeding, you agree to our <0>Terms of Service</0> and <1>Privacy Policy</1>."
 msgstr "继续操作即表示您同意我们的<0>服务条款</0>和<1>隐私政策</1>。"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "By using the electronic signature feature, you are consenting to conduct transactions and receive disclosures electronically. You acknowledge that your electronic signature on documents is binding and that you accept the terms outlined in the documents you are signing."
-msgstr "使用电子签名功能，即表示你同意以电子方式进行交易并接收披露文件。你确认你在文档上的电子签名具有约束力，并接受所签署文档中列明的条款。"
+msgid "By proceeding, you confirm that:"
+msgstr ""
 
 #: packages/ui/components/recipient/recipient-role-select.tsx
 msgid "Can prepare"
@@ -2576,6 +2579,10 @@ msgstr "配置每个成员的团队角色"
 msgid "Confirm"
 msgstr "确认"
 
+#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
+msgid "Confirm action"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/organisation-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-email-domain-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx
@@ -2601,14 +2608,6 @@ msgstr "确认邮箱"
 #: apps/remix/app/routes/_unauthenticated+/o.$orgUrl.signin.tsx
 msgid "Confirmation email sent"
 msgstr "确认邮件已发送"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Consent to Electronic Transactions"
-msgstr "同意以电子方式进行交易"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Contact Information"
-msgstr "联系信息"
 
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 msgid "Contact sales here"
@@ -3840,6 +3839,10 @@ msgstr "需要您关注的文档会显示在此处"
 msgid "Documents Viewed"
 msgstr "已查看的文档"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "Documents will be provided to you electronically through GitLaw or by email."
+msgstr ""
+
 #: apps/remix/app/components/tables/organisation-email-domains-table.tsx
 msgid "Domain"
 msgstr "域名"
@@ -4032,12 +4035,12 @@ msgid "eg. Mac"
 msgstr "例如：Mac"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Electronic Delivery of Documents"
-msgstr "文档的电子交付"
+msgid "Electronic Records & Signatures Disclosure"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Electronic Signature Disclosure"
-msgstr "电子签名披露"
+msgid "Electronic signatures on GitLaw are legally binding and have the same legal effect as handwritten signatures, including under:"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
@@ -4746,10 +4749,6 @@ msgstr "文件夹更新成功"
 msgid "Font Size"
 msgstr "字体大小"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "For any questions regarding this disclosure, electronic signatures, or any related process, please contact us at: <0>{SUPPORT_EMAIL}</0>"
-msgstr "如对本披露内容、电子签名或任何相关流程有疑问，请通过以下方式联系我们：<0>{SUPPORT_EMAIL}</0>"
-
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "For each recipient, provide their email (required) and name (optional) in separate columns. Download the template CSV below for the correct format."
 msgstr "请为每个收件人分别提供邮箱（必填）和姓名（可选）列。请下载下方模板 CSV 获取正确格式。"
@@ -4757,6 +4756,10 @@ msgstr "请为每个收件人分别提供邮箱（必填）和姓名（可选）
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "For example, if the claim has a new flag \"FLAG_1\" set to true, then this organisation will get that flag added."
 msgstr "例如，如果声明中新加了一个标记“FLAG_1”并设为 true，则该组织会获得该标记。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "For questions, contact <0>{GITLAW_SUPPORT_EMAIL}</0>."
+msgstr ""
 
 #: packages/lib/server-only/auth/send-forgot-password.ts
 msgid "Forgot Password?"
@@ -4819,6 +4822,10 @@ msgstr "生成 DKIM 记录"
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "Generate Links"
 msgstr "生成链接"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "GitLaw will retain signed documents and make them available to you electronically for future access."
+msgstr ""
 
 #: packages/ui/components/document/document-global-auth-action-select.tsx
 msgid "Global recipient action authentication"
@@ -5030,6 +5037,10 @@ msgstr "水平"
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "I agree to link my account with this organization"
 msgstr "我同意将我的账户与此组织关联"
+
+#: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
+msgid "I agree to sign this document electronically and receive records in electronic form, as described in the <0>Electronic Signature Disclosure</0>."
+msgstr ""
 
 #: packages/lib/constants/recipient-roles.ts
 msgid "I am a signer of this document"
@@ -5285,10 +5296,6 @@ msgstr "IP 地址"
 msgid "Issuer URL"
 msgstr "签发者 URL"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "It is crucial to keep your contact information, especially your email address, up to date with us. Please notify us immediately of any changes to ensure that you continue to receive all necessary communications."
-msgstr "保持你的联系信息，尤其是邮箱地址的最新状态至关重要。若有任何变更，请立即通知我们，以确保你能持续收到所有必要的通知。"
-
 #. placeholder {0}: publicProfile.name
 #: apps/remix/app/routes/_profile+/p.$url.tsx
 msgid "It looks like {0} hasn't added any documents to their profile yet."
@@ -5397,6 +5404,10 @@ msgstr "最后更新"
 msgid "Last updated at"
 msgstr "最后更新于"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "Last updated: 9th January 2026"
+msgstr ""
+
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
 msgid "Last used"
 msgstr "上次使用"
@@ -5424,10 +5435,6 @@ msgstr "离开组织"
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 msgid "Left"
 msgstr "左对齐"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Legality of Electronic Signatures"
-msgstr "电子签名的合法性"
 
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 msgid "Letter spacing"
@@ -6396,6 +6403,10 @@ msgctxt "Subscription status"
 msgid "Paid"
 msgstr "已付费"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "Paper copies may be subject to a fee covering printing and delivery costs and may delay completion of the transaction."
+msgstr ""
+
 #: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "Passkey"
@@ -6904,10 +6915,6 @@ msgstr "只读"
 msgid "Read our documentation to get started with Documenso."
 msgstr "阅读我们的文档，开始使用 Documenso。"
 
-#: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
-msgid "Read the full <0>signature disclosure</0>."
-msgstr "阅读完整的<0>签名披露</0>。"
-
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
 msgid "Reading your document"
@@ -6940,6 +6947,10 @@ msgstr "理由必须少于 500 个字符"
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "Reauthentication is required to sign this field"
 msgstr "签署此字段需要重新验证身份"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "receive records and disclosures electronically; and"
+msgstr ""
 
 #: packages/ui/components/recipient/recipient-role-select.tsx
 msgid "Receives copy"
@@ -7297,10 +7308,6 @@ msgstr "请放心，您的文档将被严格保密，绝不会被分享。只有
 #: apps/remix/app/components/general/organisations/organisation-billing-banner.tsx
 msgid "Restricted Access"
 msgstr "受限访问"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Retention of Documents"
-msgstr "文档保留"
 
 #: apps/remix/app/components/tables/admin-document-jobs-table.tsx
 msgid "Retried"
@@ -7879,6 +7886,10 @@ msgstr "签署文档"
 msgid "Sign Documents"
 msgstr "签署文档"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "sign documents using electronic signatures."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/sign-field-email-dialog.tsx
 msgid "Sign Email"
 msgstr "签署电子邮件字段"
@@ -8107,6 +8118,10 @@ msgstr "站点设置"
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
 msgid "Skip"
 msgstr "跳过"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "software capable of viewing PDF or similar documents; and"
+msgstr ""
 
 #: packages/ui/primitives/document-flow/missing-signature-field-dialog.tsx
 msgid "Some signers have not been assigned a signature field. Please assign at least 1 signature field to each signer before proceeding."
@@ -8447,10 +8462,6 @@ msgctxt "Audit log format"
 msgid "System auto inserted fields"
 msgstr "系统自动插入了字段"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "System Requirements"
-msgstr "系统要求"
-
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "System Theme"
 msgstr "系统主题"
@@ -8741,13 +8752,13 @@ msgstr "文本设置"
 msgid "Thank you for completing the signing process."
 msgstr "感谢您完成签署流程。"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Thank you for using Documenso to perform your electronic document signing. The purpose of this disclosure is to inform you about the process, legality, and your rights regarding the use of electronic signatures on our platform. By opting to use an electronic signature, you are agreeing to the terms and conditions outlined below."
-msgstr "感谢你使用 Documenso 进行电子文档签署。本披露旨在向你说明在我们平台上使用电子签名的流程、合法性以及你的权利。选择使用电子签名，即表示你同意以下条款和条件。"
-
 #: packages/email/template-components/template-forgot-password.tsx
 msgid "That's okay, it happens! Click the button below to reset your password."
 msgstr "没关系，会有这种情况！点击下方按钮重置您的密码。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "the ability to download or print documents for your records."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/admin-user-delete-dialog.tsx
 msgid "The account has been deleted successfully."
@@ -9065,6 +9076,10 @@ msgstr "键入签名的字体大小"
 msgid "The types of signatures that recipients are allowed to use when signing the document."
 msgstr "收件人在签署文档时允许使用的签名类型。"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "the U.S. Electronic Signatures in Global and National Commerce Act (E-SIGN); and"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx
 #: apps/remix/app/components/dialogs/webhook-edit-dialog.tsx
 msgid "The URL for Documenso to send webhook events to."
@@ -9156,6 +9171,10 @@ msgstr "根据文档大小，这可能需要一到两分钟。"
 #: apps/remix/app/components/dialogs/claim-delete-dialog.tsx
 msgid "This claim is locked and cannot be deleted."
 msgstr "此声明已锁定，无法删除。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "This disclosure explains how electronic records and electronic signatures work on GitLaw. Please read it carefully before signing."
+msgstr ""
 
 #: packages/email/template-components/template-document-super-delete.tsx
 msgid "This document can not be recovered, if you would like to dispute the reason for future documents please contact support."
@@ -9481,8 +9500,8 @@ msgid "To proceed further, please set at least one value for the {0} field."
 msgstr "若要继续，请至少为 {0} 字段设置一个值。"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "To use our electronic signature service, you must have access to:"
-msgstr "要使用我们的电子签名服务，你必须具备以下条件："
+msgid "To use electronic signatures on GitLaw, you must have:"
+msgstr ""
 
 #: apps/remix/app/components/embed/embed-authentication-required.tsx
 msgid "To view this document you need to be signed into your account, please sign in to continue."
@@ -9893,10 +9912,6 @@ msgstr "已将 {organisationMemberName} 更新为 {roleLabel}。"
 #: apps/remix/app/components/forms/password.tsx
 msgid "Updating password..."
 msgstr "正在更新密码..."
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Updating Your Information"
-msgstr "更新你的信息"
 
 #: packages/ui/primitives/document-dropzone.tsx
 #: packages/ui/primitives/document-upload-button.tsx
@@ -10735,10 +10750,6 @@ msgstr "Webhook URL"
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Welcome"
-msgstr "欢迎"
-
 #: apps/remix/app/routes/_unauthenticated+/signin.tsx
 msgid "Welcome back, we are lucky to have you."
 msgstr "欢迎回来，我们很高兴再次见到你。"
@@ -10782,10 +10793,6 @@ msgstr "点击继续后，系统会提示你添加设备上第一个可用的验
 msgid "When you sign a document, we can automatically fill in and sign the following fields using information that has already been provided. You can also manually sign or remove any automatically signed fields afterwards if you desire."
 msgstr "当您签署文档时，我们可以使用已提供的信息自动填写并签署以下字段。之后如有需要，您也可以手动签署或移除任何自动签署的字段。"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "When you use our platform to affix your electronic signature to documents, you are consenting to do so under the Electronic Signatures in Global and National Commerce Act (E-Sign Act) and other applicable laws. This action indicates your agreement to use electronic means to sign documents and receive notifications."
-msgstr "当你使用我们的平台在文档上加盖电子签名时，即表示你在《全球与国家商业电子签名法案》（E-Sign Act）及其他适用法律框架下，同意使用电子方式签署文档并接收通知。此举表明你同意以电子方式完成相关签署和收信。"
-
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "Whether to enable the SSO portal for your organisation"
 msgstr "是否为您的组织启用 SSO 门户"
@@ -10803,8 +10810,8 @@ msgid "Who do you want to remind?"
 msgstr "你想提醒谁？"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Withdrawing Consent"
-msgstr "撤回同意"
+msgid "Withdrawing consent may prevent the document from being completed electronically."
+msgstr ""
 
 #: apps/remix/app/components/forms/public-profile-form.tsx
 msgid "Write a description to display on your public profile"
@@ -10829,20 +10836,16 @@ msgid "You"
 msgstr "你"
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete approving the following document"
-msgstr "您即将完成以下文档的批准"
+msgid "You are about to approve:"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete assisting the following document"
-msgstr "您即将完成以下文档的协助"
+msgid "You are about to complete assisting:"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete signing the following document"
-msgstr "您即将完成以下文档的签署"
-
-#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete viewing the following document"
-msgstr "您即将完成以下文档的查看"
+msgid "You are about to complete viewing:"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 msgid "You are about to delete <0>\"{documentTitle}\"</0>"
@@ -10856,6 +10859,10 @@ msgstr "您即将删除 <0>{0}</0>。与该组织相关的所有数据（例如�
 #: apps/remix/app/components/dialogs/team-email-delete-dialog.tsx
 msgid "You are about to delete the following team email from <0>{teamName}</0>."
 msgstr "你即将从 <0>{teamName}</0> 中删除以下团队邮箱。"
+
+#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
+msgid "You are about to electronically sign:"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/team-inherit-member-enable-dialog.tsx
 msgid "You are about to give all organisation members access to this team under their organisation role."
@@ -10972,6 +10979,14 @@ msgstr "您无权启用此用户。"
 msgid "You are not authorized to reset two factor authentcation for this user."
 msgstr "您无权为此用户重置双重身份验证。"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You are responsible for keeping your contact information, including your email address, up to date so you can receive documents and notices."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "you can access and read electronic documents;"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 msgid "You can add fields manually in the editor."
 msgstr "您可以在编辑器中手动添加字段。"
@@ -10991,6 +11006,10 @@ msgstr "您可以选择启用或禁用公开个人资料。"
 #: apps/remix/app/components/general/document/document-recipient-link-copy-dialog.tsx
 msgid "You can copy and share these links to recipients so they can action the document."
 msgstr "你可以复制并分享这些链接给收件人，便于他们处理文档。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "you can download or print them for your records; and"
+msgstr ""
 
 #: apps/remix/app/components/general/teams/team-inherit-member-alert.tsx
 msgid "You can enable access to allow all organisation members to access this team by default."
@@ -11028,6 +11047,10 @@ msgstr "您可以在控制台的“由模板创建的文档”部分查看创建
 #: packages/email/template-components/template-document-rejected.tsx
 msgid "You can view the document and its status by clicking the button below."
 msgstr "您可以点击下方按钮查看文档及其状态。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You can view, download, and print signed documents at no cost."
+msgstr ""
 
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
 #: packages/ui/primitives/document-flow/add-signers.tsx
@@ -11069,6 +11092,10 @@ msgstr "您目前无法上传文档。"
 #: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 msgid "You cannot upload encrypted PDFs."
 msgstr "你无法上传已加密的 PDF。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "you consent to electronic records and signatures as described above."
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.billing.tsx
 msgid "You currently have an inactive <0>{currentProductName}</0> subscription"
@@ -11231,10 +11258,6 @@ msgstr "你已成功将该用户从团队中移除。"
 msgid "You have successfully revoked access."
 msgstr "你已成功撤销访问权限。"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "You have the right to withdraw your consent to use electronic signatures at any time before completing the signing process. To withdraw your consent, please contact the sender of the document. In failing to contact the sender you may reach out to <0>{SUPPORT_EMAIL}</0> for assistance. Be aware that withdrawing consent may delay or halt the completion of the related transaction or service."
-msgstr "在完成签署流程之前，你有权随时撤回对使用电子签名的同意。要撤回同意，请联系文档的发送方。如果无法联系发送方，你可以通过 <0>{SUPPORT_EMAIL}</0> 与我们联系以获得协助。请注意，撤回同意可能会延迟或中止相关交易或服务的完成。"
-
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 msgid "You have updated {memberName}."
 msgstr "您已更新 {memberName}。"
@@ -11251,6 +11274,14 @@ msgstr "您已更新该团队组。"
 #: apps/remix/app/routes/_unauthenticated+/team.verify.email.$token.tsx
 msgid "You have verified your email address for <0>{0}</0>."
 msgstr "你已验证在 <0>{0}</0> 的邮箱地址。"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You may request a paper copy of any electronically provided document by contacting <0>{GITLAW_SUPPORT_EMAIL}</0>."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You may withdraw your consent before completing a signing by declining to sign the document or contacting the document sender."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/organisation-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx

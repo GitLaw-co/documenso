@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { RecipientRole } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -187,6 +188,7 @@ export function AssistantConfirmationDialog({
                   className="mt-4"
                   checked={consentChecked}
                   onCheckedChange={setConsentChecked}
+                  role={RecipientRole.ASSISTANT}
                 />
               </div>
 

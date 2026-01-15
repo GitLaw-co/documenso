@@ -290,7 +290,11 @@ export const DocumentSigningSignatureField = ({
             drawSignatureEnabled={drawSignatureEnabled}
           />
 
-          <DocumentSigningDisclosure checked={consentChecked} onCheckedChange={setConsentChecked} />
+          <DocumentSigningDisclosure
+            checked={consentChecked}
+            onCheckedChange={setConsentChecked}
+            role={recipient.role}
+          />
 
           <DialogFooter>
             <div className="flex w-full flex-1 flex-nowrap gap-4">
