@@ -43,8 +43,8 @@
 
     /* salad-250: #9ddfa9 */
     --border: 130 51% 75%;
-    /* grass-65: #dffbe3 */
-    --input: 129 78% 93%;
+    /* Use same as border for visible input borders (was grass-65 which matched background) */
+    --input: 130 51% 75%;
 
     /* violetish-700: #5e49d6 */
     --primary: 249 60% 56%;

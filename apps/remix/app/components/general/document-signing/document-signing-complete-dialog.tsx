@@ -348,6 +348,7 @@ export const DocumentSigningCompleteDialog = ({
                   <DocumentSigningDisclosure
                     checked={consentChecked}
                     onCheckedChange={setConsentChecked}
+                    role={recipient.role}
                   />
 
                   <DialogFooter className="mt-4">

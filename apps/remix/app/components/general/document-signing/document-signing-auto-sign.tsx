@@ -49,7 +49,7 @@ const NON_AUTO_SIGNABLE_ACTION_AUTH_TYPES: string[] = [
 const AUTO_SIGN_THRESHOLD = 5;
 
 export type DocumentSigningAutoSignProps = {
-  recipient: Pick<Recipient, 'id' | 'token'>;
+  recipient: Pick<Recipient, 'id' | 'token' | 'role'>;
   fields: Field[];
 };
 
@@ -197,6 +197,7 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
           className="mt-4"
           checked={consentChecked}
           onCheckedChange={setConsentChecked}
+          role={recipient.role}
         />
 
         <Form {...form}>

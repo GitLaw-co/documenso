@@ -685,9 +685,17 @@ msgstr "1 organização gratuita restante"
 msgid "1 month"
 msgstr "1 mês"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "1. Consent to Electronic Records & Signatures"
+msgstr ""
+
 #: apps/remix/app/components/forms/token.tsx
 msgid "12 months"
 msgstr "12 meses"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "2. Legal Effect"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "2FA"
@@ -700,6 +708,14 @@ msgstr "Redefinição de 2FA"
 #: apps/remix/app/components/forms/token.tsx
 msgid "3 months"
 msgstr "3 meses"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "3. System Requirements"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "4. Receiving & Retaining Documents"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "400 Error"
@@ -770,6 +786,10 @@ msgstr "5 documentos por mês"
 msgid "5 Documents a month"
 msgstr "5 Documentos por mês"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "5. Paper Copies"
+msgstr ""
+
 #: apps/remix/app/components/general/generic-error-layout.tsx
 msgid "500 Internal Server Error"
 msgstr "500 Erro Interno do Servidor"
@@ -778,17 +798,29 @@ msgstr "500 Erro Interno do Servidor"
 msgid "6 months"
 msgstr "6 meses"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "6. Withdrawing Consent"
+msgstr ""
+
 #: apps/remix/app/components/forms/token.tsx
 msgid "7 days"
 msgstr "7 dias"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "7. Contact Information & Updates"
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "8. Acknowledgment"
+msgstr ""
 
 #: apps/remix/app/components/forms/send-confirmation-email.tsx
 msgid "A confirmation email has been sent, and it should arrive in your inbox shortly."
 msgstr "Um e-mail de confirmação foi enviado e deve chegar em sua caixa de entrada em breve."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "A device capable of accessing, opening, and reading documents"
-msgstr "Um dispositivo capaz de acessar, abrir e ler documentos"
+msgid "a device with internet access;"
+msgstr ""
 
 #: packages/lib/jobs/definitions/emails/send-signing-email.handler.ts
 msgid "A document was created by your direct template that requires you to {recipientActionVerb} it."
@@ -812,10 +844,6 @@ msgstr "Um campo foi removido"
 msgctxt "Audit log format"
 msgid "A field was updated"
 msgstr "Um campo foi atualizado"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "A means to print or download documents for your records"
-msgstr "Um meio de imprimir ou baixar documentos para seus registros"
 
 #: packages/email/templates/organisation-join.tsx
 msgid "A member has joined your organisation on Documenso"
@@ -883,10 +911,6 @@ msgstr "Uma solicitação para usar seu e-mail foi iniciada por {0} no Documenso
 msgid "A secret that will be sent to your URL so you can verify that the request has been sent by Documenso."
 msgstr "Um segredo que será enviado para sua URL para que você possa verificar se a solicitação foi enviada pelo Documenso."
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "A stable internet connection"
-msgstr "Uma conexão de internet estável"
-
 #: packages/email/templates/team-delete.tsx
 #: packages/email/templates/team-delete.tsx
 msgid "A team you were a part of has been deleted"
@@ -909,6 +933,10 @@ msgstr "Uma URL única para identificar sua organização"
 msgid "A unique URL to identify your team"
 msgstr "Uma URL única para identificar sua equipe"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "a valid email address;"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-email-add-dialog.tsx
 msgid "A verification email will be sent to the provided email."
 msgstr "Um e-mail de verificação será enviado para o e-mail fornecido."
@@ -930,10 +958,6 @@ msgstr "Aceitar convite para entrar em uma organização no Documenso"
 #: packages/email/templates/confirm-team-email.tsx
 msgid "Accept team email request for {teamName} on Documenso"
 msgstr "Aceitar solicitação de e-mail da equipe para {teamName} no Documenso"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Acceptance and Consent"
-msgstr "Aceitação e Consentimento"
 
 #: apps/remix/app/components/dialogs/team-inherit-member-disable-dialog.tsx
 msgid "Access disabled"
@@ -993,10 +1017,6 @@ msgstr "Reautenticação da Conta"
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Account unlinked"
 msgstr "Conta desvinculada"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Acknowledgment"
-msgstr "Reconhecimento"
 
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
 #: apps/remix/app/components/tables/document-logs-table.tsx
@@ -1301,10 +1321,6 @@ msgstr "Configurações avançadas"
 msgid "Advanced Settings"
 msgstr "Configurações Avançadas"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "After signing a document electronically, you will be provided the opportunity to view, download, and print the document for your records. It is highly recommended that you retain a copy of all electronically signed documents for your personal records. We will also retain a copy of the signed document for our records however we may not be able to provide you with a copy of the signed document after a certain period of time."
-msgstr "Após assinar um documento eletronicamente, você terá a oportunidade de visualizar, baixar e imprimir o documento para seus registros. É altamente recomendável que você guarde uma cópia de todos os documentos assinados eletronicamente para seus registros pessoais. Também manteremos uma cópia do documento assinado para nossos registros, no entanto, podemos não ser capazes de fornecer uma cópia do documento assinado após um determinado período de tempo."
-
 #: packages/lib/constants/template.ts
 msgid "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 msgstr "Após o envio, um documento será gerado automaticamente e adicionado à sua página de documentos. Você também receberá uma notificação por e-mail."
@@ -1333,10 +1349,6 @@ msgstr "Todos os documentos foram concluídos!"
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "All documents have been processed. Any new documents that are sent or received will show here."
 msgstr "Todos os documentos foram processados. Quaisquer novos documentos enviados ou recebidos aparecerão aqui."
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "All documents related to the electronic signing process will be provided to you electronically through our platform or via email. It is your responsibility to ensure that your email address is current and that you can receive and open our emails."
-msgstr "Todos os documentos relacionados ao processo de assinatura eletrônica serão fornecidos a você eletronicamente através de nossa plataforma ou via e-mail. É sua responsabilidade garantir que seu endereço de e-mail esteja atualizado e que você possa receber e abrir nossos e-mails."
 
 #: apps/remix/app/components/tables/organisation-email-domains-table.tsx
 msgid "All email domains have been synced successfully"
@@ -1426,14 +1438,6 @@ msgstr "Valor"
 #: packages/email/templates/document-super-delete.tsx
 msgid "An admin has deleted your document \"{documentName}\"."
 msgstr "Um administrador excluiu seu documento \"{documentName}\"."
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "An electronic signature provided by you on our platform, achieved through clicking through to a document and entering your name, or any other electronic signing method we provide, is legally binding. It carries the same weight and enforceability as a manual signature written with ink on paper."
-msgstr "Uma assinatura eletrônica fornecida por você em nossa plataforma, realizada clicando em um documento e inserindo seu nome, ou qualquer outro método de assinatura eletrônica que fornecemos, é legalmente vinculativa. Ela tem o mesmo peso e aplicabilidade que uma assinatura manual feita com tinta no papel."
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "An email account"
-msgstr "Uma conta de e-mail"
 
 #: apps/remix/app/components/dialogs/organisation-member-invite-dialog.tsx
 msgid "An email containing an invitation will be sent to each member."
@@ -1750,6 +1754,10 @@ msgstr "Tokens de API"
 msgid "App Version"
 msgstr "Versão do App"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "applicable electronic signature laws in the UK and EU (including eIDAS)."
+msgstr ""
+
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document/document-page-view-button.tsx
@@ -1844,7 +1852,6 @@ msgstr "Tem certeza de que deseja excluir esta equipe?"
 #: apps/remix/app/components/dialogs/team-inherit-member-enable-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/teams/team-email-usage.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Are you sure?"
@@ -2102,6 +2109,10 @@ msgstr "Ao aceitar esta solicitação, você concede a {0} as seguintes permiss�
 msgid "By accepting this request, you will be granting <0>{teamName}</0> access to:"
 msgstr "Ao aceitar esta solicitação, você concederá a <0>{teamName}</0> acesso a:"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "By clicking \"Agree\", \"Sign\", or otherwise proceeding to sign a document on GitLaw, you consent for this document to:"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 msgid "By deleting this document, the following will occur:"
 msgstr "Ao excluir este documento, o seguinte ocorrerá:"
@@ -2110,21 +2121,13 @@ msgstr "Ao excluir este documento, o seguinte ocorrerá:"
 msgid "By enabling 2FA, you will be required to enter a code from your authenticator app every time you sign in using email password."
 msgstr "Ao ativar a 2FA, você precisará inserir um código do seu aplicativo autenticador toda vez que fizer login usando senha de e-mail."
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "By proceeding to use the electronic signature service provided by Documenso, you affirm that you have read and understood this disclosure. You agree to all terms and conditions related to the use of electronic signatures and electronic transactions as outlined herein."
-msgstr "Ao prosseguir com o uso do serviço de assinatura eletrônica fornecido pela Documenso, você afirma que leu e compreendeu esta divulgação. Você concorda com todos os termos e condições relacionados ao uso de assinaturas eletrônicas e transações eletrônicas conforme descrito aqui."
-
-#: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
-msgid "By proceeding with your electronic signature, you acknowledge and consent that it will be used to sign the given document and holds the same legal validity as a handwritten signature. By completing the electronic signing process, you affirm your understanding and acceptance of these conditions."
-msgstr "Ao prosseguir com sua assinatura eletrônica, você reconhece e consente que ela será usada para assinar o documento fornecido e possui a mesma validade legal que uma assinatura manuscrita. Ao concluir o processo de assinatura eletrônica, você afirma sua compreensão e aceitação destas condições."
-
 #: apps/remix/app/components/forms/signup.tsx
 msgid "By proceeding, you agree to our <0>Terms of Service</0> and <1>Privacy Policy</1>."
 msgstr "Ao prosseguir, você concorda com nossos <0>Termos de Serviço</0> e <1>Política de Privacidade</1>."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "By using the electronic signature feature, you are consenting to conduct transactions and receive disclosures electronically. You acknowledge that your electronic signature on documents is binding and that you accept the terms outlined in the documents you are signing."
-msgstr "Ao usar o recurso de assinatura eletrônica, você consente em realizar transações e receber divulgações eletronicamente. Você reconhece que sua assinatura eletrônica em documentos é vinculativa e que aceita os termos descritos nos documentos que está assinando."
+msgid "By proceeding, you confirm that:"
+msgstr ""
 
 #: packages/ui/components/recipient/recipient-role-select.tsx
 msgid "Can prepare"
@@ -2571,6 +2574,10 @@ msgstr "Configure as funções da equipe para cada membro"
 msgid "Confirm"
 msgstr "Confirmar"
 
+#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
+msgid "Confirm action"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/organisation-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/organisation-email-domain-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx
@@ -2596,14 +2603,6 @@ msgstr "Confirmar e-mail"
 #: apps/remix/app/routes/_unauthenticated+/o.$orgUrl.signin.tsx
 msgid "Confirmation email sent"
 msgstr "E-mail de confirmação enviado"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Consent to Electronic Transactions"
-msgstr "Consentimento para Transações Eletrônicas"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Contact Information"
-msgstr "Informações de Contato"
 
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 msgid "Contact sales here"
@@ -3835,6 +3834,10 @@ msgstr "Documentos que requerem sua atenção aparecerão aqui"
 msgid "Documents Viewed"
 msgstr "Documentos Visualizados"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "Documents will be provided to you electronically through GitLaw or by email."
+msgstr ""
+
 #: apps/remix/app/components/tables/organisation-email-domains-table.tsx
 msgid "Domain"
 msgstr "Domínio"
@@ -4027,12 +4030,12 @@ msgid "eg. Mac"
 msgstr "ex: Mac"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Electronic Delivery of Documents"
-msgstr "Entrega Eletrônica de Documentos"
+msgid "Electronic Records & Signatures Disclosure"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Electronic Signature Disclosure"
-msgstr "Divulgação de Assinatura Eletrônica"
+msgid "Electronic signatures on GitLaw are legally binding and have the same legal effect as handwritten signatures, including under:"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
@@ -4741,10 +4744,6 @@ msgstr "Pasta atualizada com sucesso"
 msgid "Font Size"
 msgstr "Tamanho da fonte"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "For any questions regarding this disclosure, electronic signatures, or any related process, please contact us at: <0>{SUPPORT_EMAIL}</0>"
-msgstr "Para quaisquer dúvidas sobre esta divulgação, assinaturas eletrônicas ou qualquer processo relacionado, entre em contato conosco em: <0>{SUPPORT_EMAIL}</0>"
-
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "For each recipient, provide their email (required) and name (optional) in separate columns. Download the template CSV below for the correct format."
 msgstr "Para cada destinatário, forneça seu e-mail (obrigatório) e nome (opcional) em colunas separadas. Baixe o modelo CSV abaixo para o formato correto."
@@ -4752,6 +4751,10 @@ msgstr "Para cada destinatário, forneça seu e-mail (obrigatório) e nome (opci
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "For example, if the claim has a new flag \"FLAG_1\" set to true, then this organisation will get that flag added."
 msgstr "Por exemplo, se a reivindicação tiver um novo sinalizador \"FLAG_1\" definido como verdadeiro, essa organização terá esse sinalizador adicionado."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "For questions, contact <0>{GITLAW_SUPPORT_EMAIL}</0>."
+msgstr ""
 
 #: packages/lib/server-only/auth/send-forgot-password.ts
 msgid "Forgot Password?"
@@ -4814,6 +4817,10 @@ msgstr "Gerar Registros DKIM"
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "Generate Links"
 msgstr "Gerar Links"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "GitLaw will retain signed documents and make them available to you electronically for future access."
+msgstr ""
 
 #: packages/ui/components/document/document-global-auth-action-select.tsx
 msgid "Global recipient action authentication"
@@ -5025,6 +5032,10 @@ msgstr "Horizontal"
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "I agree to link my account with this organization"
 msgstr "Concordo em vincular minha conta a esta organização"
+
+#: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
+msgid "I agree to sign this document electronically and receive records in electronic form, as described in the <0>Electronic Signature Disclosure</0>."
+msgstr ""
 
 #: packages/lib/constants/recipient-roles.ts
 msgid "I am a signer of this document"
@@ -5280,10 +5291,6 @@ msgstr "Endereço IP"
 msgid "Issuer URL"
 msgstr "URL do Emissor"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "It is crucial to keep your contact information, especially your email address, up to date with us. Please notify us immediately of any changes to ensure that you continue to receive all necessary communications."
-msgstr "É crucial manter suas informações de contato, especialmente seu endereço de e-mail, atualizadas conosco. Por favor, notifique-nos imediatamente sobre quaisquer alterações para garantir que você continue recebendo todas as comunicações necessárias."
-
 #. placeholder {0}: publicProfile.name
 #: apps/remix/app/routes/_profile+/p.$url.tsx
 msgid "It looks like {0} hasn't added any documents to their profile yet."
@@ -5392,6 +5399,10 @@ msgstr "Última Atualização"
 msgid "Last updated at"
 msgstr "Última atualização em"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "Last updated: 9th January 2026"
+msgstr ""
+
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
 msgid "Last used"
 msgstr "Último uso"
@@ -5419,10 +5430,6 @@ msgstr "Sair da organização"
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 msgid "Left"
 msgstr "Esquerda"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Legality of Electronic Signatures"
-msgstr "Legalidade das Assinaturas Eletrônicas"
 
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 msgid "Letter spacing"
@@ -6391,6 +6398,10 @@ msgctxt "Subscription status"
 msgid "Paid"
 msgstr "Pago"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "Paper copies may be subject to a fee covering printing and delivery costs and may delay completion of the transaction."
+msgstr ""
+
 #: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "Passkey"
@@ -6899,10 +6910,6 @@ msgstr "Somente Leitura"
 msgid "Read our documentation to get started with Documenso."
 msgstr "Leia nossa documentação para começar com o Documenso."
 
-#: apps/remix/app/components/general/document-signing/document-signing-disclosure.tsx
-msgid "Read the full <0>signature disclosure</0>."
-msgstr "Leia a <0>divulgação de assinatura</0> completa."
-
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
 msgid "Reading your document"
@@ -6935,6 +6942,10 @@ msgstr "O motivo deve ter menos de 500 caracteres"
 #: apps/remix/app/components/general/document-signing/document-signing-auth-dialog.tsx
 msgid "Reauthentication is required to sign this field"
 msgstr "Reautenticação é necessária para assinar este campo"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "receive records and disclosures electronically; and"
+msgstr ""
 
 #: packages/ui/components/recipient/recipient-role-select.tsx
 msgid "Receives copy"
@@ -7292,10 +7303,6 @@ msgstr "Fique tranquilo, seu documento é estritamente confidencial e nunca ser�
 #: apps/remix/app/components/general/organisations/organisation-billing-banner.tsx
 msgid "Restricted Access"
 msgstr "Acesso Restrito"
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Retention of Documents"
-msgstr "Retenção de Documentos"
 
 #: apps/remix/app/components/tables/admin-document-jobs-table.tsx
 msgid "Retried"
@@ -7874,6 +7881,10 @@ msgstr "Assinar Documento"
 msgid "Sign Documents"
 msgstr "Assinar Documentos"
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "sign documents using electronic signatures."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/sign-field-email-dialog.tsx
 msgid "Sign Email"
 msgstr "Assinar E-mail"
@@ -8102,6 +8113,10 @@ msgstr "Configurações do Site"
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
 msgid "Skip"
 msgstr "Pular"
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "software capable of viewing PDF or similar documents; and"
+msgstr ""
 
 #: packages/ui/primitives/document-flow/missing-signature-field-dialog.tsx
 msgid "Some signers have not been assigned a signature field. Please assign at least 1 signature field to each signer before proceeding."
@@ -8442,10 +8457,6 @@ msgctxt "Audit log format"
 msgid "System auto inserted fields"
 msgstr "Campos inseridos automaticamente pelo sistema"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "System Requirements"
-msgstr "Requisitos do Sistema"
-
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "System Theme"
 msgstr "Tema do Sistema"
@@ -8736,13 +8747,13 @@ msgstr "Configurações de Texto"
 msgid "Thank you for completing the signing process."
 msgstr "Obrigado por concluir o processo de assinatura."
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Thank you for using Documenso to perform your electronic document signing. The purpose of this disclosure is to inform you about the process, legality, and your rights regarding the use of electronic signatures on our platform. By opting to use an electronic signature, you are agreeing to the terms and conditions outlined below."
-msgstr "Obrigado por usar o Documenso para realizar sua assinatura eletrônica de documentos. O objetivo desta divulgação é informá-lo sobre o processo, legalidade e seus direitos em relação ao uso de assinaturas eletrônicas em nossa plataforma. Ao optar por usar uma assinatura eletrônica, você concorda com os termos e condições descritos abaixo."
-
 #: packages/email/template-components/template-forgot-password.tsx
 msgid "That's okay, it happens! Click the button below to reset your password."
 msgstr "Tudo bem, acontece! Clique no botão abaixo para redefinir sua senha."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "the ability to download or print documents for your records."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/admin-user-delete-dialog.tsx
 msgid "The account has been deleted successfully."
@@ -9060,6 +9071,10 @@ msgstr "O tamanho da fonte da assinatura digitada"
 msgid "The types of signatures that recipients are allowed to use when signing the document."
 msgstr "Os tipos de assinaturas que os destinatários podem usar ao assinar o documento."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "the U.S. Electronic Signatures in Global and National Commerce Act (E-SIGN); and"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx
 #: apps/remix/app/components/dialogs/webhook-edit-dialog.tsx
 msgid "The URL for Documenso to send webhook events to."
@@ -9151,6 +9166,10 @@ msgstr "Isso pode levar um ou dois minutos, dependendo do tamanho do seu documen
 #: apps/remix/app/components/dialogs/claim-delete-dialog.tsx
 msgid "This claim is locked and cannot be deleted."
 msgstr "Esta reivindicação está bloqueada e não pode ser excluída."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "This disclosure explains how electronic records and electronic signatures work on GitLaw. Please read it carefully before signing."
+msgstr ""
 
 #: packages/email/template-components/template-document-super-delete.tsx
 msgid "This document can not be recovered, if you would like to dispute the reason for future documents please contact support."
@@ -9476,8 +9495,8 @@ msgid "To proceed further, please set at least one value for the {0} field."
 msgstr "Para prosseguir, defina pelo menos um valor para o campo {0}."
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "To use our electronic signature service, you must have access to:"
-msgstr "Para usar nosso serviço de assinatura eletrônica, você deve ter acesso a:"
+msgid "To use electronic signatures on GitLaw, you must have:"
+msgstr ""
 
 #: apps/remix/app/components/embed/embed-authentication-required.tsx
 msgid "To view this document you need to be signed into your account, please sign in to continue."
@@ -9888,10 +9907,6 @@ msgstr "{organisationMemberName} atualizado para {roleLabel}."
 #: apps/remix/app/components/forms/password.tsx
 msgid "Updating password..."
 msgstr "Atualizando senha..."
-
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Updating Your Information"
-msgstr "Atualizando Suas Informações"
 
 #: packages/ui/primitives/document-dropzone.tsx
 #: packages/ui/primitives/document-upload-button.tsx
@@ -10730,10 +10745,6 @@ msgstr "URL do Webhook"
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Welcome"
-msgstr "Bem-vindo"
-
 #: apps/remix/app/routes/_unauthenticated+/signin.tsx
 msgid "Welcome back, we are lucky to have you."
 msgstr "Bem-vindo de volta, temos sorte em ter você."
@@ -10777,10 +10788,6 @@ msgstr "Ao clicar em continuar, você será solicitado a adicionar o primeiro au
 msgid "When you sign a document, we can automatically fill in and sign the following fields using information that has already been provided. You can also manually sign or remove any automatically signed fields afterwards if you desire."
 msgstr "Ao assinar um documento, podemos preencher e assinar automaticamente os seguintes campos usando informações que já foram fornecidas. Você também pode assinar manualmente ou remover quaisquer campos assinados automaticamente depois, se desejar."
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "When you use our platform to affix your electronic signature to documents, you are consenting to do so under the Electronic Signatures in Global and National Commerce Act (E-Sign Act) and other applicable laws. This action indicates your agreement to use electronic means to sign documents and receive notifications."
-msgstr "Ao usar nossa plataforma para afixar sua assinatura eletrônica em documentos, você consente em fazê-lo sob a Lei de Assinaturas Eletrônicas no Comércio Global e Nacional (E-Sign Act) e outras leis aplicáveis. Esta ação indica sua concordância em usar meios eletrônicos para assinar documentos e receber notificações."
-
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.sso.tsx
 msgid "Whether to enable the SSO portal for your organisation"
 msgstr "Se deve ativar o portal SSO para sua organização"
@@ -10798,8 +10805,8 @@ msgid "Who do you want to remind?"
 msgstr "Quem você deseja lembrar?"
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "Withdrawing Consent"
-msgstr "Retirada de Consentimento"
+msgid "Withdrawing consent may prevent the document from being completed electronically."
+msgstr ""
 
 #: apps/remix/app/components/forms/public-profile-form.tsx
 msgid "Write a description to display on your public profile"
@@ -10824,20 +10831,16 @@ msgid "You"
 msgstr "Você"
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete approving the following document"
-msgstr "Você está prestes a concluir a aprovação do seguinte documento"
+msgid "You are about to approve:"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete assisting the following document"
-msgstr "Você está prestes a concluir o auxílio ao seguinte documento"
+msgid "You are about to complete assisting:"
+msgstr ""
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete signing the following document"
-msgstr "Você está prestes a concluir a assinatura do seguinte documento"
-
-#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
-msgid "You are about to complete viewing the following document"
-msgstr "Você está prestes a concluir a visualização do seguinte documento"
+msgid "You are about to complete viewing:"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 msgid "You are about to delete <0>\"{documentTitle}\"</0>"
@@ -10851,6 +10854,10 @@ msgstr "Você está prestes a excluir <0>{0}</0>. Todos os dados relacionados a 
 #: apps/remix/app/components/dialogs/team-email-delete-dialog.tsx
 msgid "You are about to delete the following team email from <0>{teamName}</0>."
 msgstr "Você está prestes a excluir o seguinte e-mail de equipe de <0>{teamName}</0>."
+
+#: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
+msgid "You are about to electronically sign:"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/team-inherit-member-enable-dialog.tsx
 msgid "You are about to give all organisation members access to this team under their organisation role."
@@ -10967,6 +10974,14 @@ msgstr "Você não está autorizado a ativar este usuário."
 msgid "You are not authorized to reset two factor authentcation for this user."
 msgstr "Você não está autorizado a redefinir a autenticação de dois fatores para este usuário."
 
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You are responsible for keeping your contact information, including your email address, up to date so you can receive documents and notices."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "you can access and read electronic documents;"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 msgid "You can add fields manually in the editor."
 msgstr "Você pode adicionar campos manualmente no editor."
@@ -10986,6 +11001,10 @@ msgstr "Você pode optar por ativar ou desativar o perfil para visualização p�
 #: apps/remix/app/components/general/document/document-recipient-link-copy-dialog.tsx
 msgid "You can copy and share these links to recipients so they can action the document."
 msgstr "Você pode copiar e compartilhar esses links com os destinatários para que eles possam agir sobre o documento."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "you can download or print them for your records; and"
+msgstr ""
 
 #: apps/remix/app/components/general/teams/team-inherit-member-alert.tsx
 msgid "You can enable access to allow all organisation members to access this team by default."
@@ -11023,6 +11042,10 @@ msgstr "Você pode visualizar os documentos criados no seu painel na seção \"D
 #: packages/email/template-components/template-document-rejected.tsx
 msgid "You can view the document and its status by clicking the button below."
 msgstr "Você pode visualizar o documento e seu status clicando no botão abaixo."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You can view, download, and print signed documents at no cost."
+msgstr ""
 
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-recipient-form.tsx
 #: packages/ui/primitives/document-flow/add-signers.tsx
@@ -11063,6 +11086,10 @@ msgstr "Você não pode enviar documentos neste momento."
 #: apps/remix/app/components/general/envelope/envelope-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/envelope/envelope-upload-button.tsx
 msgid "You cannot upload encrypted PDFs."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "you consent to electronic records and signatures as described above."
 msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings.billing.tsx
@@ -11226,10 +11253,6 @@ msgstr "Você removeu com sucesso este usuário da equipe."
 msgid "You have successfully revoked access."
 msgstr "Você revogou o acesso com sucesso."
 
-#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
-msgid "You have the right to withdraw your consent to use electronic signatures at any time before completing the signing process. To withdraw your consent, please contact the sender of the document. In failing to contact the sender you may reach out to <0>{SUPPORT_EMAIL}</0> for assistance. Be aware that withdrawing consent may delay or halt the completion of the related transaction or service."
-msgstr "Você tem o direito de retirar seu consentimento para usar assinaturas eletrônicas a qualquer momento antes de concluir o processo de assinatura. Para retirar seu consentimento, entre em contato com o remetente do documento. Se não conseguir entrar em contato com o remetente, você pode entrar em contato com <0>{SUPPORT_EMAIL}</0> para obter assistência. Esteja ciente de que a retirada do consentimento pode atrasar ou interromper a conclusão da transação ou serviço relacionado."
-
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 msgid "You have updated {memberName}."
 msgstr "Você atualizou {memberName}."
@@ -11246,6 +11269,14 @@ msgstr "Você atualizou o grupo da equipe."
 #: apps/remix/app/routes/_unauthenticated+/team.verify.email.$token.tsx
 msgid "You have verified your email address for <0>{0}</0>."
 msgstr "Você verificou seu endereço de e-mail para <0>{0}</0>."
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You may request a paper copy of any electronically provided document by contacting <0>{GITLAW_SUPPORT_EMAIL}</0>."
+msgstr ""
+
+#: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
+msgid "You may withdraw your consent before completing a signing by declining to sign the document or contacting the document sender."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/organisation-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx

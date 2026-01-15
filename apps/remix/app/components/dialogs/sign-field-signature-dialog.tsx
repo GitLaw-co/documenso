@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
+import type { RecipientRole } from '@prisma/client';
 import { createCallable } from 'react-call';
 
 import { Button } from '@documenso/ui/primitives/button';
@@ -21,6 +22,7 @@ export type SignFieldSignatureDialogProps = {
   typedSignatureEnabled?: boolean;
   uploadSignatureEnabled?: boolean;
   drawSignatureEnabled?: boolean;
+  role?: RecipientRole;
 };
 
 export const SignFieldSignatureDialog = createCallable<
@@ -34,6 +36,7 @@ export const SignFieldSignatureDialog = createCallable<
     uploadSignatureEnabled,
     drawSignatureEnabled,
     initialSignature,
+    role,
   }) => {
     const [localSignature, setLocalSignature] = useState(initialSignature);
     const [consentChecked, setConsentChecked] = useState(false);
@@ -58,7 +61,11 @@ export const SignFieldSignatureDialog = createCallable<
             />
           </div>
 
-          <DocumentSigningDisclosure checked={consentChecked} onCheckedChange={setConsentChecked} />
+          <DocumentSigningDisclosure
+            checked={consentChecked}
+            onCheckedChange={setConsentChecked}
+            role={role}
+          />
 
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={() => call.end(null)}>
