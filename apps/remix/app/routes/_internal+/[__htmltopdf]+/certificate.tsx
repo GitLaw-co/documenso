@@ -219,13 +219,13 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
   };
 
   return (
-    <div className="print-provider pointer-events-none mx-auto max-w-screen-md bg-white">
-      <div className="flex items-center">
-        <h1 className="my-8 text-2xl font-bold">{_(msg`Signing Certificate`)}</h1>
+    <div className="print-provider pointer-events-none mx-auto max-w-screen-md bg-white p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">{_(msg`Signing Certificate`)}</h1>
       </div>
 
       <Card className="border-gray-200 bg-white">
-        <CardContent className="bg-white p-0">
+        <CardContent className="bg-white p-6">
           <Table overflowHidden>
             <TableHeader>
               <TableRow>
@@ -243,7 +243,10 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
 
                 return (
                   <TableRow key={i} className="print:break-inside-avoid">
-                    <TableCell truncate={false} className="w-[min-content] max-w-[220px] align-top">
+                    <TableCell
+                      truncate={false}
+                      className="w-[min-content] max-w-[220px] py-4 align-top"
+                    >
                       <div className="hyphens-auto break-words font-medium">{recipient.name}</div>
                       <div className="break-all">{recipient.email}</div>
                       <p className="mt-2 text-sm text-muted-foreground print:text-xs">
@@ -256,7 +259,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
                       </p>
                     </TableCell>
 
-                    <TableCell truncate={false} className="w-[min-content] align-top">
+                    <TableCell truncate={false} className="w-[min-content] py-4 align-top">
                       {signature ? (
                         <>
                           <div className="inline-block rounded-lg border border-gray-300 bg-white p-2">
@@ -301,7 +304,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
                       </p>
                     </TableCell>
 
-                    <TableCell truncate={false} className="w-[min-content] align-top">
+                    <TableCell truncate={false} className="w-[min-content] py-4 align-top">
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground print:text-xs">
                           <span className="font-medium">{_(msg`Sent`)}:</span>{' '}
