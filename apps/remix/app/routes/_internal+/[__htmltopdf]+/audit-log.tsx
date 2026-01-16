@@ -103,60 +103,70 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
   const chronologicalLogs = [...auditLogs].reverse();
 
   return (
-    <div className="print-provider pointer-events-none mx-auto max-w-screen-md bg-white p-8">
-      <div className="mb-6 flex items-center justify-between border-b pb-4">
-        <BrandingLogo className="h-8" />
-        <h1 className="text-2xl font-light text-gray-600">{_(msg`Audit Trail`)}</h1>
-      </div>
-
-      <div className="space-y-3 text-sm">
-        <div className="flex">
-          <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Title`)}</span>
-          <span className="text-gray-900">{document.title}</span>
+    <div className="min-h-screen bg-white">
+      <div className="print-provider pointer-events-none mx-auto flex min-h-screen max-w-screen-md flex-col bg-white p-8">
+        <div className="mb-6 flex items-center justify-between border-b pb-4">
+          <BrandingLogo className="h-8" />
+          <h1 className="text-2xl font-light text-gray-600">{_(msg`Audit Trail`)}</h1>
         </div>
 
-        <div className="flex">
-          <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Document ID`)}</span>
-          <span className="font-mono text-gray-900">{document.envelopeId}</span>
-        </div>
+        <div className="flex-1">
+          <div className="space-y-3 text-sm">
+            <div className="flex">
+              <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Title`)}</span>
+              <span className="text-gray-900">{document.title}</span>
+            </div>
 
-        <div className="flex">
-          <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Owner`)}</span>
-          <span className="text-gray-900">
-            {document.user.name} ({document.user.email})
-          </span>
-        </div>
-
-        <div className="flex">
-          <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Status`)}</span>
-          <span className="flex items-center gap-2 text-gray-900">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
-            {_(document.deletedAt ? msg`Deleted` : DOCUMENT_STATUS[document.status].description)}
-          </span>
-        </div>
-
-        <div className="flex">
-          <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Recipients`)}</span>
-          <div className="text-gray-900">
-            {document.recipients.map((recipient, i) => (
-              <span key={recipient.id}>
-                [{_(RECIPIENT_ROLES_DESCRIPTION[recipient.role].roleName)}] {recipient.name} (
-                {recipient.email}){i < document.recipients.length - 1 ? ', ' : ''}
+            <div className="flex">
+              <span className="w-48 font-semibold uppercase text-gray-600">
+                {_(msg`Document ID`)}
               </span>
-            ))}
+              <span className="font-mono text-gray-900">{document.envelopeId}</span>
+            </div>
+
+            <div className="flex">
+              <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Owner`)}</span>
+              <span className="text-gray-900">
+                {document.user.name} ({document.user.email})
+              </span>
+            </div>
+
+            <div className="flex">
+              <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Status`)}</span>
+              <span className="flex items-center gap-2 text-gray-900">
+                <span className="h-2 w-2 rounded-full bg-green-500" />
+                {_(
+                  document.deletedAt ? msg`Deleted` : DOCUMENT_STATUS[document.status].description,
+                )}
+              </span>
+            </div>
+
+            <div className="flex">
+              <span className="w-48 font-semibold uppercase text-gray-600">
+                {_(msg`Recipients`)}
+              </span>
+              <div className="text-gray-900">
+                {document.recipients.map((recipient, i) => (
+                  <span key={recipient.id}>
+                    [{_(RECIPIENT_ROLES_DESCRIPTION[recipient.role].roleName)}] {recipient.name} (
+                    {recipient.email}){i < document.recipients.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h2 className="mb-6 text-lg font-medium text-gray-700">{_(msg`Document History`)}</h2>
+            <InternalAuditLogTable logs={chronologicalLogs} />
           </div>
         </div>
-      </div>
 
-      <div className="mt-8">
-        <h2 className="mb-6 text-lg font-medium text-gray-700">{_(msg`Document History`)}</h2>
-        <InternalAuditLogTable logs={chronologicalLogs} />
-      </div>
-
-      <div className="my-8 border-t pt-4">
-        <div className="flex items-center gap-x-2 text-sm text-gray-500">
-          <span>{_(msg`Powered by`)}</span>
-          <BrandingLogo className="h-5" />
+        <div className="mt-auto border-t pt-4">
+          <div className="flex items-center gap-x-2 text-sm text-gray-500">
+            <span>{_(msg`Powered by`)}</span>
+            <BrandingLogo className="h-5" />
+          </div>
         </div>
       </div>
     </div>

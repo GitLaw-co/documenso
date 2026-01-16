@@ -23,10 +23,13 @@ const getAuditLogIcon = (type: string) =>
       icon: Send,
       label: 'SENT',
     }))
-    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED, () => ({
-      icon: Eye,
-      label: 'VIEWED',
-    }))
+    .with(
+      P.union(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED, DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED),
+      () => ({
+        icon: Eye,
+        label: 'VIEWED',
+      }),
+    )
     .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_COMPLETED, () => ({
       icon: PenLine,
       label: 'SIGNED',
