@@ -220,12 +220,13 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
 
   return (
     <div className="print-provider pointer-events-none mx-auto max-w-screen-md bg-white p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">{_(msg`Signing Certificate`)}</h1>
+      <div className="mb-8 flex items-center justify-between border-b pb-4">
+        <BrandingLogo className="h-8" />
+        <h1 className="text-2xl font-light text-gray-600">{_(msg`Signing Certificate`)}</h1>
       </div>
 
-      <Card className="border-gray-200 bg-white">
-        <CardContent className="bg-white p-6">
+      <Card className="border-0 bg-white shadow-none">
+        <CardContent className="bg-white p-0">
           <Table overflowHidden>
             <TableHeader>
               <TableRow>
@@ -381,11 +382,11 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
       </Card>
 
       {!hidePoweredBy && (
-        <div className="my-8 flex items-end justify-end gap-x-4">
-          <p className="flex-shrink-0 text-sm font-medium print:text-xs">
-            {_(msg`Signing certificate provided by`)}:
-          </p>
-          <BrandingLogo className="max-h-6 print:max-h-4" />
+        <div className="my-8 border-t pt-4">
+          <div className="flex items-center gap-x-2 text-sm text-gray-500">
+            <span>{_(msg`Signing certificate provided by`)}</span>
+            <BrandingLogo className="h-5" />
+          </div>
         </div>
       )}
     </div>
