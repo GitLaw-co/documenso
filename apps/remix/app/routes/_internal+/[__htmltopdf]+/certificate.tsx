@@ -6,9 +6,7 @@ import { redirect } from 'react-router';
 import { prop, sortBy } from 'remeda';
 import { match } from 'ts-pattern';
 import { UAParser } from 'ua-parser-js';
-import { renderSVG } from 'uqr';
 
-import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { APP_I18N_OPTIONS, ZSupportedLanguageCodeSchema } from '@documenso/lib/constants/i18n';
 import {
   RECIPIENT_ROLES_DESCRIPTION,
@@ -221,13 +219,13 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
   };
 
   return (
-    <div className="print-provider pointer-events-none mx-auto max-w-screen-md">
-      <div className="flex items-center">
-        <h1 className="my-8 text-2xl font-bold">{_(msg`Signing Certificate`)}</h1>
+    <div className="print-provider pointer-events-none mx-auto max-w-screen-md bg-white p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">{_(msg`Signing Certificate`)}</h1>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
+      <Card className="border-gray-200 bg-white">
+        <CardContent className="bg-white p-6">
           <Table overflowHidden>
             <TableHeader>
               <TableRow>
@@ -245,7 +243,10 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
 
                 return (
                   <TableRow key={i} className="print:break-inside-avoid">
-                    <TableCell truncate={false} className="w-[min-content] max-w-[220px] align-top">
+                    <TableCell
+                      truncate={false}
+                      className="w-[min-content] max-w-[220px] py-4 align-top"
+                    >
                       <div className="hyphens-auto break-words font-medium">{recipient.name}</div>
                       <div className="break-all">{recipient.email}</div>
                       <p className="mt-2 text-sm text-muted-foreground print:text-xs">
@@ -258,15 +259,10 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
                       </p>
                     </TableCell>
 
-                    <TableCell truncate={false} className="w-[min-content] align-top">
+                    <TableCell truncate={false} className="w-[min-content] py-4 align-top">
                       {signature ? (
                         <>
-                          <div
-                            className="inline-block rounded-lg p-1"
-                            style={{
-                              boxShadow: `0px 0px 0px 4.88px rgba(122, 196, 85, 0.1), 0px 0px 0px 1.22px rgba(122, 196, 85, 0.6), 0px 0px 0px 0.61px rgba(122, 196, 85, 1)`,
-                            }}
-                          >
+                          <div className="inline-block rounded-lg border border-gray-300 bg-white p-2">
                             {signature.signature?.signatureImageAsBase64 && (
                               <img
                                 src={`${signature.signature?.signatureImageAsBase64}`}
@@ -308,7 +304,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
                       </p>
                     </TableCell>
 
-                    <TableCell truncate={false} className="w-[min-content] align-top">
+                    <TableCell truncate={false} className="w-[min-content] py-4 align-top">
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground print:text-xs">
                           <span className="font-medium">{_(msg`Sent`)}:</span>{' '}
@@ -385,24 +381,11 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
       </Card>
 
       {!hidePoweredBy && (
-        <div className="my-8 flex-row-reverse space-y-4">
-          <div className="flex items-end justify-end gap-x-4">
-            <div
-              className="flex h-24 w-24 justify-center"
-              dangerouslySetInnerHTML={{
-                __html: renderSVG(`${NEXT_PUBLIC_WEBAPP_URL()}/share/${document.qrToken}`, {
-                  ecc: 'Q',
-                }),
-              }}
-            />
-          </div>
-
-          <div className="flex items-end justify-end gap-x-4">
-            <p className="flex-shrink-0 text-sm font-medium print:text-xs">
-              {_(msg`Signing certificate provided by`)}:
-            </p>
-            <BrandingLogo className="max-h-6 print:max-h-4" />
-          </div>
+        <div className="my-8 flex items-end justify-end gap-x-4">
+          <p className="flex-shrink-0 text-sm font-medium print:text-xs">
+            {_(msg`Signing certificate provided by`)}:
+          </p>
+          <BrandingLogo className="max-h-6 print:max-h-4" />
         </div>
       )}
     </div>
