@@ -1,0 +1,11 @@
+/* Override the global green background for audit log pages */
+html,
+body {
+  background-color: white !important;
+}
+
+@media print {
+  html {
+    font-size: 10pt;
+  }
+}

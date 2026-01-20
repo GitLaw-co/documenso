@@ -30,9 +30,16 @@ import {
   TableRow,
 } from '@documenso/ui/primitives/table';
 
+import appStylesheet from '~/app.css?url';
 import { BrandingLogo } from '~/components/general/branding-logo';
 
 import type { Route } from './+types/certificate';
+import pdfPagesStylesheet from './pdf-pages.css?url';
+
+export const links: Route.LinksFunction = () => [
+  { rel: 'stylesheet', href: appStylesheet },
+  { rel: 'stylesheet', href: pdfPagesStylesheet },
+];
 
 const FRIENDLY_SIGNING_REASONS = {
   ['__OWNER__']: msg`I am the owner of this document`,
@@ -76,14 +83,23 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const messages = await getTranslations(documentLanguage);
 
+  // Use external owner info from metadata if available (GitLaw user), otherwise fall back to "GitLaw"
+  const externalOwnerName = (envelope.documentMeta as Record<string, unknown>)
+    ?.externalOwnerName as string | undefined;
+  const externalOwnerEmail = (envelope.documentMeta as Record<string, unknown>)
+    ?.externalOwnerEmail as string | undefined;
+
+  const ownerName = externalOwnerName || 'GitLaw';
+  const ownerEmail = externalOwnerEmail || '';
+
   return {
     document: {
       id: mapSecondaryIdToDocumentId(envelope.secondaryId),
       title: envelope.title,
       status: envelope.status,
       user: {
-        name: envelope.user.name,
-        email: envelope.user.email,
+        name: ownerName,
+        email: ownerEmail,
       },
       qrToken: envelope.qrToken,
       authOptions: envelope.authOptions,
@@ -117,6 +133,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
   i18n.loadAndActivate({ locale: documentLanguage, messages });
 
   const isOwner = (email: string) => {
+    if (!document.user.email) return false;
     return email.toLowerCase() === document.user.email.toLowerCase();
   };
 
