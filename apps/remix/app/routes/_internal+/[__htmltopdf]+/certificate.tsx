@@ -83,14 +83,14 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const messages = await getTranslations(documentLanguage);
 
-  // Use external owner info from metadata if available (GitLaw user), otherwise fall back to Documenso account owner
+  // Use external owner info from metadata if available (GitLaw user), otherwise fall back to "GitLaw"
   const externalOwnerName = (envelope.documentMeta as Record<string, unknown>)
     ?.externalOwnerName as string | undefined;
   const externalOwnerEmail = (envelope.documentMeta as Record<string, unknown>)
     ?.externalOwnerEmail as string | undefined;
 
-  const ownerName = externalOwnerName || envelope.user.name;
-  const ownerEmail = externalOwnerEmail || envelope.user.email;
+  const ownerName = externalOwnerName || 'GitLaw';
+  const ownerEmail = externalOwnerEmail || '';
 
   return {
     document: {
@@ -133,6 +133,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
   i18n.loadAndActivate({ locale: documentLanguage, messages });
 
   const isOwner = (email: string) => {
+    if (!document.user.email) return false;
     return email.toLowerCase() === document.user.email.toLowerCase();
   };
 

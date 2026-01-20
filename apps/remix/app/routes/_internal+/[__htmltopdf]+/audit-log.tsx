@@ -63,14 +63,14 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const messages = await getTranslations(documentLanguage);
 
-  // Use external owner info from metadata if available (GitLaw user), otherwise fall back to Documenso account owner
+  // Use external owner info from metadata if available (GitLaw user), otherwise fall back to "GitLaw"
   const externalOwnerName = (envelope.documentMeta as Record<string, unknown>)
     ?.externalOwnerName as string | undefined;
   const externalOwnerEmail = (envelope.documentMeta as Record<string, unknown>)
     ?.externalOwnerEmail as string | undefined;
 
-  const ownerName = externalOwnerName || envelope.user.name;
-  const ownerEmail = externalOwnerEmail || envelope.user.email;
+  const ownerName = externalOwnerName || 'GitLaw';
+  const ownerEmail = externalOwnerEmail || '';
 
   // Derive effective status from audit logs if database status is stale
   // Check if there's a DOCUMENT_COMPLETED event in the audit logs
@@ -144,7 +144,8 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
             <div className="flex">
               <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Owner`)}</span>
               <span className="text-gray-900">
-                {document.user.name} ({document.user.email})
+                {document.user.name}
+                {document.user.email && ` (${document.user.email})`}
               </span>
             </div>
 
