@@ -60,6 +60,7 @@ test.describe('Signing Certificate Tests', () => {
 
     await page.waitForTimeout(1000);
 
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click({ force: true });
     await page.waitForURL(`/sign/${recipient.token}/complete`);
 
@@ -167,6 +168,7 @@ test.describe('Signing Certificate Tests', () => {
     }
 
     await page.getByRole('button', { name: 'Complete' }).click();
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
     await page.waitForURL(`/sign/${recipient.token}/complete`);
 
@@ -272,6 +274,7 @@ test.describe('Signing Certificate Tests', () => {
     }
 
     await page.getByRole('button', { name: 'Complete' }).click();
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
     await page.waitForURL(`/sign/${recipient.token}/complete`);
 

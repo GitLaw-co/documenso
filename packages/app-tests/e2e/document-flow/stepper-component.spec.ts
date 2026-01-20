@@ -498,6 +498,7 @@ test('[DOCUMENT_FLOW]: should be able to sign a document with custom date', asyn
 
   await page.getByRole('button', { name: 'Complete' }).click();
   await expect(page.getByRole('dialog').getByText('Complete Signing').first()).toBeVisible();
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
 
   await page.waitForURL(`/sign/${token}/complete`);
@@ -630,6 +631,7 @@ test('[DOCUMENT_FLOW]: should be able to create and sign a document with 3 recip
     await page.locator(`#field-${recipientField.id}`).getByRole('button').click();
 
     await page.getByRole('button', { name: 'Complete' }).click();
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
 
     await page.waitForURL(`/sign/${recipient?.token}/complete`);

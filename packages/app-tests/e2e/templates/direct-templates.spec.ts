@@ -160,6 +160,7 @@ test('[DIRECT_TEMPLATES]: V1 direct template link auth access', async ({ page })
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByRole('button', { name: 'Complete' }).click();
 
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(/\/sign/);
   await expect(page.getByRole('heading', { name: 'Document Signed' })).toBeVisible();
@@ -200,6 +201,7 @@ test('[DIRECT_TEMPLATES]: V2 direct template link auth access', async ({ page })
   await page.getByRole('button', { name: 'Complete' }).click();
   await expect(page.getByLabel('Your Email')).not.toBeVisible();
 
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(/\/sign/);
   await expect(page.getByRole('heading', { name: 'Document Signed' })).toBeVisible();
@@ -229,6 +231,7 @@ test('[DIRECT_TEMPLATES]: use direct template link with 1 recipient', async ({ p
   await expect(page.getByText('Next Recipient Name')).not.toBeVisible();
 
   await page.getByRole('button', { name: 'Complete' }).click();
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(/\/sign/);
   await expect(page.getByRole('heading', { name: 'Document Signed' })).toBeVisible();
@@ -300,6 +303,7 @@ test('[DIRECT_TEMPLATES]: V1 use direct template link with 2 recipients with nex
   await page.getByLabel('Next Recipient Email').fill(newSecondSignerEmail);
   await page.getByLabel('Next Recipient Name').fill(newName);
 
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(/\/sign/);
   await expect(page.getByRole('heading', { name: 'Document Signed' })).toBeVisible();
@@ -387,6 +391,7 @@ test('[DIRECT_TEMPLATES]: V2 use direct template link with 2 recipients with nex
   await page.getByLabel('Next Recipient Email').fill(newSecondSignerEmail);
   await page.getByLabel('Next Recipient Name').fill(newName);
 
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(/\/sign/);
   await expect(page.getByRole('heading', { name: 'Document Signed' })).toBeVisible();

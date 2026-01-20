@@ -77,6 +77,7 @@ test('[NEXT_RECIPIENT_DICTATION]: should allow updating next recipient when dict
   await dialog.getByLabel('Email').fill('new.recipient@example.com');
 
   // Submit and verify completion
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(`${signUrl}/complete`);
 
@@ -163,6 +164,7 @@ test('[NEXT_RECIPIENT_DICTATION]: should not show dictation UI when disabled', a
   await expect(page.getByRole('button', { name: 'Update Recipient' })).not.toBeVisible();
 
   // Submit and verify completion
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(`${signUrl}/complete`);
 
@@ -249,6 +251,7 @@ test('[NEXT_RECIPIENT_DICTATION]: should work with parallel signing flow', async
     await expect(page.getByRole('button', { name: 'Update Recipient' })).not.toBeVisible();
 
     // Submit and verify completion
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
     await page.waitForURL(`${signUrl}/complete`);
   }

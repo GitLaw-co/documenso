@@ -81,6 +81,7 @@ test('[PUBLIC_PROFILE]: create team profile', async ({ page }) => {
   await page.getByRole('link', { name: 'Sign' }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByRole('button', { name: 'Complete' }).click();
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
 
   await expect(page.getByRole('heading', { name: 'Document Signed' })).toBeVisible();
