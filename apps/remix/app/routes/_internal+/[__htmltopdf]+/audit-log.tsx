@@ -9,6 +9,7 @@ import { RECIPIENT_ROLES_DESCRIPTION } from '@documenso/lib/constants/recipient-
 import { unsafeGetEntireEnvelope } from '@documenso/lib/server-only/admin/get-entire-document';
 import { decryptSecondaryData } from '@documenso/lib/server-only/crypto/decrypt';
 import { findDocumentAuditLogs } from '@documenso/lib/server-only/document/find-document-audit-logs';
+import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import { mapSecondaryIdToDocumentId } from '@documenso/lib/utils/envelope';
 import { getTranslations } from '@documenso/lib/utils/i18n';
 
@@ -17,11 +18,11 @@ import { BrandingLogo } from '~/components/general/branding-logo';
 import { InternalAuditLogTable } from '~/components/tables/internal-audit-log-table';
 
 import type { Route } from './+types/audit-log';
-import auditLogStylesheet from './audit-log.print.css?url';
+import pdfPagesStylesheet from './pdf-pages.css?url';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'stylesheet', href: appStylesheet },
-  { rel: 'stylesheet', href: auditLogStylesheet },
+  { rel: 'stylesheet', href: pdfPagesStylesheet },
 ];
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -62,16 +63,32 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const messages = await getTranslations(documentLanguage);
 
+  // Use external owner info from metadata if available (GitLaw user), otherwise fall back to Documenso account owner
+  const externalOwnerName = (envelope.documentMeta as Record<string, unknown>)
+    ?.externalOwnerName as string | undefined;
+  const externalOwnerEmail = (envelope.documentMeta as Record<string, unknown>)
+    ?.externalOwnerEmail as string | undefined;
+
+  const ownerName = externalOwnerName || envelope.user.name;
+  const ownerEmail = externalOwnerEmail || envelope.user.email;
+
+  // Derive effective status from audit logs if database status is stale
+  // Check if there's a DOCUMENT_COMPLETED event in the audit logs
+  const hasCompletedEvent = auditLogs.some(
+    (log) => log.type === DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED,
+  );
+  const effectiveStatus = hasCompletedEvent ? 'COMPLETED' : envelope.status;
+
   return {
     auditLogs,
     document: {
       id: mapSecondaryIdToDocumentId(envelope.secondaryId),
       title: envelope.title,
-      status: envelope.status,
+      status: effectiveStatus,
       envelopeId: envelope.id,
       user: {
-        name: envelope.user.name,
-        email: envelope.user.email,
+        name: ownerName,
+        email: ownerEmail,
       },
       recipients: envelope.recipients,
       createdAt: envelope.createdAt,
