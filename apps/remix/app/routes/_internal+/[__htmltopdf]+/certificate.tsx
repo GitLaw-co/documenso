@@ -94,14 +94,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     const signingRecipients = envelope.recipients.filter(
       (r) => r.role === 'SIGNER' || r.role === 'APPROVER',
     );
-    const allCompleted =
-      signingRecipients.length > 0 &&
-      signingRecipients.every((r) => r.signingStatus === 'COMPLETED');
+    const allSigned =
+      signingRecipients.length > 0 && signingRecipients.every((r) => r.signingStatus === 'SIGNED');
     const anyRejected = envelope.recipients.some((r) => r.signingStatus === 'REJECTED');
 
     if (anyRejected) {
       effectiveStatus = 'REJECTED';
-    } else if (allCompleted) {
+    } else if (allSigned) {
       effectiveStatus = 'COMPLETED';
     }
   }
