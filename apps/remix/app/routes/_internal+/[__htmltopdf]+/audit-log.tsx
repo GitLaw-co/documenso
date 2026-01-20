@@ -9,7 +9,6 @@ import { RECIPIENT_ROLES_DESCRIPTION } from '@documenso/lib/constants/recipient-
 import { unsafeGetEntireEnvelope } from '@documenso/lib/server-only/admin/get-entire-document';
 import { decryptSecondaryData } from '@documenso/lib/server-only/crypto/decrypt';
 import { findDocumentAuditLogs } from '@documenso/lib/server-only/document/find-document-audit-logs';
-import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import { mapSecondaryIdToDocumentId } from '@documenso/lib/utils/envelope';
 import { getTranslations } from '@documenso/lib/utils/i18n';
 
@@ -67,12 +66,24 @@ export async function loader({ request }: Route.LoaderArgs) {
   const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
   const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
-  // Derive effective status from audit logs if database status is stale
-  // Check if there's a DOCUMENT_COMPLETED event in the audit logs
-  const hasCompletedEvent = auditLogs.some(
-    (log) => log.type === DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED,
-  );
-  const effectiveStatus = hasCompletedEvent ? 'COMPLETED' : envelope.status;
+  // Derive effective status: if envelope says COMPLETED/REJECTED, use that.
+  // Otherwise check if all signers/approvers have completed (seal job may not have run yet)
+  let effectiveStatus = envelope.status;
+  if (envelope.status === 'PENDING') {
+    const signingRecipients = envelope.recipients.filter(
+      (r) => r.role === 'SIGNER' || r.role === 'APPROVER',
+    );
+    const allCompleted =
+      signingRecipients.length > 0 &&
+      signingRecipients.every((r) => r.signingStatus === 'COMPLETED');
+    const anyRejected = envelope.recipients.some((r) => r.signingStatus === 'REJECTED');
+
+    if (anyRejected) {
+      effectiveStatus = 'REJECTED';
+    } else if (allCompleted) {
+      effectiveStatus = 'COMPLETED';
+    }
+  }
 
   return {
     auditLogs,

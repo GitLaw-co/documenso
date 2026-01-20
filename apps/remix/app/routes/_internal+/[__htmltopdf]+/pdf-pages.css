@@ -2,13 +2,23 @@
 html,
 body {
   background-color: white !important;
+  margin: 0;
+  padding: 0;
 }
 
-/* PDF page container - ensures full page height for footer positioning */
+/* A4 page dimensions for PDF generation via Playwright */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+/* PDF page container - A4 dimensions (210mm × 297mm) */
 .pdf-page {
-  min-height: 100vh;
+  width: 210mm;
+  min-height: 297mm;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .pdf-page-content {
@@ -25,9 +35,7 @@ body {
     font-size: 10pt;
   }
 
-  /* For print/PDF, use fixed page dimensions */
   .pdf-page {
-    min-height: 100vh;
     page-break-after: always;
   }
 
