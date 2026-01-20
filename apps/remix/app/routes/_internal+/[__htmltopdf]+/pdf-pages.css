@@ -4,8 +4,34 @@ body {
   background-color: white !important;
 }
 
+/* PDF page container - ensures full page height for footer positioning */
+.pdf-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-page-content {
+  flex: 1 1 auto;
+}
+
+.pdf-page-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
 @media print {
   html {
     font-size: 10pt;
+  }
+
+  /* For print/PDF, use fixed page dimensions */
+  .pdf-page {
+    min-height: 100vh;
+    page-break-after: always;
+  }
+
+  .pdf-page:last-child {
+    page-break-after: auto;
   }
 }

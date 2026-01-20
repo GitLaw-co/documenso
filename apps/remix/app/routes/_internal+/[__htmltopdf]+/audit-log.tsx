@@ -64,13 +64,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const messages = await getTranslations(documentLanguage);
 
   // Use external owner info from metadata if available (GitLaw user), otherwise fall back to "GitLaw"
-  const externalOwnerName = (envelope.documentMeta as Record<string, unknown>)
-    ?.externalOwnerName as string | undefined;
-  const externalOwnerEmail = (envelope.documentMeta as Record<string, unknown>)
-    ?.externalOwnerEmail as string | undefined;
-
-  const ownerName = externalOwnerName || 'GitLaw';
-  const ownerEmail = externalOwnerEmail || '';
+  const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
+  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
   // Derive effective status from audit logs if database status is stale
   // Check if there's a DOCUMENT_COMPLETED event in the audit logs
@@ -120,14 +115,14 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
   const chronologicalLogs = [...auditLogs].reverse();
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="print-provider pointer-events-none mx-auto flex min-h-screen max-w-screen-md flex-col bg-white p-8">
+    <div className="bg-white">
+      <div className="pdf-page print-provider pointer-events-none mx-auto max-w-screen-md bg-white p-8">
         <div className="mb-6 flex items-center justify-between border-b pb-4">
           <BrandingLogo className="h-8" />
           <h1 className="text-2xl font-light text-gray-600">{_(msg`Audit Trail`)}</h1>
         </div>
 
-        <div className="flex-1">
+        <div className="pdf-page-content">
           <div className="space-y-3 text-sm">
             <div className="flex">
               <span className="w-48 font-semibold uppercase text-gray-600">{_(msg`Title`)}</span>
@@ -180,7 +175,7 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
 
-        <div className="mt-auto border-t pt-4">
+        <div className="pdf-page-footer border-t pt-4">
           <div className="flex items-center gap-x-2 text-sm text-gray-500">
             <span>{_(msg`Powered by`)}</span>
             <BrandingLogo className="h-5" />
