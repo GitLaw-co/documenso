@@ -84,19 +84,19 @@ export async function loader({ request }: Route.LoaderArgs) {
   const messages = await getTranslations(documentLanguage);
 
   // Use external owner info from metadata if available (GitLaw user), otherwise fall back to "GitLaw"
-  const externalOwnerName = (envelope.documentMeta as Record<string, unknown>)
-    ?.externalOwnerName as string | undefined;
-  const externalOwnerEmail = (envelope.documentMeta as Record<string, unknown>)
-    ?.externalOwnerEmail as string | undefined;
+  const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
+  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
-  const ownerName = externalOwnerName || 'GitLaw';
-  const ownerEmail = externalOwnerEmail || '';
+  // Derive effective status from audit logs if database status is stale
+  // Check if there's a DOCUMENT_COMPLETED event in the audit logs
+  const hasCompletedEvent = auditLogs[DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED]?.length > 0;
+  const effectiveStatus = hasCompletedEvent ? 'COMPLETED' : envelope.status;
 
   return {
     document: {
       id: mapSecondaryIdToDocumentId(envelope.secondaryId),
       title: envelope.title,
-      status: envelope.status,
+      status: effectiveStatus,
       user: {
         name: ownerName,
         email: ownerEmail,
@@ -236,14 +236,14 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="print-provider pointer-events-none mx-auto flex min-h-screen max-w-screen-md flex-col bg-white p-8">
+    <div className="bg-white">
+      <div className="pdf-page print-provider pointer-events-none mx-auto max-w-screen-md bg-white p-8">
         <div className="mb-8 flex items-center justify-between border-b pb-4">
           <BrandingLogo className="h-8" />
           <h1 className="text-2xl font-light text-gray-600">{_(msg`Signing Certificate`)}</h1>
         </div>
 
-        <div className="flex-1">
+        <div className="pdf-page-content">
           <Card className="border-0 bg-white shadow-none">
             <CardContent className="bg-white p-0">
               <Table overflowHidden>
@@ -405,7 +405,7 @@ export default function SigningCertificate({ loaderData }: Route.ComponentProps)
         </div>
 
         {!hidePoweredBy && (
-          <div className="mt-auto border-t pt-4">
+          <div className="pdf-page-footer border-t pt-4">
             <div className="flex items-center gap-x-2 text-sm text-gray-500">
               <span>{_(msg`Signing certificate provided by`)}</span>
               <BrandingLogo className="h-5" />

@@ -442,6 +442,9 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
           drawSignatureEnabled: body.meta.drawSignatureEnabled,
           distributionMethod: body.meta.distributionMethod,
           emailSettings: body.meta.emailSettings,
+          // External owner info for audit trail display (e.g., GitLaw user instead of API account)
+          externalOwnerName: body.meta.externalOwnerName,
+          externalOwnerEmail: body.meta.externalOwnerEmail,
         },
         requestMetadata: metadata,
       });

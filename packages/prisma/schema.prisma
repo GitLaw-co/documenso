@@ -520,6 +520,10 @@ model DocumentMeta {
   emailReplyTo  String?
   emailId       String?
 
+  // External owner info for audit trail display (e.g., GitLaw user instead of API account)
+  externalOwnerName  String?
+  externalOwnerEmail String?
+
   envelope Envelope?
 }
 
