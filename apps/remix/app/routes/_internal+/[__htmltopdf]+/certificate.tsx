@@ -87,10 +87,24 @@ export async function loader({ request }: Route.LoaderArgs) {
   const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
   const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
-  // Derive effective status from audit logs if database status is stale
-  // Check if there's a DOCUMENT_COMPLETED event in the audit logs
-  const hasCompletedEvent = auditLogs[DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED]?.length > 0;
-  const effectiveStatus = hasCompletedEvent ? 'COMPLETED' : envelope.status;
+  // Derive effective status: if envelope says COMPLETED/REJECTED, use that.
+  // Otherwise check if all signers/approvers have completed (seal job may not have run yet)
+  let effectiveStatus = envelope.status;
+  if (envelope.status === 'PENDING') {
+    const signingRecipients = envelope.recipients.filter(
+      (r) => r.role === 'SIGNER' || r.role === 'APPROVER',
+    );
+    const allCompleted =
+      signingRecipients.length > 0 &&
+      signingRecipients.every((r) => r.signingStatus === 'COMPLETED');
+    const anyRejected = envelope.recipients.some((r) => r.signingStatus === 'REJECTED');
+
+    if (anyRejected) {
+      effectiveStatus = 'REJECTED';
+    } else if (allCompleted) {
+      effectiveStatus = 'COMPLETED';
+    }
+  }
 
   return {
     document: {
