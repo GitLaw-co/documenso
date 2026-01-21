@@ -1,0 +1,45 @@
+/* Override the global green background for audit log pages */
+html,
+body {
+  background-color: white !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* A4 page dimensions for PDF generation via Playwright */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+/* PDF page container - A4 dimensions (210mm × 297mm) */
+.pdf-page {
+  width: 210mm;
+  min-height: 297mm;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.pdf-page-content {
+  flex: 1 1 auto;
+}
+
+.pdf-page-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+@media print {
+  html {
+    font-size: 10pt;
+  }
+
+  .pdf-page {
+    page-break-after: always;
+  }
+
+  .pdf-page:last-child {
+    page-break-after: auto;
+  }
+}

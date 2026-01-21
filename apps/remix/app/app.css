@@ -1,6 +1,6 @@
 @import '@documenso/ui/styles/theme.css';
 
-/* Inter Variable Fonts */
+/* Inter Variable Fonts - kept as fallback */
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/inter-variablefont_opsz,wght.ttf') format('truetype-variations');
@@ -64,7 +64,7 @@
 
 @layer base {
   :root {
-    --font-sans: 'Inter';
+    --font-sans: 'DM Sans', 'Inter', sans-serif;
     --font-signature: 'Caveat';
     --font-noto: 'Noto Sans', 'Noto Sans Korean', 'Noto Sans Japanese', 'Noto Sans Chinese';
   }

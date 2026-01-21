@@ -125,7 +125,7 @@ export const DirectTemplatePageView = ({
       const redirectUrl = template.templateMeta?.redirectUrl;
 
       if (redirectUrl) {
-        window.location.href = redirectUrl;
+        window.location.href = `${redirectUrl}?token=${encodeURIComponent(token)}`;
       } else {
         await navigate(`/sign/${token}/complete`);
       }

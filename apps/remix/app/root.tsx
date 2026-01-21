@@ -28,7 +28,16 @@ import { langCookie } from './storage/lang-cookie.server';
 import { themeSessionResolver } from './storage/theme-session.server';
 import { appMetaTags } from './utils/meta';
 
-export const links: Route.LinksFunction = () => [{ rel: 'stylesheet', href: stylesheet }];
+export const links: Route.LinksFunction = () => [
+  // Google Fonts - DM Sans (GitLaw primary font)
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+  {
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap',
+  },
+  { rel: 'stylesheet', href: stylesheet },
+];
 
 export function meta() {
   return appMetaTags();
@@ -100,10 +109,11 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
   const { publicEnv, session, lang, disableAnimations, ...data } =
     useLoaderData<typeof loader>() || {};
 
-  const [theme] = useTheme();
+  // Force light mode - ignore system dark mode preference (matches front-law behavior)
+  const [_theme] = useTheme();
 
   return (
-    <html translate="no" lang={lang} data-theme={theme} className={theme ?? ''}>
+    <html translate="no" lang={lang} data-theme="light" className="light">
       <head>
         <meta charSet="utf-8" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />

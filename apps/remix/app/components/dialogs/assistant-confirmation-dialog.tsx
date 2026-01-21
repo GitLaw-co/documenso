@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { RecipientRole } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -59,6 +60,7 @@ export function AssistantConfirmationDialog({
 }: ConfirmationDialogProps) {
   const { t } = useLingui();
   const [isEditingNextSigner, setIsEditingNextSigner] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const form = useForm<TNextSignerFormSchema>({
     resolver: zodResolver(ZNextSignerFormSchema),
@@ -77,6 +79,7 @@ export function AssistantConfirmationDialog({
       name: defaultNextSigner?.name ?? '',
       email: defaultNextSigner?.email ?? '',
     });
+    setConsentChecked(false);
 
     onClose();
   };
@@ -115,7 +118,7 @@ export function AssistantConfirmationDialog({
                   <div className="mt-4 flex flex-col gap-4">
                     {!isEditingNextSigner && (
                       <div>
-                        <p className="text-muted-foreground text-sm">
+                        <p className="text-sm text-muted-foreground">
                           The next recipient to sign this document will be{' '}
                           <span className="font-semibold">{form.watch('name')}</span> (
                           <span className="font-semibold">{form.watch('email')}</span>).
@@ -181,7 +184,12 @@ export function AssistantConfirmationDialog({
                   </div>
                 )}
 
-                <DocumentSigningDisclosure className="mt-4" />
+                <DocumentSigningDisclosure
+                  className="mt-4"
+                  checked={consentChecked}
+                  onCheckedChange={setConsentChecked}
+                  role={RecipientRole.ASSISTANT}
+                />
               </div>
 
               <DialogFooter className="mt-4">
@@ -191,7 +199,7 @@ export function AssistantConfirmationDialog({
                 <Button
                   type="button"
                   variant={hasUninsertedFields ? 'destructive' : 'default'}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !consentChecked}
                   onClick={handleSubmit}
                   loading={isSubmitting}
                 >

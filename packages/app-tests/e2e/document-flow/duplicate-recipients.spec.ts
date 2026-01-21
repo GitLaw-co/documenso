@@ -224,6 +224,7 @@ test.describe('[DOCUMENT_FLOW]: Duplicate Recipients', () => {
         .click();
 
       await page.getByRole('button', { name: 'Complete' }).click();
+      await page.locator('#consent-checkbox').click();
       await page.getByRole('button', { name: 'Sign' }).click();
 
       // Verify completion

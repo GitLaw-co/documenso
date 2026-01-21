@@ -11,11 +11,11 @@ type BrandingContextValue = {
 const BrandingContext = createContext<BrandingContextValue | undefined>(undefined);
 
 const defaultBrandingContextValue: BrandingContextValue = {
-  brandingEnabled: false,
-  brandingUrl: '',
-  brandingLogo: '',
-  brandingCompanyDetails: '',
-  brandingHidePoweredBy: false,
+  brandingEnabled: true,
+  brandingUrl: 'https://git.law',
+  brandingLogo: 'https://git.law/email-logo.png',
+  brandingCompanyDetails: 'GitLaw',
+  brandingHidePoweredBy: true,
 };
 
 export const BrandingProvider = (props: {

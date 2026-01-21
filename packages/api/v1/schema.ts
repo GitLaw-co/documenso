@@ -176,6 +176,9 @@ export const ZCreateDocumentMutationSchema = z.object({
       drawSignatureEnabled: z.boolean().optional().default(true),
       distributionMethod: z.nativeEnum(DocumentDistributionMethod).optional(),
       emailSettings: ZDocumentEmailSettingsSchema.optional(),
+      // External owner info for audit trail display (e.g., GitLaw user instead of API account)
+      externalOwnerName: z.string().optional(),
+      externalOwnerEmail: z.string().optional(),
     })
     .partial()
     .optional()

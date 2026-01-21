@@ -4,47 +4,72 @@
 
 @layer base {
   :root,
-  .dark-mode-disabled {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+  .dark-mode-disabled,
+  .dark {
+    /* GitLaw Light Theme - matches front-law colors.css exactly */
+    /* Force light mode always - no dark mode support (same as front-law) */
+    
+    /* grass-65: #dffbe3 */
+    --background: 129 78% 93%;
+    /* stone-900 */
+    --foreground: 24 10% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* stone-100 */
+    --muted: 60 5% 96%;
+    /* black-alpha-40 */
+    --muted-foreground: 0 0% 40%;
 
+    /* white */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    /* stone-950 */
+    --popover-foreground: 20 15% 4%;
 
+    /* white */
     --card: 0 0% 100%;
-    --card-border: 214.3 31.8% 91.4%;
+    /* salad-250: #9ddfa9 */
+    --card-border: 130 51% 75%;
     --card-border-tint: 112 205 159;
-    --card-foreground: 222.2 47.4% 11.2%;
+    /* stone-900 */
+    --card-foreground: 24 10% 10%;
 
-    --field-card: 95 74% 90%;
-    --field-card-border: 95.08 71.08% 67.45%;
-    --field-card-foreground: 222.2 47.4% 11.2%;
+    /* violetish-100: #ebe7ff */
+    --field-card: 249 100% 95%;
+    /* violetish-700: #5e49d6 */
+    --field-card-border: 249 60% 56%;
+    --field-card-foreground: 24 10% 10%;
 
     --widget: 0 0% 97%;
     --widget-foreground: 0 0% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    /* salad-250: #9ddfa9 */
+    --border: 130 51% 75%;
+    /* Use same as border for visible input borders (was grass-65 which matched background) */
+    --input: 130 51% 75%;
 
-    --primary: 95.08 71.08% 67.45%;
-    --primary-foreground: 95.08 71.08% 10%;
+    /* violetish-700: #5e49d6 */
+    --primary: 249 60% 56%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* violetish-100: #ebe7ff */
+    --secondary: 249 100% 95%;
+    /* violetish-700: #5e49d6 */
+    --secondary-foreground: 249 60% 56%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* white */
+    --accent: 0 0% 100%;
+    /* violetish-700: #5e49d6 */
+    --accent-foreground: 249 60% 56%;
 
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 210 40% 98%;
+    /* red-500 */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 95.08 71.08% 67.45%;
+    /* stone-400 */
+    --ring: 24 6% 63%;
 
     --radius: 0.5rem;
 
+    /* yellow */
     --warning: 54 96% 45%;
 
     --gold: 47.9 95.8% 53.1%;
@@ -82,18 +107,18 @@
     --new-white-800: 0, 0%, 90%;
     --new-white-900: 0, 0%, 100%;
 
-    /* Primary - Green */
-    --new-primary-50: 98, 73%, 97%;
-    --new-primary-100: 95, 73%, 94%;
-    --new-primary-200: 94, 70%, 87%;
-    --new-primary-300: 95, 71%, 81%;
-    --new-primary-400: 95, 71%, 74%;
-    --new-primary-500: 95, 71%, 67%;
-    --new-primary-600: 95, 71%, 54%;
-    --new-primary-700: 95, 71%, 41%;
-    --new-primary-800: 95, 71%, 27%;
-    --new-primary-900: 95, 72%, 14%;
-    --new-primary-950: 95, 72%, 7%;
+    /* Primary - GitLaw Violet (violetish) */
+    --new-primary-50: 249, 100%, 97%;
+    --new-primary-100: 249, 100%, 95%;
+    --new-primary-200: 249, 80%, 87%;
+    --new-primary-300: 249, 70%, 81%;
+    --new-primary-400: 249, 65%, 74%;
+    --new-primary-500: 249, 60%, 67%;
+    --new-primary-600: 249, 60%, 60%;
+    --new-primary-700: 249, 60%, 56%;
+    --new-primary-800: 249, 60%, 47%;
+    --new-primary-900: 249, 60%, 35%;
+    --new-primary-950: 249, 60%, 20%;
 
     /* Secondary - Info */
     --new-info-50: 210, 54%, 95%;
@@ -137,50 +162,6 @@
     /* Surface */
     --new-surface-black: 0, 0%, 0%;
     --new-surface-white: 0, 0%, 91%;
-  }
-
-  .dark:not(.dark-mode-disabled) {
-    --background: 0 0% 14.9%;
-    --foreground: 0 0% 97%;
-
-    --muted: 0 0% 23.4%;
-    --muted-foreground: 0 0% 85%;
-
-    --popover: 0 0% 14.9%;
-    --popover-foreground: 0 0% 90%;
-
-    --card: 0 0% 14.9%;
-    --card-border: 0 0% 27.9%;
-    --card-border-tint: 112 205 159;
-    --card-foreground: 0 0% 95%;
-
-    --widget: 0 0% 14.9%;
-    --widget-foreground: 0 0% 18%;
-
-    --border: 0 0% 27.9%;
-    --input: 0 0% 27.9%;
-
-    --field-border: 214.3 31.8% 91.4%;
-
-    --primary: 95.08 71.08% 67.45%;
-    --primary-foreground: 95.08 71.08% 10%;
-
-    --secondary: 0 0% 23.4%;
-    --secondary-foreground: 95.08 71.08% 67.45%;
-
-    --accent: 0 0% 27.9%;
-    --accent-foreground: 95.08 71.08% 67.45%;
-
-    --destructive: 0 87% 62%;
-    --destructive-foreground: 0 87% 19%;
-
-    --ring: 95.08 71.08% 67.45%;
-
-    --radius: 0.5rem;
-
-    --warning: 54 96% 45%;
-
-    --gold: 47.9 95.8% 53.1%;
   }
 }
 
@@ -229,20 +210,6 @@
   border-radius: 10px;
   scrollbar-gutter: stable;
 }
-
-/* .custom-scrollbar::-webkit-scrollbar-track {
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(100 116 139 / 1);
-  border-radius: 10px;
-  width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(100 116 139 / 0.5);
-} */
 
 /* Custom Swagger Dark Theme */
 .swagger-dark-theme .swagger-ui {

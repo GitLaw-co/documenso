@@ -235,6 +235,7 @@ test('field placement visual regression', async ({ page, request }, testInfo) =>
   await expect(page.getByRole('heading', { name: 'Sign Document' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Complete' }).click();
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(`${signUrl}/complete`);
 
@@ -323,6 +324,7 @@ test.skip('download envelope images', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Sign Document' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Complete' }).click();
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(`${signUrl}/complete`);
 

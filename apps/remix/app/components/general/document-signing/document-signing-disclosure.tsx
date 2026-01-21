@@ -1,37 +1,72 @@
 import type { HTMLAttributes } from 'react';
 
+import { msg } from '@lingui/core/macro';
+import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
+import { RecipientRole } from '@prisma/client';
 import { Link } from 'react-router';
 
 import { cn } from '@documenso/ui/lib/utils';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 
-export type DocumentSigningDisclosureProps = HTMLAttributes<HTMLParagraphElement>;
+export type DocumentSigningDisclosureProps = HTMLAttributes<HTMLDivElement> & {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  role?: RecipientRole;
+};
+
+const getRoleActionText = (role: RecipientRole | undefined) => {
+  switch (role) {
+    case RecipientRole.APPROVER:
+      return msg`approve`;
+    case RecipientRole.VIEWER:
+      return msg`view`;
+    case RecipientRole.ASSISTANT:
+      return msg`assist with`;
+    case RecipientRole.CC:
+      return msg`receive a copy of`;
+    case RecipientRole.SIGNER:
+    default:
+      return msg`sign`;
+  }
+};
 
 export const DocumentSigningDisclosure = ({
   className,
+  checked,
+  onCheckedChange,
+  role,
   ...props
 }: DocumentSigningDisclosureProps) => {
+  const { _ } = useLingui();
+  const actionText = _(getRoleActionText(role));
+
   return (
-    <p className={cn('text-muted-foreground text-xs', className)} {...props}>
-      <Trans>
-        By proceeding with your electronic signature, you acknowledge and consent that it will be
-        used to sign the given document and holds the same legal validity as a handwritten
-        signature. By completing the electronic signing process, you affirm your understanding and
-        acceptance of these conditions.
-      </Trans>
-      <span className="mt-2 block">
+    <div className={cn('flex items-start gap-3', className)} {...props}>
+      <Checkbox
+        id="consent-checkbox"
+        checked={checked}
+        onCheckedChange={(value) => onCheckedChange(value === true)}
+        className="mt-0.5"
+      />
+      <label
+        htmlFor="consent-checkbox"
+        className="cursor-pointer text-sm leading-relaxed text-muted-foreground"
+      >
         <Trans>
-          Read the full{' '}
+          I agree to {actionText} this document electronically and receive records in electronic
+          form, as described in the{' '}
           <Link
             className="text-documenso-700 underline"
             to="/articles/signature-disclosure"
             target="_blank"
+            onClick={(e) => e.stopPropagation()}
           >
-            signature disclosure
+            Electronic Signature Disclosure
           </Link>
           .
         </Trans>
-      </span>
-    </p>
+      </label>
+    </div>
   );
 };
