@@ -350,6 +350,7 @@ test('[NEXT_RECIPIENT_DICTATION]: should allow assistant to dictate next signer'
   await dialog.getByLabel('Email').fill('new.recipient@example.com');
 
   // Submit and verify completion
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: /Continue|Proceed/i }).click();
   await page.waitForURL(`${signUrl}/complete`);
 
