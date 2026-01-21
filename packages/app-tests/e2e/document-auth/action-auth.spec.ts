@@ -51,6 +51,7 @@ test('[DOCUMENT_AUTH]: should allow signing when no auth setup', async ({ page }
     }
 
     await page.getByRole('button', { name: 'Complete' }).click();
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
     await page.waitForURL(`${signUrl}/complete`);
   }
@@ -101,6 +102,7 @@ test('[DOCUMENT_AUTH]: should allow signing with valid global auth', async ({ pa
   }
 
   await page.getByRole('button', { name: 'Complete' }).click();
+  await page.locator('#consent-checkbox').click();
   await page.getByRole('button', { name: 'Sign' }).click();
   await page.waitForURL(`${signUrl}/complete`);
 });
@@ -269,6 +271,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient au
     }
 
     await page.getByRole('button', { name: 'Complete' }).click();
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
     await page.waitForURL(`${signUrl}/complete`);
 
@@ -375,6 +378,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient an
     }
 
     await page.getByRole('button', { name: 'Complete' }).click();
+    await page.locator('#consent-checkbox').click();
     await page.getByRole('button', { name: 'Sign' }).click();
     await page.waitForURL(`${signUrl}/complete`);
 
