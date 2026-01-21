@@ -14,6 +14,9 @@ export const signSignaturePad = async (page: Page) => {
 
   // Click Next button
   await page.getByRole('button', { name: 'Next' }).click();
+
+  // Wait for fields to be ready
+  await page.waitForTimeout(500);
 };
 
 /**

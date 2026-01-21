@@ -322,6 +322,8 @@ test('[NEXT_RECIPIENT_DICTATION]: should allow assistant to dictate next signer'
 
     if (field.type === FieldType.SIGNATURE) {
       await signDirectSignaturePad(page);
+      // Check consent checkbox in signature dialog
+      await page.getByRole('checkbox').click();
       await page.getByRole('button', { name: 'Sign', exact: true }).click();
     }
 
