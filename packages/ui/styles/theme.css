@@ -9,8 +9,8 @@
     /* GitLaw Light Theme - matches front-law colors.css exactly */
     /* Force light mode always - no dark mode support (same as front-law) */
     
-    /* grass-65: #dffbe3 */
-    --background: 129 78% 93%;
+    /* lilac-50: #f7f6ff */
+    --background: 249 100% 98%;
     /* stone-900 */
     --foreground: 24 10% 10%;
 
@@ -26,9 +26,9 @@
 
     /* white */
     --card: 0 0% 100%;
-    /* salad-250: #9ddfa9 */
-    --card-border: 130 51% 75%;
-    --card-border-tint: 112 205 159;
+    /* violetish-200: #e2ddff */
+    --card-border: 249 100% 93%;
+    --card-border-tint: 226 221 255;
     /* stone-900 */
     --card-foreground: 24 10% 10%;
 
@@ -41,10 +41,10 @@
     --widget: 0 0% 97%;
     --widget-foreground: 0 0% 95%;
 
-    /* salad-250: #9ddfa9 */
-    --border: 130 51% 75%;
-    /* Use same as border for visible input borders (was grass-65 which matched background) */
-    --input: 130 51% 75%;
+    /* violetish-200: #e2ddff */
+    --border: 249 100% 93%;
+    /* white for inputs */
+    --input: 0 0% 100%;
 
     /* violetish-700: #5e49d6 */
     --primary: 249 60% 56%;

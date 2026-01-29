@@ -395,7 +395,7 @@ export const DirectTemplateSigningForm = ({
           )}
         </ElementVisible>
 
-        <div className="-mx-2 flex flex-1 flex-col gap-4 overflow-y-auto px-2">
+        <div className="-mx-2 flex flex-1 flex-col gap-4 overflow-y-auto px-2 pb-1">
           <div className="flex flex-1 flex-col gap-y-4">
             <div>
               <Label htmlFor="full-name">
@@ -404,6 +404,7 @@ export const DirectTemplateSigningForm = ({
 
               <Input
                 id="full-name"
+                className="mt-2"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value.trimStart())}
               />

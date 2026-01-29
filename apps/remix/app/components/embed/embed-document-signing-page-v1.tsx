@@ -358,7 +358,7 @@ export const EmbedSignDocumentV1ClientPage = ({
               </div>
 
               {/* Form */}
-              <div className="embed--DocumentWidgetForm -mx-2 hidden px-2 group-data-[expanded]/document-widget:block md:block">
+              <div className="embed--DocumentWidgetForm -mx-2 hidden px-2 pb-1 group-data-[expanded]/document-widget:block md:block">
                 <div className="flex flex-1 flex-col gap-y-4">
                   {isAssistantMode && (
                     <div>

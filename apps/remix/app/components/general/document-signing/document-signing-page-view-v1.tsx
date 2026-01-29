@@ -372,7 +372,7 @@ export const DocumentSigningPageViewV1 = ({
                 <hr className="mb-8 mt-4 border-border" />
               </div>
 
-              <div className="-mx-2 hidden px-2 group-data-[expanded]/document-widget:block md:block">
+              <div className="-mx-2 hidden px-2 pb-1 group-data-[expanded]/document-widget:block md:block">
                 <DocumentSigningForm
                   document={document}
                   recipient={recipient}

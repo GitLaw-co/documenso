@@ -254,7 +254,7 @@ export const DocumentSigningForm = ({
             <>
               <fieldset
                 disabled={isSubmitting}
-                className="-mx-2 flex flex-1 flex-col gap-4 overflow-y-auto px-2"
+                className="-mx-2 flex flex-1 flex-col gap-4 overflow-y-auto px-2 pb-1"
               >
                 <div className="flex flex-1 flex-col gap-y-4">
                   <div>
