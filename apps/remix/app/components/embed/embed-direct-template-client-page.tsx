@@ -396,7 +396,7 @@ export const EmbedDirectTemplateClientPage = ({
             </div>
 
             {/* Form */}
-            <div className="-mx-2 hidden px-2 group-data-[expanded]/document-widget:block md:block">
+            <div className="-mx-2 hidden px-2 pb-1 group-data-[expanded]/document-widget:block md:block">
               <div className="flex flex-1 flex-col gap-y-4">
                 <div>
                   <Label htmlFor="full-name">
