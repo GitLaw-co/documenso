@@ -276,7 +276,9 @@ export const DocumentSigningSignatureField = ({
           <DialogTitle>
             <Trans>
               Sign as {recipient.name}{' '}
-              <div className="h-5 text-muted-foreground">({recipient.email})</div>
+              <span className="block text-sm font-normal text-muted-foreground">
+                ({recipient.email})
+              </span>
             </Trans>
           </DialogTitle>
 
