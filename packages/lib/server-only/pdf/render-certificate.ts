@@ -12,12 +12,14 @@ import type { Canvas } from 'skia-canvas';
 import { FontLibrary } from 'skia-canvas';
 import { Image as SkiaImage } from 'skia-canvas';
 import { UAParser } from 'ua-parser-js';
+
 import { APP_I18N_OPTIONS } from '../../constants/i18n';
 import {
   RECIPIENT_ROLES_DESCRIPTION,
   RECIPIENT_ROLE_SIGNING_REASONS,
 } from '../../constants/recipient-roles';
 import type { TDocumentAuditLogBaseSchema } from '../../types/document-audit-logs';
+
 type ColumnWidths = [number, number, number];
 
 type BaseAuditLog = Pick<TDocumentAuditLogBaseSchema, 'createdAt' | 'ipAddress' | 'userAgent'>;
@@ -272,7 +274,6 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
   const isRejected = Boolean(recipient.logs.rejected);
 
   if (recipient.signatureField?.secondaryId) {
-    // Signature container with green border
     const signatureContainer = new Konva.Group({ x: 0, y: 0 });
 
     const minSignatureHeight = 40;
@@ -323,26 +324,15 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
     const signatureHeight = Math.max(signatureContainer.getClientRect().height, minSignatureHeight);
 
     const signatureBorder = new Konva.Rect({
-      x: 2,
-      y: 2,
-      width: maxSignatureWidth,
-      height: signatureHeight,
-      stroke: 'rgba(122, 196, 85, 0.6)',
+      x: 0,
+      y: 0,
+      width: maxSignatureWidth + 8,
+      height: signatureHeight + 8,
+      stroke: '#d1d5db',
       strokeWidth: 1,
       cornerRadius: 8,
     });
     signatureContainer.add(signatureBorder);
-
-    const signatureShadow = new Konva.Rect({
-      x: 0,
-      y: 0,
-      width: maxSignatureWidth + 4,
-      height: signatureHeight + 4,
-      stroke: 'rgba(122, 196, 85, 0.1)',
-      strokeWidth: 4,
-      cornerRadius: 8,
-    });
-    signatureContainer.add(signatureShadow);
 
     // Signature ID
     const sigIdLabel = new Konva.Text({
@@ -559,6 +549,66 @@ const renderRow = (options: RenderRowOptions) => {
   return rowGroup;
 };
 
+const renderPageHeader = ({
+  i18n,
+  width,
+  margin,
+}: {
+  i18n: I18n;
+  width: number;
+  margin: number;
+}) => {
+  const header = new Konva.Group();
+  const headerHeight = pageTopMargin;
+  const logoHeight = 20;
+  const separatorPadding = 8;
+
+  const logoPath = path.join(process.cwd(), 'public/static/logo.png');
+  const logo = fs.readFileSync(logoPath);
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const img = new SkiaImage(logo) as unknown as HTMLImageElement;
+
+  const logoImage = new Konva.Image({
+    image: img,
+    x: margin,
+    y: (headerHeight - separatorPadding - logoHeight) / 2,
+    height: logoHeight,
+    width: logoHeight * (img.width / img.height),
+  });
+
+  const titleText = new Konva.Text({
+    x: margin,
+    y: 0,
+    width: width - margin * 2,
+    height: headerHeight - separatorPadding,
+    verticalAlign: 'middle',
+    align: 'right',
+    text: i18n._(msg`Signing Certificate`),
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontStyle: '300',
+    fill: '#4b5563',
+  });
+
+  const separator = new Konva.Line({
+    points: [
+      margin,
+      headerHeight - separatorPadding,
+      width - margin,
+      headerHeight - separatorPadding,
+    ],
+    stroke: '#e5e7eb',
+    strokeWidth: 1,
+  });
+
+  header.add(logoImage);
+  header.add(titleText);
+  header.add(separator);
+
+  return header;
+};
+
 const renderBranding = ({ i18n }: { i18n: I18n }) => {
   const branding = new Konva.Group();
 
@@ -567,11 +617,12 @@ const renderBranding = ({ i18n }: { i18n: I18n }) => {
   const text = new Konva.Text({
     x: 0,
     verticalAlign: 'middle',
-    text: i18n._(msg`Signing certificate provided by`) + ':',
+    text: `${i18n._(msg`Signing certificate provided by`)}:`,
     fontStyle: fontMedium,
     fontFamily: 'Inter',
     fontSize: textSm,
     height: brandingHeight,
+    fill: textMutedForeground,
   });
 
   const logoPath = path.join(process.cwd(), 'public/static/logo.png');
@@ -663,19 +714,6 @@ const renderTables = (options: RenderTablesOptions) => {
       table.add(row);
     }
 
-    // Add table background and border.
-    const tableClientRect = table.getClientRect();
-    const cardRect = new Konva.Rect({
-      x: tableClientRect.x,
-      y: tableClientRect.y,
-      width: tableClientRect.width,
-      height: tableClientRect.height,
-      stroke: '#e5e7eb',
-      strokeWidth: 1.5,
-      cornerRadius: 8,
-    });
-    table.add(cardRect);
-
     tables.push(table);
   }
 
@@ -694,8 +732,8 @@ export async function renderCertificate({
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   FontLibrary.use({
-    ['Caveat']: [path.join(fontPath, 'caveat.ttf')],
-    ['Inter']: [path.join(fontPath, 'inter-variablefont_opsz,wght.ttf')],
+    Caveat: [path.join(fontPath, 'caveat.ttf')],
+    Inter: [path.join(fontPath, 'inter-variablefont_opsz,wght.ttf')],
   });
 
   const minimumMargin = 10;
@@ -740,33 +778,36 @@ export async function renderCertificate({
 
     const group = new Konva.Group();
 
-    const titleText = new Konva.Text({
-      x: margin,
-      y: 0,
-      height: pageTopMargin,
-      verticalAlign: 'middle',
-      text: i18n._(msg`Signing Certificate`),
-      fontFamily: 'Inter',
-      fontSize: titleFontSize,
-      fontStyle: '700',
-    });
+    const pageHeader = renderPageHeader({ i18n, width: pageWidth, margin });
 
     table.setAttrs({
       x: margin,
       y: pageTopMargin,
     } satisfies Partial<Konva.GroupConfig>);
 
-    group.add(titleText);
+    group.add(pageHeader);
     group.add(table);
 
     // Add branding on the last page if there is space.
     if (index === tables.length - 1 && !hidePoweredBy) {
+      const separatorHeight = 1;
+      const separatorPaddingBelow = 16;
+      const totalBrandingHeight =
+        brandingRect.height + brandingTopPadding + separatorHeight + separatorPaddingBelow;
       const remainingHeight = pageHeight - group.getClientRect().height - pageBottomMargin;
 
-      if (brandingRect.height + brandingTopPadding <= remainingHeight) {
+      if (totalBrandingHeight <= remainingHeight) {
+        const separatorY = group.getClientRect().height + brandingTopPadding;
+        const footerSeparator = new Konva.Line({
+          points: [margin, separatorY, pageWidth - margin, separatorY],
+          stroke: '#e5e7eb',
+          strokeWidth: separatorHeight,
+        });
+        page.add(footerSeparator);
+
         brandingGroup.setAttrs({
           x: pageWidth - brandingRect.width - margin,
-          y: group.getClientRect().height + brandingTopPadding,
+          y: separatorY + separatorPaddingBelow,
         } satisfies Partial<Konva.GroupConfig>);
 
         page.add(brandingGroup);

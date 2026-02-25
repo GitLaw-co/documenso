@@ -57,8 +57,8 @@ export const generateCertificatePdf = async (options: GenerateCertificatePdfOpti
     messages,
   });
 
-  const ownerName = envelope.documentMeta?.externalOwnerName || envelopeOwner.name;
-  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || envelopeOwner.email;
+  const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
+  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
   const payload = {
     recipients: recipients.map((recipient) => {

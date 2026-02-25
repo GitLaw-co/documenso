@@ -41,10 +41,10 @@ export const generateAuditLogPdf = async (options: GenerateAuditLogPdfOptions) =
     messages,
   });
 
-  const ownerName = envelope.documentMeta?.externalOwnerName || envelopeOwner.name;
-  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || envelopeOwner.email;
+  const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
+  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
-  const auditLogs: TDocumentAuditLog[] = [...additionalAuditLogs, ...partialAuditLogs];
+  const auditLogs: TDocumentAuditLog[] = [...additionalAuditLogs, ...partialAuditLogs].reverse();
 
   const auditLogPages = await renderAuditLogs({
     envelope,
