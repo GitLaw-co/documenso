@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro';
 import { DocumentSigningOrder, DocumentStatus, RecipientRole, SigningStatus } from '@prisma/client';
 import { Clock8 } from 'lucide-react';
-import { redirect } from 'react-router';
+import { Link, redirect } from 'react-router';
 import { getOptionalLoaderContext } from 'server/utils/get-loader-session';
 import { match } from 'ts-pattern';
 
@@ -376,6 +376,25 @@ const SigningPageV1 = ({ data }: { data: Awaited<ReturnType<typeof handleV1Loade
           <p className="mt-2.5 max-w-[60ch] text-center text-sm font-medium text-muted-foreground/60 md:text-base">
             <Trans>This document has been cancelled by the owner.</Trans>
           </p>
+
+          {user ? (
+            <Link to="/" className="mt-36 text-documenso-700 hover:text-documenso-600">
+              <Trans>Go Back Home</Trans>
+            </Link>
+          ) : (
+            <p className="mt-36 text-sm text-muted-foreground/60">
+              <Trans>
+                Want to send slick signing links like this one?{' '}
+                <Link
+                  to="https://documenso.com"
+                  className="text-documenso-700 hover:text-documenso-600"
+                >
+                  Check out Documenso
+                </Link>
+                .
+              </Trans>
+            </p>
+          )}
         </div>
       </div>
     );
@@ -457,6 +476,25 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
           <p className="mt-2.5 max-w-[60ch] text-center text-sm font-medium text-muted-foreground/60 md:text-base">
             <Trans>This document has been cancelled by the owner.</Trans>
           </p>
+
+          {user ? (
+            <Link to="/" className="mt-36 text-documenso-700 hover:text-documenso-600">
+              <Trans>Go Back Home</Trans>
+            </Link>
+          ) : (
+            <p className="mt-36 text-sm text-muted-foreground/60">
+              <Trans>
+                Want to send slick signing links like this one?{' '}
+                <Link
+                  to="https://documenso.com"
+                  className="text-documenso-700 hover:text-documenso-600"
+                >
+                  Check out Documenso
+                </Link>
+                .
+              </Trans>
+            </p>
+          )}
         </div>
       </div>
     );

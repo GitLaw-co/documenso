@@ -354,6 +354,30 @@ export const emailPasswordRoute = new Hono<HonoAuthContext>()
   .post('/reset-password', sValidator('json', ZResetPasswordSchema), async (c) => {
     const requestMetadata = c.get('requestMetadata');
 
+    const { token, password } = c.req.valid('json');
+
+    const resetLimitResult = await resetPasswordRateLimit.check({
+      ip: requestMetadata.ipAddress ?? 'unknown',
+      identifier: token,
+    });
+
+    const resetLimited = rateLimitResponse(c, resetLimitResult);
+
+    if (resetLimited) {
+      throw new HTTPException(429, {
+        res: resetLimited,
+      });
+    }
+
+    const user = await getUserByResetToken({ token });
+
+    if (
+      user.email.toLowerCase() === legacyServiceAccountEmail() ||
+      user.email.toLowerCase() === deletedServiceAccountEmail()
+    ) {
+      return c.text('FORBIDDEN', 403);
+    }
+
     const { userId } = await resetPassword({
       token,
       password,

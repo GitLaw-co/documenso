@@ -252,7 +252,7 @@ export const run = async ({
             ? getCertificatePdf({
                 documentId,
                 language: envelope.documentMeta.language,
-              }).then((buffer) => PDF.load(buffer))
+              }).then(async (buffer) => PDF.load(buffer))
             : generateCertificatePdf(certificatePayload);
 
         const makeAuditLogPdf = async () =>
@@ -260,7 +260,7 @@ export const run = async ({
             ? getAuditLogsPdf({
                 documentId,
                 language: envelope.documentMeta.language,
-              }).then((buffer) => PDF.load(buffer))
+              }).then(async (buffer) => PDF.load(buffer))
             : generateAuditLogPdf(certificatePayload);
 
         [certificateDoc, auditLogDoc] = await Promise.all([

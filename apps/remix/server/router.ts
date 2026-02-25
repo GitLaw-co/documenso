@@ -8,7 +8,18 @@ import type { Logger } from 'pino';
 import { tsRestHonoApp } from '@documenso/api/hono';
 import { auth } from '@documenso/auth/server';
 import { jobsClient } from '@documenso/lib/jobs/client';
+import { LicenseClient } from '@documenso/lib/server-only/license/license-client';
+import { createRateLimitMiddleware } from '@documenso/lib/server-only/rate-limit/rate-limit-middleware';
+import {
+  aiRateLimit,
+  apiTrpcRateLimit,
+  apiV1RateLimit,
+  apiV2RateLimit,
+  fileUploadRateLimit,
+} from '@documenso/lib/server-only/rate-limit/rate-limits';
 import { TelemetryClient } from '@documenso/lib/server-only/telemetry/telemetry-client';
+import { migrateDeletedAccountServiceAccount } from '@documenso/lib/server-only/user/service-accounts/deleted-account';
+import { migrateLegacyServiceAccount } from '@documenso/lib/server-only/user/service-accounts/legacy-service-account';
 import { getIpAddress } from '@documenso/lib/universal/get-ip-address';
 import { env } from '@documenso/lib/utils/env';
 import { logger } from '@documenso/lib/utils/logger';
@@ -40,20 +51,6 @@ const aiRateLimitMiddleware = createRateLimitMiddleware(aiRateLimit);
 const trpcRateLimitMiddleware = createRateLimitMiddleware(apiTrpcRateLimit);
 const fileRateLimitMiddleware = createRateLimitMiddleware(fileUploadRateLimit);
 
-const aiRateLimitMiddleware = rateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  limit: 3, // 3 requests per window
-  keyGenerator: (c) => {
-    try {
-      return getIpAddress(c.req.raw);
-    } catch (error) {
-      return 'unknown';
-    }
-  },
-  message: {
-    error: 'Too many requests, please try again later.',
-  },
-});
 
 /**
  * Attach session and context to requests.
@@ -132,5 +129,15 @@ app.use(`/api/v2-beta/*`, async (c) =>
 if (env('NODE_ENV') !== 'development') {
   void TelemetryClient.start();
 }
+
+// Start license client to verify license on startup.
+void LicenseClient.start();
+
+// Start cron scheduler for background jobs (e.g. envelope expiration sweep).
+// No-op for Inngest provider which handles cron externally.
+jobsClient.startCron();
+
+void migrateDeletedAccountServiceAccount();
+void migrateLegacyServiceAccount();
 
 export default app;

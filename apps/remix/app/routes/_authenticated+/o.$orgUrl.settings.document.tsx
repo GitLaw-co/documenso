@@ -57,7 +57,10 @@ export default function OrganisationSettingsDocumentPage() {
         includeSigningCertificate,
         includeAuditLog,
         signatureTypes,
+        defaultRecipients,
+        delegateDocumentOwnership,
         aiFeaturesEnabled,
+        envelopeExpirationPeriod,
       } = data;
 
       if (
@@ -86,7 +89,9 @@ export default function OrganisationSettingsDocumentPage() {
           typedSignatureEnabled: signatureTypes.includes(DocumentSignatureType.TYPE),
           uploadSignatureEnabled: signatureTypes.includes(DocumentSignatureType.UPLOAD),
           drawSignatureEnabled: signatureTypes.includes(DocumentSignatureType.DRAW),
+          delegateDocumentOwnership: delegateDocumentOwnership,
           aiFeaturesEnabled,
+          envelopeExpirationPeriod: envelopeExpirationPeriod ?? undefined,
         },
       });
 

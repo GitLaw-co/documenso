@@ -1,7 +1,9 @@
+import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
-import { CheckCircle, Eye, FileText, Mail, PenLine, Send, XCircle } from 'lucide-react';
+import type { DateTimeFormatOptions } from 'luxon';
 import { DateTime } from 'luxon';
 import { P, match } from 'ts-pattern';
+import { UAParser } from 'ua-parser-js';
 
 import { APP_I18N_OPTIONS } from '@documenso/lib/constants/i18n';
 import {
@@ -9,104 +11,139 @@ import {
   type TDocumentAuditLog,
 } from '@documenso/lib/types/document-audit-logs';
 import { formatDocumentAuditLogAction } from '@documenso/lib/utils/document-audit-logs';
+import { cn } from '@documenso/ui/lib/utils';
+import { Card, CardContent } from '@documenso/ui/primitives/card';
 
 export type AuditLogDataTableProps = {
   logs: TDocumentAuditLog[];
 };
 
+const dateFormat: DateTimeFormatOptions = {
+  ...DateTime.DATETIME_SHORT,
+  hourCycle: 'h12',
+};
+
 /**
- * Get icon and label for the audit log type (HelloSign style)
+ * Get the color indicator for the audit log type
  */
-const getAuditLogIcon = (type: string) =>
+
+const getAuditLogIndicatorColor = (type: string) =>
   match(type)
-    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_SENT, () => ({
-      icon: Send,
-      label: 'SENT',
-    }))
-    .with(
-      P.union(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED, DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED),
-      () => ({
-        icon: Eye,
-        label: 'VIEWED',
-      }),
-    )
-    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_COMPLETED, () => ({
-      icon: PenLine,
-      label: 'SIGNED',
-    }))
-    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED, () => ({
-      icon: CheckCircle,
-      label: 'COMPLETED',
-    }))
-    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_REJECTED, () => ({
-      icon: XCircle,
-      label: 'REJECTED',
-    }))
-    .with(DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT, () => ({
-      icon: Mail,
-      label: 'EMAIL SENT',
-    }))
+    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_COMPLETED, () => 'bg-green-500')
+    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_REJECTED, () => 'bg-red-500')
+    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_SENT, () => 'bg-orange-500')
     .with(
       P.union(
         DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_INSERTED,
         DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_UNINSERTED,
       ),
-      () => ({
-        icon: FileText,
-        label: 'FIELD',
-      }),
+      () => 'bg-blue-500',
     )
-    .otherwise(() => ({
-      icon: FileText,
-      label: type.replace(/_/g, ' ').replace('DOCUMENT ', ''),
-    }));
+    .otherwise(() => 'bg-muted');
 
 /**
  * DO NOT USE TRANS. YOU MUST USE _ FOR THIS FILE AND ALL CHILDREN COMPONENTS.
  */
+
+const formatUserAgent = (userAgent: string | null | undefined, userAgentInfo: UAParser.IResult) => {
+  if (!userAgent) {
+    return msg`N/A`;
+  }
+
+  const browser = userAgentInfo.browser.name;
+  const version = userAgentInfo.browser.version;
+  const os = userAgentInfo.os.name;
+
+  // If we can parse meaningful browser info, format it nicely
+  if (browser && os) {
+    const browserInfo = version ? `${browser} ${version}` : browser;
+
+    return msg`${browserInfo} on ${os}`;
+  }
+
+  return msg`${userAgent}`;
+};
+
 export const InternalAuditLogTable = ({ logs }: AuditLogDataTableProps) => {
   const { _, i18n } = useLingui();
 
+  const parser = new UAParser();
+
   return (
-    <div className="divide-y divide-gray-100">
+    <div className="space-y-4">
       {logs.map((log, index) => {
-        const formattedAction = formatDocumentAuditLogAction(_, log);
-        const { icon: Icon, label } = getAuditLogIcon(log.type);
-        const dateTime = DateTime.fromJSDate(log.createdAt).setLocale(
-          APP_I18N_OPTIONS.defaultLocale,
-        );
+        parser.setUA(log.userAgent || '');
+        const formattedAction = formatDocumentAuditLogAction(i18n, log);
+        const userAgentInfo = parser.getResult();
 
         return (
-          <div
+          <Card
             key={index}
-            className="grid grid-cols-[100px_140px_1fr] gap-4 py-6 first:pt-0"
+            // Add top margin for the first card to ensure it's not cut off from the 2nd page onwards
+            className={`border shadow-sm ${index > 0 ? 'print:mt-8' : ''}`}
             style={{
               pageBreakInside: 'avoid',
               breakInside: 'avoid',
             }}
           >
-            {/* Column 1: Icon + Event Type */}
-            <div className="flex flex-col items-center text-center">
-              <Icon className="mb-1 h-6 w-6 text-gray-500" strokeWidth={1.5} />
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-600">
-                {label}
-              </span>
-            </div>
+            <CardContent className="p-4">
+              {/* Header Section with indicator, event type, and timestamp */}
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex items-baseline gap-3">
+                  <div
+                    className={cn(`h-2 w-2 rounded-full`, getAuditLogIndicatorColor(log.type))}
+                  />
 
-            {/* Column 2: Date + Time */}
-            <div className="text-sm">
-              <div className="font-semibold text-gray-900">
-                {dateTime.toFormat('MM / dd / yyyy')}
+                  <div>
+                    <div className="text-sm font-medium uppercase tracking-wide text-muted-foreground print:text-[8pt]">
+                      {log.type.replace(/_/g, ' ')}
+                    </div>
+
+                    <div className="text-sm font-medium text-foreground print:text-[8pt]">
+                      {formattedAction.description}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-sm text-muted-foreground print:text-[8pt]">
+                  {DateTime.fromJSDate(log.createdAt)
+                    .setLocale(APP_I18N_OPTIONS.defaultLocale)
+                    .toLocaleString(dateFormat)}
+                </div>
               </div>
-              <div className="text-gray-600">{dateTime.toFormat('HH:mm:ss')} UTC</div>
-            </div>
 
-            {/* Column 3: Description + IP */}
-            <div className="text-sm">
-              <div className="text-gray-900">{formattedAction.description}</div>
-              {log.ipAddress && <div className="mt-1 text-gray-600">IP: {log.ipAddress}</div>}
-            </div>
-          </div>
+              <hr className="my-4" />
+
+              {/* Details Section - Two column layout */}
+              <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-xs print:text-[6pt]">
+                <div>
+                  <div className="font-medium uppercase tracking-wide text-muted-foreground/70">
+                    {_(msg`User`)}
+                  </div>
+
+                  <div className="mt-1 font-mono text-foreground">{log.email || 'N/A'}</div>
+                </div>
+
+                <div className="text-right">
+                  <div className="font-medium uppercase tracking-wide text-muted-foreground/70">
+                    {_(msg`IP Address`)}
+                  </div>
+
+                  <div className="mt-1 font-mono text-foreground">{log.ipAddress || 'N/A'}</div>
+                </div>
+
+                <div className="col-span-2">
+                  <div className="font-medium uppercase tracking-wide text-muted-foreground/70">
+                    {_(msg`User Agent`)}
+                  </div>
+
+                  <div className="mt-1 text-foreground">
+                    {_(formatUserAgent(log.userAgent, userAgentInfo))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         );
       })}
     </div>

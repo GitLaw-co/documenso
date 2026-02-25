@@ -138,6 +138,10 @@ export const generateDefaultOrganisationSettings = (): Omit<
     // emailReplyToName: null,
     emailDocumentSettings: DEFAULT_DOCUMENT_EMAIL_SETTINGS,
 
+    defaultRecipients: null,
+
+    envelopeExpirationPeriod: DEFAULT_ENVELOPE_EXPIRATION_PERIOD,
+
     aiFeaturesEnabled: false,
   };
 };
