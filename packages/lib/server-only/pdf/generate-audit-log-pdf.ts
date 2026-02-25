@@ -41,11 +41,17 @@ export const generateAuditLogPdf = async (options: GenerateAuditLogPdfOptions) =
     messages,
   });
 
+  const ownerName = envelope.documentMeta?.externalOwnerName || envelopeOwner.name;
+  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || envelopeOwner.email;
+
   const auditLogs: TDocumentAuditLog[] = [...additionalAuditLogs, ...partialAuditLogs];
 
   const auditLogPages = await renderAuditLogs({
     envelope,
-    envelopeOwner,
+    envelopeOwner: {
+      name: ownerName,
+      email: ownerEmail,
+    },
     envelopeItems,
     recipients,
     auditLogs,

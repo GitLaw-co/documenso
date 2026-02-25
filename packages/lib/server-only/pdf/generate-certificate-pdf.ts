@@ -57,6 +57,9 @@ export const generateCertificatePdf = async (options: GenerateCertificatePdfOpti
     messages,
   });
 
+  const ownerName = envelope.documentMeta?.externalOwnerName || envelopeOwner.name;
+  const ownerEmail = envelope.documentMeta?.externalOwnerEmail || envelopeOwner.email;
+
   const payload = {
     recipients: recipients.map((recipient) => {
       const recipientId = recipient.id;
@@ -141,8 +144,10 @@ export const generateCertificatePdf = async (options: GenerateCertificatePdfOpti
         },
       };
     }),
-    envelopeOwner,
-    qrToken: envelope.qrToken,
+    envelopeOwner: {
+      name: ownerName,
+      email: ownerEmail,
+    },
     hidePoweredBy: organisationClaim.flags.hidePoweredBy ?? false,
     pageWidth,
     pageHeight,
