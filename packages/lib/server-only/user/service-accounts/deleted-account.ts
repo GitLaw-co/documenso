@@ -37,20 +37,6 @@ export const deletedAccountServiceAccount = async () => {
         },
       },
     },
-    select: {
-      id: true,
-      email: true,
-      ownedOrganisations: {
-        select: {
-          id: true,
-          teams: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      },
-    },
   });
 
   if (!serviceAccount) {

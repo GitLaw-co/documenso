@@ -99,6 +99,7 @@ export const DocumentSigningCompleteDialog = ({
   const { t } = useLingui();
 
   const [showDialog, setShowDialog] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const [showTwoFactorForm, setShowTwoFactorForm] = useState(false);
   const [twoFactorValidationError, setTwoFactorValidationError] = useState<string | null>(null);
@@ -361,7 +362,11 @@ export const DocumentSigningCompleteDialog = ({
                     </div>
                   )}
 
-                  <DocumentSigningDisclosure />
+                  <DocumentSigningDisclosure
+                    checked={consentChecked}
+                    onCheckedChange={setConsentChecked}
+                    role={recipient.role}
+                  />
 
                   <DialogFooter className="mt-4">
                     <Button
@@ -375,7 +380,7 @@ export const DocumentSigningCompleteDialog = ({
 
                     <Button
                       type="submit"
-                      disabled={!isComplete}
+                      disabled={!isComplete || !consentChecked}
                       loading={form.formState.isSubmitting}
                     >
                       {match(recipient.role)

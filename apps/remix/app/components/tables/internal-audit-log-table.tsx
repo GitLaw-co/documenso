@@ -65,7 +65,7 @@ const getAuditLogIcon = (type: string) =>
  * DO NOT USE TRANS. YOU MUST USE _ FOR THIS FILE AND ALL CHILDREN COMPONENTS.
  */
 export const InternalAuditLogTable = ({ logs }: AuditLogDataTableProps) => {
-  const { _ } = useLingui();
+  const { _, i18n } = useLingui();
 
   return (
     <div className="divide-y divide-gray-100">
