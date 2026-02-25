@@ -1,0 +1,216 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Every Monday at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      upstream_branch:
+        description: 'Upstream branch to sync from'
+        required: false
+        default: 'main'
+        type: string
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for existing sync PR
+        id: check_existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing_pr=$(gh pr list \
+            --repo "${{ github.repository }}" \
+            --label "upstream-sync" \
+            --state open \
+            --json number,url \
+            --jq '.[0]')
+
+          if [ -n "$existing_pr" ] && [ "$existing_pr" != "null" ]; then
+            pr_url=$(echo "$existing_pr" | jq -r '.url')
+            echo "::warning::An open upstream sync PR already exists: $pr_url"
+            echo "::warning::Please review, merge, or close it before running another sync."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout dev
+        if: steps.check_existing.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Configure git identity
+        if: steps.check_existing.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch upstream
+        if: steps.check_existing.outputs.skip != 'true'
+        run: |
+          upstream_branch="${{ inputs.upstream_branch || 'main' }}"
+          git remote add upstream https://github.com/documenso/documenso.git || true
+          git fetch upstream "$upstream_branch"
+          echo "upstream_branch=$upstream_branch" >> "$GITHUB_ENV"
+
+      - name: Check for new commits
+        if: steps.check_existing.outputs.skip != 'true'
+        id: check_commits
+        run: |
+          if git merge-base --is-ancestor "upstream/$upstream_branch" HEAD; then
+            echo "::notice::Already up to date with upstream/$upstream_branch"
+            echo "has_new_commits=false" >> "$GITHUB_OUTPUT"
+          else
+            commit_count=$(git rev-list --count "HEAD..upstream/$upstream_branch")
+            upstream_sha=$(git rev-parse --short "upstream/$upstream_branch")
+            echo "has_new_commits=true" >> "$GITHUB_OUTPUT"
+            echo "commit_count=$commit_count" >> "$GITHUB_OUTPUT"
+            echo "upstream_sha=$upstream_sha" >> "$GITHUB_OUTPUT"
+            echo "upstream_sha_full=$(git rev-parse "upstream/$upstream_branch")" >> "$GITHUB_OUTPUT"
+            echo "base_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            echo "::notice::Found $commit_count new upstream commits (upstream HEAD: $upstream_sha)"
+          fi
+
+      - name: Create sync branch
+        if: steps.check_existing.outputs.skip != 'true' && steps.check_commits.outputs.has_new_commits == 'true'
+        run: |
+          branch_name="sync/upstream-${{ steps.check_commits.outputs.upstream_sha }}"
+          git checkout -b "$branch_name"
+          echo "branch_name=$branch_name" >> "$GITHUB_ENV"
+
+      - name: Attempt merge
+        if: steps.check_existing.outputs.skip != 'true' && steps.check_commits.outputs.has_new_commits == 'true'
+        id: merge
+        run: |
+          if git merge "upstream/$upstream_branch" -X ours --no-edit; then
+            echo "merge_clean=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Merge completed successfully (conflicts auto-resolved with -X ours)"
+          else
+            echo "merge_clean=false" >> "$GITHUB_OUTPUT"
+
+            conflicting_files=$(git diff --name-only --diff-filter=U)
+            echo "::warning::Merge has unresolvable conflicts in:"
+            echo "$conflicting_files"
+
+            {
+              echo "conflicting_files<<CONFLICT_EOF"
+              echo "$conflicting_files"
+              echo "CONFLICT_EOF"
+            } >> "$GITHUB_ENV"
+
+            git add -A
+            git commit -m "chore: sync upstream (unresolved conflicts)"
+          fi
+
+      - name: Push sync branch
+        if: steps.check_existing.outputs.skip != 'true' && steps.check_commits.outputs.has_new_commits == 'true'
+        run: |
+          git push origin "$branch_name"
+
+      - name: Create PR (clean merge)
+        if: >-
+          steps.check_existing.outputs.skip != 'true'
+          && steps.check_commits.outputs.has_new_commits == 'true'
+          && steps.merge.outputs.merge_clean == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_COUNT: ${{ steps.check_commits.outputs.commit_count }}
+          UPSTREAM_BRANCH: ${{ inputs.upstream_branch || 'main' }}
+          BASE_SHA: ${{ steps.check_commits.outputs.base_sha }}
+          UPSTREAM_SHA_FULL: ${{ steps.check_commits.outputs.upstream_sha_full }}
+        run: |
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --base dev \
+            --head "$branch_name" \
+            --title "chore: sync with upstream documenso (${{ steps.check_commits.outputs.upstream_sha }})" \
+            --label "upstream-sync" \
+            --body "## Upstream Sync
+
+          Syncing **${COMMIT_COUNT}** commits from upstream \`documenso/documenso@${UPSTREAM_BRANCH}\`.
+
+          **Upstream range:** \`${BASE_SHA}...${UPSTREAM_SHA_FULL}\`
+          **Compare:** https://github.com/documenso/documenso/compare/${BASE_SHA}...${UPSTREAM_SHA_FULL}
+
+          ### Conflict Resolution
+
+          Text-level conflicts were auto-resolved using \`-X ours\`, which preserves our fork's version of conflicting lines while accepting all non-conflicting upstream changes. Review the diff carefully to ensure no important upstream changes were inadvertently overridden.
+
+          ### Review Checklist
+
+          - [ ] Verify GitLaw branding/theme is intact
+          - [ ] Verify certificate styling is unchanged
+          - [ ] Check for any new upstream features that need GitLaw adaptation
+          - [ ] Confirm the build passes"
+
+      - name: Create PR (with conflicts)
+        if: >-
+          steps.check_existing.outputs.skip != 'true'
+          && steps.check_commits.outputs.has_new_commits == 'true'
+          && steps.merge.outputs.merge_clean == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_COUNT: ${{ steps.check_commits.outputs.commit_count }}
+          UPSTREAM_BRANCH: ${{ inputs.upstream_branch || 'main' }}
+          BASE_SHA: ${{ steps.check_commits.outputs.base_sha }}
+          UPSTREAM_SHA_FULL: ${{ steps.check_commits.outputs.upstream_sha_full }}
+        run: |
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --base dev \
+            --head "$branch_name" \
+            --title "chore: sync with upstream documenso (${{ steps.check_commits.outputs.upstream_sha }}) [CONFLICTS]" \
+            --label "upstream-sync" \
+            --label "has-conflicts" \
+            --body "## Upstream Sync — Manual Resolution Required
+
+          > **WARNING: This PR contains unresolved merge conflicts and cannot be merged as-is.**
+
+          Syncing **${COMMIT_COUNT}** commits from upstream \`documenso/documenso@${UPSTREAM_BRANCH}\`.
+
+          **Upstream range:** \`${BASE_SHA}...${UPSTREAM_SHA_FULL}\`
+          **Compare:** https://github.com/documenso/documenso/compare/${BASE_SHA}...${UPSTREAM_SHA_FULL}
+
+          ### Conflicting Files
+
+          The following files have merge conflicts (\`<<<<<<<\` markers) that must be resolved manually:
+
+          \`\`\`
+          ${{ env.conflicting_files }}
+          \`\`\`
+
+          ### How to Resolve
+
+          \`\`\`bash
+          git fetch origin ${branch_name}
+          git checkout ${branch_name}
+
+          # For each conflicting file, search for <<<<<<< markers and resolve
+          grep -rn '<<<<<<< HEAD' .
+
+          # After resolving all conflicts:
+          git add -A
+          git commit -m \"chore: resolve upstream sync conflicts\"
+          git push origin ${branch_name}
+          \`\`\`
+
+          ### Review Checklist
+
+          - [ ] All conflict markers (\`<<<<<<<\`, \`=======\`, \`>>>>>>>\`) are removed
+          - [ ] Verify GitLaw branding/theme is intact
+          - [ ] Verify certificate styling is unchanged
+          - [ ] Check for any new upstream features that need GitLaw adaptation
+          - [ ] Confirm the build passes"
