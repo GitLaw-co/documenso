@@ -59,6 +59,7 @@ export function AssistantConfirmationDialog({
 }: ConfirmationDialogProps) {
   const { t } = useLingui();
   const [isEditingNextSigner, setIsEditingNextSigner] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const form = useForm<TNextSignerFormSchema>({
     resolver: zodResolver(ZNextSignerFormSchema),
@@ -183,7 +184,11 @@ export function AssistantConfirmationDialog({
                   </div>
                 )}
 
-                <DocumentSigningDisclosure className="mt-4" />
+                <DocumentSigningDisclosure
+                  className="mt-4"
+                  checked={consentChecked}
+                  onCheckedChange={setConsentChecked}
+                />
               </div>
 
               <DialogFooter className="mt-4">
@@ -193,7 +198,7 @@ export function AssistantConfirmationDialog({
                 <Button
                   type="button"
                   variant={hasUninsertedFields ? 'destructive' : 'default'}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !consentChecked}
                   onClick={handleSubmit}
                   loading={isSubmitting}
                 >
