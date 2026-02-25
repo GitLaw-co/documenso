@@ -3,6 +3,8 @@ import { createAttachmentRoute } from './attachment/create-attachment';
 import { deleteAttachmentRoute } from './attachment/delete-attachment';
 import { findAttachmentsRoute } from './attachment/find-attachments';
 import { updateAttachmentRoute } from './attachment/update-attachment';
+import { bulkDeleteEnvelopesRoute } from './bulk-delete-envelopes';
+import { bulkMoveEnvelopesRoute } from './bulk-move-envelopes';
 import { createEnvelopeRoute } from './create-envelope';
 import { createEnvelopeItemsRoute } from './create-envelope-items';
 import { deleteEnvelopeRoute } from './delete-envelope';
@@ -22,6 +24,7 @@ import { findEnvelopeAuditLogsRoute } from './find-envelope-audit-logs';
 import { getEnvelopeRoute } from './get-envelope';
 import { getEnvelopeItemsRoute } from './get-envelope-items';
 import { getEnvelopeItemsByTokenRoute } from './get-envelope-items-by-token';
+import { getEnvelopesByIdsRoute } from './get-envelopes-by-ids';
 import { redistributeEnvelopeRoute } from './redistribute-envelope';
 import { setEnvelopeFieldsRoute } from './set-envelope-fields';
 import { setEnvelopeRecipientsRoute } from './set-envelope-recipients';
@@ -70,6 +73,7 @@ export const envelopeRouter = router({
     find: findEnvelopeAuditLogsRoute,
   },
   get: getEnvelopeRoute,
+  getMany: getEnvelopesByIdsRoute,
   create: createEnvelopeRoute,
   use: useEnvelopeRoute,
   update: updateEnvelopeRoute,

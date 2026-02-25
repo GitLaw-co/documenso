@@ -90,7 +90,7 @@ export const FieldContent = ({ field, documentMeta }: FieldIconProps) => {
             {item.value && (
               <Label
                 htmlFor={`checkbox-${index}`}
-                className="text-foreground ml-1.5 text-xs font-normal"
+                className="ml-1.5 text-xs font-normal text-foreground"
               >
                 {item.value}
               </Label>
@@ -122,7 +122,7 @@ export const FieldContent = ({ field, documentMeta }: FieldIconProps) => {
               {item.value && (
                 <Label
                   htmlFor={`option-${index}`}
-                  className="text-foreground ml-1.5 text-xs font-normal"
+                  className="ml-1.5 text-xs font-normal text-foreground"
                 >
                   {item.value}
                 </Label>
@@ -196,7 +196,7 @@ export const FieldContent = ({ field, documentMeta }: FieldIconProps) => {
     <div className="flex h-full w-full items-center overflow-hidden">
       <p
         className={cn(
-          'text-foreground w-full whitespace-pre-wrap text-left text-[clamp(0.07rem,25cqw,0.825rem)] duration-200',
+          'w-full whitespace-pre-wrap text-left text-[clamp(0.07rem,25cqw,0.825rem)] text-foreground duration-200',
           {
             '!text-center': textAlign === 'center' || !textToDisplay,
             '!text-right': textAlign === 'right',

@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 
+import { Trans } from '@lingui/react/macro';
 import { type PDFDocumentProxy } from 'pdfjs-dist';
 
 import type { PdfViewerRendererMode } from './pdf-viewer-konva';

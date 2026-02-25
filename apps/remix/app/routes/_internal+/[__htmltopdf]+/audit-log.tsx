@@ -9,6 +9,7 @@ import { RECIPIENT_ROLES_DESCRIPTION } from '@documenso/lib/constants/recipient-
 import { unsafeGetEntireEnvelope } from '@documenso/lib/server-only/admin/get-entire-document';
 import { decryptSecondaryData } from '@documenso/lib/server-only/crypto/decrypt';
 import { findDocumentAuditLogs } from '@documenso/lib/server-only/document/find-document-audit-logs';
+import { getOrganisationClaimByTeamId } from '@documenso/lib/server-only/organisation/get-organisation-claims';
 import { mapSecondaryIdToDocumentId } from '@documenso/lib/utils/envelope';
 import { getTranslations } from '@documenso/lib/utils/i18n';
 
@@ -50,6 +51,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!envelope) {
     throw redirect('/');
   }
+
+  const organisationClaim = await getOrganisationClaimByTeamId({ teamId: envelope.teamId });
 
   const documentLanguage = ZSupportedLanguageCodeSchema.parse(envelope.documentMeta?.language);
 
@@ -101,6 +104,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       deletedAt: envelope.deletedAt,
       documentMeta: envelope.documentMeta,
     },
+    hidePoweredBy: organisationClaim.flags.hidePoweredBy,
     documentLanguage,
     messages,
   };
@@ -115,7 +119,7 @@ export async function loader({ request }: Route.LoaderArgs) {
  * Update: Maybe <Trans> tags work now after RR7 migration.
  */
 export default function AuditLog({ loaderData }: Route.ComponentProps) {
-  const { auditLogs, document, documentLanguage, messages } = loaderData;
+  const { auditLogs, document, documentLanguage, hidePoweredBy, messages } = loaderData;
 
   const { i18n, _ } = useLingui();
 
@@ -185,12 +189,14 @@ export default function AuditLog({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
 
-        <div className="pdf-page-footer border-t pt-4">
-          <div className="flex items-center gap-x-2 text-sm text-gray-500">
-            <span>{_(msg`Powered by`)}</span>
-            <BrandingLogo className="h-5" />
+        {!hidePoweredBy && (
+          <div className="pdf-page-footer border-t pt-4">
+            <div className="flex items-center gap-x-2 text-sm text-gray-500">
+              <span>{_(msg`Powered by`)}</span>
+              <BrandingLogo className="h-5" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

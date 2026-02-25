@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 
+import { Trans } from '@lingui/react/macro';
 import { SigningStatus } from '@prisma/client';
 import { useRevalidator } from 'react-router';
 

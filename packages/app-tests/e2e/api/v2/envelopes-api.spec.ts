@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type APIRequestContext, expect, test } from '@playwright/test';
 import type { Team, User } from '@prisma/client';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -170,6 +170,7 @@ test.describe('API V2 Envelopes', () => {
                 positionY: 0,
                 width: 0,
                 height: 0,
+                fieldMeta: { type: 'signature' },
               },
               {
                 type: FieldType.SIGNATURE,
@@ -179,6 +180,7 @@ test.describe('API V2 Envelopes', () => {
                 positionY: 0,
                 width: 0,
                 height: 0,
+                fieldMeta: { type: 'signature' },
               },
             ],
           },
@@ -204,6 +206,7 @@ test.describe('API V2 Envelopes', () => {
             documentPending: false,
             documentCompleted: false,
             documentDeleted: false,
+            ownerRecipientExpired: true,
             ownerDocumentCompleted: true,
           },
         },

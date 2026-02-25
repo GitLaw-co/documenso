@@ -10,6 +10,7 @@ import {
   WebhookTriggerEvents,
 } from '@prisma/client';
 
+import { resolveExpiresAt } from '@documenso/lib/constants/envelope-expiration';
 import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import type { ApiRequestMetadata } from '@documenso/lib/universal/extract-request-metadata';
 import { createDocumentAuditLogData } from '@documenso/lib/utils/document-audit-logs';
@@ -33,7 +34,7 @@ import {
   mapEnvelopeToWebhookDocumentPayload,
 } from '../../types/webhook-payload';
 import { getFileServerSide } from '../../universal/upload/get-file.server';
-import { putPdfFileServerSide } from '../../universal/upload/put-file.server';
+import { putNormalizedPdfFileServerSide } from '../../universal/upload/put-file.server';
 import { isDocumentCompleted } from '../../utils/document';
 import { extractDocumentAuthMethods } from '../../utils/document-auth';
 import { type EnvelopeIdOptions, mapSecondaryIdToDocumentId } from '../../utils/envelope';
@@ -155,23 +156,19 @@ export const sendDocument = async ({
   //   userId: userId,
   // });
 
-  // const fieldsWithSignerEmail = fields.map((field) => ({
-  //   ...field,
-  //   signerEmail:
-  //     envelope.Recipient.find((recipient) => recipient.id === field.recipientId)?.email ?? '',
-  // }));
+  // Validate that recipients who require fields (e.g., signers need signature fields) have them.
+  const recipientsWithMissingFields = getRecipientsWithMissingFields(
+    envelope.recipients,
+    envelope.fields,
+  );
 
-  // const everySignerHasSignature = document?.Recipient.every(
-  //   (recipient) =>
-  //     recipient.role !== RecipientRole.SIGNER ||
-  //     fieldsWithSignerEmail.some(
-  //       (field) => field.type === 'SIGNATURE' && field.signerEmail === recipient.email,
-  //     ),
-  // );
+  if (recipientsWithMissingFields.length > 0) {
+    const missingRecipientIds = recipientsWithMissingFields.map((r) => r.id).join(', ');
 
-  // if (!everySignerHasSignature) {
-  //   throw new Error('Some signers have not been assigned a signature field.');
-  // }
+    throw new AppError(AppErrorCode.INVALID_REQUEST, {
+      message: `The following recipients are missing required fields: ${missingRecipientIds}. Signers must have at least one signature field.`,
+    });
+  }
 
   const allRecipientsHaveNoActionToTake = envelope.recipients.every(
     (recipient) =>
@@ -265,6 +262,28 @@ export const sendDocument = async ({
       });
     }
 
+    const expiresAt = resolveExpiresAt(envelope.documentMeta?.envelopeExpirationPeriod ?? null);
+
+    // Set expiresAt on each recipient that hasn't already signed/rejected.
+    // Exclude CC recipients since they don't sign and shouldn't be subject to expiry.
+    if (expiresAt) {
+      await tx.recipient.updateMany({
+        where: {
+          envelopeId: envelope.id,
+          signingStatus: {
+            notIn: [SigningStatus.SIGNED, SigningStatus.REJECTED],
+          },
+          role: {
+            not: RecipientRole.CC,
+          },
+        },
+        data: {
+          expiresAt,
+          expirationNotifiedAt: null,
+        },
+      });
+    }
+
     return await tx.envelope.update({
       where: {
         id: envelope.id,
@@ -334,7 +353,7 @@ const injectFormValuesIntoDocument = async (
     fileName = `${envelope.title}.pdf`;
   }
 
-  const newDocumentData = await putPdfFileServerSide({
+  const newDocumentData = await putNormalizedPdfFileServerSide({
     name: fileName,
     type: 'application/pdf',
     arrayBuffer: async () => Promise.resolve(prefilled),
