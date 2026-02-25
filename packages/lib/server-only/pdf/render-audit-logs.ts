@@ -198,7 +198,7 @@ const renderPageHeader = ({
 }) => {
   const header = new Konva.Group();
   const headerHeight = pageTopMargin;
-  const logoHeight = 20;
+  const logoHeight = 32;
   const separatorPadding = 8;
 
   const logoPath = path.join(process.cwd(), 'public/static/logo.png');
@@ -520,7 +520,7 @@ const renderRow = (options: RenderRowOptions) => {
 const renderBranding = ({ i18n }: { i18n: I18n }) => {
   const branding = new Konva.Group();
 
-  const brandingHeight = 12;
+  const brandingLogoHeight = 20;
 
   const text = new Konva.Text({
     x: 0,
@@ -529,7 +529,7 @@ const renderBranding = ({ i18n }: { i18n: I18n }) => {
     fontStyle: fontMedium,
     fontFamily: 'Inter',
     fontSize: textSm,
-    height: brandingHeight,
+    height: brandingLogoHeight,
     fill: textMutedForeground,
   });
 
@@ -541,8 +541,8 @@ const renderBranding = ({ i18n }: { i18n: I18n }) => {
 
   const logoImage = new Konva.Image({
     image: img,
-    height: brandingHeight,
-    width: brandingHeight * (img.width / img.height),
+    height: brandingLogoHeight,
+    width: brandingLogoHeight * (img.width / img.height),
     x: text.width() + 8,
   });
 
