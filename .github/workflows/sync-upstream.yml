@@ -173,6 +173,7 @@ jobs:
           UPSTREAM_SHA: ${{ steps.check_commits.outputs.upstream_sha }}
           UPSTREAM_SHA_FULL: ${{ steps.check_commits.outputs.upstream_sha_full }}
         run: |
+          gh label create "upstream-sync" --color "1d76db" --force --repo "${{ github.repository }}" 2>/dev/null || true
           gh issue create \
             --repo "${{ github.repository }}" \
             --title "Upstream sync failed: manual merge required (${UPSTREAM_SHA})" \
