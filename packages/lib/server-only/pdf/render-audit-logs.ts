@@ -720,12 +720,13 @@ export async function renderAuditLogs({
     if (index === pageGroups.length - 1 && !hidePoweredBy) {
       const separatorHeight = 1;
       const separatorPaddingBelow = 16;
-      const totalBrandingHeight =
-        brandingRect.height + brandingTopPadding + separatorHeight + separatorPaddingBelow;
+      const totalBrandingHeight = brandingRect.height + separatorHeight + separatorPaddingBelow;
       const remainingHeight = pageHeight - pageGroup.getClientRect().height - pageBottomMargin;
 
       if (totalBrandingHeight <= remainingHeight) {
-        const separatorY = pageGroup.getClientRect().height + brandingTopPadding;
+        const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
+        const separatorY = brandingY - separatorPaddingBelow;
+
         const footerSeparator = new Konva.Line({
           points: [margin, separatorY, pageWidth - margin, separatorY],
           stroke: '#e5e7eb',
@@ -735,7 +736,7 @@ export async function renderAuditLogs({
 
         brandingGroup.setAttrs({
           x: pageWidth - brandingRect.width - margin,
-          y: separatorY + separatorPaddingBelow,
+          y: brandingY,
         } satisfies Partial<Konva.GroupConfig>);
 
         page.add(brandingGroup);
