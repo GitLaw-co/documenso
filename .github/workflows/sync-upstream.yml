@@ -18,6 +18,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 jobs:
   sync:
@@ -101,9 +102,10 @@ jobs:
           else
             echo "merge_clean=false" >> "$GITHUB_OUTPUT"
 
-            conflicting_files=$(git diff --name-only --diff-filter=U)
-            echo "::warning::Merge has unresolvable conflicts in:"
-            echo "$conflicting_files"
+            conflicting_files=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+            echo "::error::Merge failed with structural conflicts that require manual resolution"
+            echo "::warning::Conflicting files:"
+            echo "${conflicting_files:-<unable to detect specific files>}"
 
             {
               echo "conflicting_files<<CONFLICT_EOF"
@@ -111,12 +113,14 @@ jobs:
               echo "CONFLICT_EOF"
             } >> "$GITHUB_ENV"
 
-            git add -A
-            git commit -m "chore: sync upstream (unresolved conflicts)"
+            git merge --abort
           fi
 
       - name: Push sync branch
-        if: steps.check_existing.outputs.skip != 'true' && steps.check_commits.outputs.has_new_commits == 'true'
+        if: >-
+          steps.check_existing.outputs.skip != 'true'
+          && steps.check_commits.outputs.has_new_commits == 'true'
+          && steps.merge.outputs.merge_clean == 'true'
         run: |
           git push origin "$branch_name"
 
@@ -156,7 +160,7 @@ jobs:
           - [ ] Check for any new upstream features that need GitLaw adaptation
           - [ ] Confirm the build passes"
 
-      - name: Create PR (with conflicts)
+      - name: Create issue (merge conflicts)
         if: >-
           steps.check_existing.outputs.skip != 'true'
           && steps.check_commits.outputs.has_new_commits == 'true'
@@ -166,27 +170,21 @@ jobs:
           COMMIT_COUNT: ${{ steps.check_commits.outputs.commit_count }}
           UPSTREAM_BRANCH: ${{ inputs.upstream_branch || 'main' }}
           BASE_SHA: ${{ steps.check_commits.outputs.base_sha }}
+          UPSTREAM_SHA: ${{ steps.check_commits.outputs.upstream_sha }}
           UPSTREAM_SHA_FULL: ${{ steps.check_commits.outputs.upstream_sha_full }}
         run: |
-          gh pr create \
+          gh issue create \
             --repo "${{ github.repository }}" \
-            --base dev \
-            --head "$branch_name" \
-            --title "chore: sync with upstream documenso (${{ steps.check_commits.outputs.upstream_sha }}) [CONFLICTS]" \
+            --title "Upstream sync failed: manual merge required (${UPSTREAM_SHA})" \
             --label "upstream-sync" \
-            --label "has-conflicts" \
-            --body "## Upstream Sync — Manual Resolution Required
+            --body "## Upstream Sync Failed — Manual Merge Required
 
-          > **WARNING: This PR contains unresolved merge conflicts and cannot be merged as-is.**
-
-          Syncing **${COMMIT_COUNT}** commits from upstream \`documenso/documenso@${UPSTREAM_BRANCH}\`.
+          The automated upstream sync found **${COMMIT_COUNT}** new commits from \`documenso/documenso@${UPSTREAM_BRANCH}\`, but the merge has structural conflicts (file deletions, renames, or binary changes) that cannot be auto-resolved.
 
           **Upstream range:** \`${BASE_SHA}...${UPSTREAM_SHA_FULL}\`
           **Compare:** https://github.com/documenso/documenso/compare/${BASE_SHA}...${UPSTREAM_SHA_FULL}
 
           ### Conflicting Files
-
-          The following files have merge conflicts (\`<<<<<<<\` markers) that must be resolved manually:
 
           \`\`\`
           ${{ env.conflicting_files }}
@@ -195,22 +193,25 @@ jobs:
           ### How to Resolve
 
           \`\`\`bash
-          git fetch origin ${branch_name}
-          git checkout ${branch_name}
+          git checkout dev
+          git pull origin dev
+          git checkout -b sync/upstream-${UPSTREAM_SHA}
 
-          # For each conflicting file, search for <<<<<<< markers and resolve
-          grep -rn '<<<<<<< HEAD' .
+          git remote add upstream https://github.com/documenso/documenso.git 2>/dev/null || true
+          git fetch upstream ${UPSTREAM_BRANCH}
+          git merge upstream/${UPSTREAM_BRANCH} -X ours
 
-          # After resolving all conflicts:
+          # Resolve the remaining structural conflicts manually
+          # For each file listed above, decide whether to keep ours, theirs, or combine
+          git status  # shows unmerged files
+          # ... resolve each file ...
           git add -A
-          git commit -m \"chore: resolve upstream sync conflicts\"
-          git push origin ${branch_name}
+          git commit
+          git push -u origin sync/upstream-${UPSTREAM_SHA}
           \`\`\`
 
-          ### Review Checklist
+          Then open a PR targeting \`dev\` with the label \`upstream-sync\`.
 
-          - [ ] All conflict markers (\`<<<<<<<\`, \`=======\`, \`>>>>>>>\`) are removed
-          - [ ] Verify GitLaw branding/theme is intact
-          - [ ] Verify certificate styling is unchanged
-          - [ ] Check for any new upstream features that need GitLaw adaptation
-          - [ ] Confirm the build passes"
+          ### Why This Happened
+
+          The \`-X ours\` merge strategy resolves text-level conflicts automatically by keeping our version. However, structural conflicts (a file deleted on one side but modified on the other, rename conflicts, binary file changes) require a human decision. This is expected and safe — no data was lost."
