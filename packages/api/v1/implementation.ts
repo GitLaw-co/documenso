@@ -12,6 +12,7 @@ import { createDocumentData } from '@documenso/lib/server-only/document-data/cre
 import { updateDocumentMeta } from '@documenso/lib/server-only/document-meta/upsert-document-meta';
 import { deleteDocument } from '@documenso/lib/server-only/document/delete-document';
 import { findDocuments } from '@documenso/lib/server-only/document/find-documents';
+import { rejectDocumentWithToken } from '@documenso/lib/server-only/document/reject-document-with-token';
 import { resendDocument } from '@documenso/lib/server-only/document/resend-document';
 import { sendDocument } from '@documenso/lib/server-only/document/send-document';
 import { createEnvelope } from '@documenso/lib/server-only/envelope/create-envelope';
@@ -1134,6 +1135,52 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
         status: 500,
         body: {
           message: 'An error has occured while resending the document',
+        },
+      };
+    }
+  }),
+
+  rejectDocument: authenticatedMiddleware(async (args, _user, _team, { logger, metadata }) => {
+    const { id: documentId } = args.params;
+    const { token, reason } = args.body;
+
+    logger.info({
+      input: {
+        id: documentId,
+      },
+    });
+
+    try {
+      await rejectDocumentWithToken({
+        token,
+        id: {
+          type: 'documentId',
+          id: Number(documentId),
+        },
+        reason,
+        requestMetadata: metadata.requestMetadata,
+      });
+
+      return {
+        status: 200,
+        body: {
+          message: 'Document rejected successfully',
+        },
+      };
+    } catch (err) {
+      if (err instanceof AppError && err.code === 'NOT_FOUND') {
+        return {
+          status: 404,
+          body: {
+            message: 'Document or recipient not found',
+          },
+        };
+      }
+
+      return {
+        status: 500,
+        body: {
+          message: 'An error has occurred while rejecting the document',
         },
       };
     }
