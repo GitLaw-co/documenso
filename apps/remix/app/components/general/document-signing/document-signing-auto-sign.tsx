@@ -163,7 +163,9 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Automatically sign fields</DialogTitle>
+          <DialogTitle>
+            <Trans>Automatically sign fields</Trans>
+          </DialogTitle>
         </DialogHeader>
 
         <div className="max-w-[50ch] text-muted-foreground">

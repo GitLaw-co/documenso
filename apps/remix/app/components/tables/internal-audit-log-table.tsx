@@ -70,7 +70,7 @@ export const InternalAuditLogTable = ({ logs }: AuditLogDataTableProps) => {
   return (
     <div className="divide-y divide-gray-100">
       {logs.map((log, index) => {
-        const formattedAction = formatDocumentAuditLogAction(_, log);
+        const formattedAction = formatDocumentAuditLogAction(i18n, log);
         const { icon: Icon, label } = getAuditLogIcon(log.type);
         const dateTime = DateTime.fromJSDate(log.createdAt).setLocale(
           APP_I18N_OPTIONS.defaultLocale,
