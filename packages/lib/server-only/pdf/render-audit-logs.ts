@@ -720,12 +720,25 @@ export async function renderAuditLogs({
     if (index === pageGroups.length - 1 && !hidePoweredBy) {
       const separatorHeight = 1;
       const separatorPaddingBelow = 16;
+      const pageGroupRect = pageGroup.getClientRect();
       const totalBrandingHeight = brandingRect.height + separatorHeight + separatorPaddingBelow;
-      const remainingHeight = pageHeight - pageGroup.getClientRect().height - pageBottomMargin;
+      const remainingHeight = pageHeight - pageGroupRect.height - pageBottomMargin;
+
+      console.log(
+        '[AUDIT_DEBUG] pageHeight=%d, pageGroupRect=%j, brandingRect=%j, totalBrandingHeight=%d, remainingHeight=%d, fits=%s',
+        pageHeight,
+        pageGroupRect,
+        brandingRect,
+        totalBrandingHeight,
+        remainingHeight,
+        totalBrandingHeight <= remainingHeight,
+      );
 
       if (totalBrandingHeight <= remainingHeight) {
         const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
         const separatorY = brandingY - separatorPaddingBelow;
+
+        console.log('[AUDIT_DEBUG] brandingY=%d, separatorY=%d', brandingY, separatorY);
 
         const footerSeparator = new Konva.Line({
           points: [margin, separatorY, pageWidth - margin, separatorY],
@@ -747,11 +760,18 @@ export async function renderAuditLogs({
     stage.add(page);
 
     const canvas = page.canvas._canvas as unknown as Canvas; // eslint-disable-line @typescript-eslint/consistent-type-assertions
+    console.log(
+      '[AUDIT_DEBUG] canvas dimensions: width=%d, height=%d',
+      canvas.width,
+      canvas.height,
+    );
     const buffer = await canvas.toBuffer('pdf');
+    console.log('[AUDIT_DEBUG] page %d buffer size: %d bytes', index, buffer.length);
     pages.push(new Uint8Array(buffer));
   }
 
   if (!hidePoweredBy && !isBrandingPlaced) {
+    console.log('[AUDIT_DEBUG] branding did NOT fit on last page, creating fallback page');
     stage.destroyChildren();
     const page = new Konva.Layer();
 

@@ -792,12 +792,25 @@ export async function renderCertificate({
     if (index === tables.length - 1 && !hidePoweredBy) {
       const separatorHeight = 1;
       const separatorPaddingBelow = 16;
+      const groupRect = group.getClientRect();
       const totalBrandingHeight = brandingRect.height + separatorHeight + separatorPaddingBelow;
-      const remainingHeight = pageHeight - group.getClientRect().height - pageBottomMargin;
+      const remainingHeight = pageHeight - groupRect.height - pageBottomMargin;
+
+      console.log(
+        '[CERT_DEBUG] pageHeight=%d, groupRect=%j, brandingRect=%j, totalBrandingHeight=%d, remainingHeight=%d, fits=%s',
+        pageHeight,
+        groupRect,
+        brandingRect,
+        totalBrandingHeight,
+        remainingHeight,
+        totalBrandingHeight <= remainingHeight,
+      );
 
       if (totalBrandingHeight <= remainingHeight) {
         const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
         const separatorY = brandingY - separatorPaddingBelow;
+
+        console.log('[CERT_DEBUG] brandingY=%d, separatorY=%d', brandingY, separatorY);
 
         const footerSeparator = new Konva.Line({
           points: [margin, separatorY, pageWidth - margin, separatorY],
@@ -821,7 +834,9 @@ export async function renderCertificate({
 
     // Export the page and save it.
     const canvas = page.canvas._canvas as unknown as Canvas; // eslint-disable-line @typescript-eslint/consistent-type-assertions
+    console.log('[CERT_DEBUG] canvas dimensions: width=%d, height=%d', canvas.width, canvas.height);
     const buffer = await canvas.toBuffer('pdf');
+    console.log('[CERT_DEBUG] page %d buffer size: %d bytes', index, buffer.length);
     pages.push(new Uint8Array(buffer));
   }
 
