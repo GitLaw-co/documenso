@@ -113,6 +113,21 @@ export const ZSuccessfulResendDocumentResponseSchema = z.object({
 
 export type TResendDocumentResponseSchema = z.infer<typeof ZSuccessfulResendDocumentResponseSchema>;
 
+export const ZRejectDocumentMutationSchema = z.object({
+  token: z.string().min(1),
+  reason: z.string().min(1).max(500),
+});
+
+export type TRejectDocumentMutationSchema = z.infer<typeof ZRejectDocumentMutationSchema>;
+
+export const ZSuccessfulRejectDocumentResponseSchema = z.object({
+  message: z.string(),
+});
+
+export type TSuccessfulRejectDocumentResponseSchema = z.infer<
+  typeof ZSuccessfulRejectDocumentResponseSchema
+>;
+
 export const ZUploadDocumentSuccessfulSchema = z.object({
   url: z.string(),
   key: z.string(),

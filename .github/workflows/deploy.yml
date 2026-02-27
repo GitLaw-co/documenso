@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  DEPLOY_APPS: documenso
 
 jobs:
   deploy:
@@ -15,27 +16,57 @@ jobs:
     if: startsWith(github.event.comment.body, '/deploy')
 
     permissions:
-      contents: write
-      packages: write
-      pull-requests: read
+      contents: read
+      pull-requests: write
 
     steps:
+      - name: Add eyes reaction to deployment comment
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            -d '{"content":"eyes"}'
+
       - name: Get env name
         shell: bash
         run: |
           comment='${{ github.event.comment.body }}'
-          comment=($comment)
-          env_name=""
-          for i in "${comment[@]}"; do
-             if [[ "${i}" == --* ]]; then
-                echo "command_arg=${i#--}" >> $GITHUB_ENV
-              elif [[ "${i}" == /* ]]; then
-                echo "command: ${i}"
-              else
-                env_name=${i}
-              fi
-          done
+          env_name=$(echo "$comment" | awk '{print $2}')
           echo "requested_env_name=${env_name}" >> $GITHUB_ENV
+          echo "Environment: ${env_name}"
+
+      - name: Validate environment name
+        shell: bash
+        run: |
+          env_name="${{ env.requested_env_name }}"
+          if [[ "${env_name}" != "stg" && "${env_name}" != stg-* ]]; then
+            echo "❌ Invalid environment: '${env_name}'. Only 'stg' and any of 'stg-*' are supported."
+
+            echo '{
+              "body": "❌ **Deployment Failed**\n\nInvalid environment: `'"${env_name}"'`\n\nSupported environments: `stg`, `stg-*`\n\nUsage: `/deploy <environment>`"
+            }' > error_payload.json
+
+            curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+              --data @error_payload.json
+
+            curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+              -d '{"content":"confused"}'
+
+            exit 1
+          fi
 
       - name: Get head ref from PR
         shell: bash
@@ -56,10 +87,38 @@ jobs:
         shell: bash
         run: |
           git fetch --tags
-          version=$(git describe --tags --abbrev=0 2>/dev/null || echo "$(date +'%Y.%m.%d')-manual-${{ github.run_number }}")
-          echo "version=$version" >> $GITHUB_ENV
+          if version=$(git describe --tags --no-abbrev 2>/dev/null); then
+            echo "version=${version}" >> $GITHUB_ENV
+            echo "VERSION_AVAILABLE=true" >> $GITHUB_ENV
+          else
+            echo "❌ No version tag found for this commit. Image may not be built yet."
+            echo "VERSION_AVAILABLE=false" >> $GITHUB_ENV
+
+            echo '{
+              "body": "❌ **Deployment Failed**\n\nNo version tag found for this commit. The Docker image may not be built yet.\n\nPlease wait for the build to complete and try again."
+            }' > no_version_payload.json
+
+            curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+              --data @no_version_payload.json
+
+            curl -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+              -d '{"content":"confused"}'
+
+            exit 1
+          fi
 
       - name: Trigger deploy in k8s repo
+        if: env.VERSION_AVAILABLE == 'true'
         env:
           GH_TOKEN: ${{ secrets.DEPLOY_TRIGERRER_TOKEN }}
         run: |
@@ -69,3 +128,29 @@ jobs:
             -f app=documenso \
             -f app_version="${version}" \
             -f env=${requested_env_name}
+
+      - name: Post deployment success
+        if: env.VERSION_AVAILABLE == 'true'
+        run: |
+          env_name="${{ env.requested_env_name }}"
+          version="${{ env.version }}"
+
+          echo '{
+            "body": "✅ **Deployment triggered successfully!**\n\n**Environment:** `'"${env_name}"'`\n**Version:** `'"${version}"'`\n**Services:** '"${DEPLOY_APPS}"'"
+          }' > success_payload.json
+
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            --data @success_payload.json
+
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            -d '{"content":"rocket"}'
