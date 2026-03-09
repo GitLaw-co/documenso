@@ -649,6 +649,7 @@ type GroupRowsIntoPagesOptions = {
   maxHeight: number;
   i18n: I18n;
   columnWidths: ColumnWidths;
+  brandingReserve: number;
   envelopeOwner: {
     name: string;
     email: string;
@@ -656,17 +657,16 @@ type GroupRowsIntoPagesOptions = {
 };
 
 const groupRowsIntoPages = (options: GroupRowsIntoPagesOptions) => {
-  const { recipients, maxHeight, i18n, columnWidths, envelopeOwner } = options;
+  const { recipients, maxHeight, i18n, columnWidths, envelopeOwner, brandingReserve } = options;
 
   const rowHeader = renderRowHeader({ columnWidths, i18n });
   const rowHeaderHeight = rowHeader.getClientRect().height;
 
   const groupedRows: Konva.Group[][] = [[]];
 
-  let availablePageHeight = maxHeight - rowHeaderHeight;
+  let availablePageHeight = maxHeight - rowHeaderHeight - brandingReserve;
   let currentGroupedRowIndex = 0;
 
-  // Group rows into pages.
   for (const recipient of recipients) {
     const row = renderRow({ recipient, columnWidths, i18n, envelopeOwner });
 
@@ -675,13 +675,11 @@ const groupRowsIntoPages = (options: GroupRowsIntoPagesOptions) => {
     if (rowHeight > availablePageHeight) {
       currentGroupedRowIndex++;
       groupedRows[currentGroupedRowIndex] = [row];
-      availablePageHeight = maxHeight - rowHeaderHeight;
+      availablePageHeight = maxHeight - rowHeaderHeight - brandingReserve - rowHeight;
     } else {
       groupedRows[currentGroupedRowIndex].push(row);
+      availablePageHeight -= rowHeight;
     }
-
-    // Reduce available height by the row height.
-    availablePageHeight -= rowHeight;
   }
 
   return groupedRows;
@@ -751,6 +749,16 @@ export async function renderCertificate({
   // Helper to render a Konva stage to a PNG buffer
   let stage: Konva.Stage | null = new Konva.Stage({ width: pageWidth, height: pageHeight });
 
+  const brandingGroup = renderBranding({ i18n });
+  const brandingRect = brandingGroup.getClientRect();
+  const brandingTopPadding = 24;
+
+  const separatorHeight = 1;
+  const separatorPaddingBelow = 16;
+  const brandingReserve = hidePoweredBy
+    ? 0
+    : brandingTopPadding + separatorHeight + separatorPaddingBelow + brandingRect.height;
+
   const maxTableHeight = pageHeight - pageTopMargin - pageBottomMargin;
 
   const groupedRows = groupRowsIntoPages({
@@ -759,19 +767,15 @@ export async function renderCertificate({
     columnWidths,
     i18n,
     envelopeOwner,
+    brandingReserve,
   });
 
   const tables = renderTables({ groupedRows, columnWidths, i18n });
-
-  const brandingGroup = renderBranding({ i18n });
-  const brandingRect = brandingGroup.getClientRect();
-  const brandingTopPadding = 24;
 
   const pages: Uint8Array[] = [];
 
   let isBrandingPlaced = false;
 
-  // Add a table to each page.
   for (const [index, table] of tables.entries()) {
     stage.destroyChildren();
     const page = new Konva.Layer();
@@ -788,32 +792,16 @@ export async function renderCertificate({
     group.add(pageHeader);
     group.add(table);
 
-    // Add branding on the last page anchored to the page bottom.
     if (index === tables.length - 1 && !hidePoweredBy) {
-      const separatorHeight = 1;
-      const separatorPaddingBelow = 16;
-      const groupRect = group.getClientRect();
       const totalBrandingHeight = brandingRect.height + separatorHeight + separatorPaddingBelow;
-      const remainingHeight = pageHeight - groupRect.height - pageBottomMargin;
-
-      console.log(
-        '[CERT_DEBUG] pageHeight=%d, groupRect=%j, brandingRect=%j, totalBrandingHeight=%d, remainingHeight=%d, fits=%s',
-        pageHeight,
-        groupRect,
-        brandingRect,
-        totalBrandingHeight,
-        remainingHeight,
-        totalBrandingHeight <= remainingHeight,
-      );
+      const remainingHeight = pageHeight - group.getClientRect().height - pageBottomMargin;
 
       if (totalBrandingHeight <= remainingHeight) {
         const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
-        const separatorY = brandingY - separatorPaddingBelow;
-
-        console.log('[CERT_DEBUG] brandingY=%d, separatorY=%d', brandingY, separatorY);
+        const footerSeparatorY = brandingY - separatorPaddingBelow;
 
         const footerSeparator = new Konva.Line({
-          points: [margin, separatorY, pageWidth - margin, separatorY],
+          points: [margin, footerSeparatorY, pageWidth - margin, footerSeparatorY],
           stroke: '#e5e7eb',
           strokeWidth: separatorHeight,
         });
@@ -832,21 +820,28 @@ export async function renderCertificate({
     page.add(group);
     stage.add(page);
 
-    // Export the page and save it.
     const canvas = page.canvas._canvas as unknown as Canvas; // eslint-disable-line @typescript-eslint/consistent-type-assertions
-    console.log('[CERT_DEBUG] canvas dimensions: width=%d, height=%d', canvas.width, canvas.height);
     const buffer = await canvas.toBuffer('pdf');
-    console.log('[CERT_DEBUG] page %d buffer size: %d bytes', index, buffer.length);
     pages.push(new Uint8Array(buffer));
   }
 
-  // Need to create an empty page for the branding if it hasn't been placed yet.
   if (!hidePoweredBy && !isBrandingPlaced) {
+    stage.destroyChildren();
     const page = new Konva.Layer();
+
+    const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
+    const footerSeparatorY = brandingY - separatorPaddingBelow;
+
+    const footerSeparator = new Konva.Line({
+      points: [margin, footerSeparatorY, pageWidth - margin, footerSeparatorY],
+      stroke: '#e5e7eb',
+      strokeWidth: separatorHeight,
+    });
+    page.add(footerSeparator);
 
     brandingGroup.setAttrs({
       x: pageWidth - brandingRect.width - margin,
-      y: pageTopMargin / 2,
+      y: brandingY,
     } satisfies Partial<Konva.GroupConfig>);
 
     page.add(brandingGroup);

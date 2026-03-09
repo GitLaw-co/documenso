@@ -557,34 +557,38 @@ type GroupRowsIntoPagesOptions = {
   contentWidth: number;
   i18n: I18n;
   overviewCard: Konva.Group;
+  brandingReserve: number;
 };
 
 const groupRowsIntoPages = (options: GroupRowsIntoPagesOptions) => {
-  const { auditLogs, maxHeight, contentWidth, i18n, overviewCard } = options;
+  const { auditLogs, maxHeight, contentWidth, i18n, overviewCard, brandingReserve } = options;
 
   const groupedRows: Konva.Group[][] = [[]];
 
   const overviewCardHeight = overviewCard.getClientRect().height;
   const sectionTitleHeight = 30;
+  const dividerHeight = 1;
 
-  // First page has header + overview card + "Document History" title
-  let availableHeight = maxHeight - pageTopMargin - overviewCardHeight - sectionTitleHeight - 20;
+  const pageUsableHeight = maxHeight - pageTopMargin - pageBottomMargin - brandingReserve;
+
+  let availableHeight = pageUsableHeight - overviewCardHeight - sectionTitleHeight - 20;
   let currentGroupedRowIndex = 0;
 
   for (const auditLog of auditLogs) {
     const row = renderRow({ auditLog, width: contentWidth, i18n });
 
     const rowHeight = row.getClientRect().height;
+    const isFirstOnPage = groupedRows[currentGroupedRowIndex].length === 0;
+    const neededHeight = isFirstOnPage ? rowHeight : rowHeight + dividerHeight;
 
-    if (rowHeight > availableHeight) {
+    if (neededHeight > availableHeight) {
       currentGroupedRowIndex++;
       groupedRows[currentGroupedRowIndex] = [row];
-      availableHeight = maxHeight - pageTopMargin;
+      availableHeight = pageUsableHeight - rowHeight;
     } else {
       groupedRows[currentGroupedRowIndex].push(row);
+      availableHeight -= neededHeight;
     }
-
-    availableHeight -= rowHeight;
   }
 
   return groupedRows;
@@ -687,12 +691,23 @@ export async function renderAuditLogs({
     i18n,
   });
 
+  const brandingGroup = renderBranding({ i18n });
+  const brandingRect = brandingGroup.getClientRect();
+  const brandingTopPadding = 24;
+
+  const separatorHeight = 1;
+  const separatorPaddingBelow = 16;
+  const brandingReserve = hidePoweredBy
+    ? 0
+    : brandingTopPadding + separatorHeight + separatorPaddingBelow + brandingRect.height;
+
   const groupedRows = groupRowsIntoPages({
     auditLogs,
     maxHeight: pageHeight,
     contentWidth,
     i18n,
     overviewCard,
+    brandingReserve,
   });
 
   const pageGroups = renderPages({
@@ -702,10 +717,6 @@ export async function renderAuditLogs({
     i18n,
     overviewCard,
   });
-
-  const brandingGroup = renderBranding({ i18n });
-  const brandingRect = brandingGroup.getClientRect();
-  const brandingTopPadding = 24;
 
   const pages: Uint8Array[] = [];
 
@@ -718,30 +729,15 @@ export async function renderAuditLogs({
     page.add(pageGroup);
 
     if (index === pageGroups.length - 1 && !hidePoweredBy) {
-      const separatorHeight = 1;
-      const separatorPaddingBelow = 16;
-      const pageGroupRect = pageGroup.getClientRect();
       const totalBrandingHeight = brandingRect.height + separatorHeight + separatorPaddingBelow;
-      const remainingHeight = pageHeight - pageGroupRect.height - pageBottomMargin;
-
-      console.log(
-        '[AUDIT_DEBUG] pageHeight=%d, pageGroupRect=%j, brandingRect=%j, totalBrandingHeight=%d, remainingHeight=%d, fits=%s',
-        pageHeight,
-        pageGroupRect,
-        brandingRect,
-        totalBrandingHeight,
-        remainingHeight,
-        totalBrandingHeight <= remainingHeight,
-      );
+      const remainingHeight = pageHeight - pageGroup.getClientRect().height - pageBottomMargin;
 
       if (totalBrandingHeight <= remainingHeight) {
         const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
-        const separatorY = brandingY - separatorPaddingBelow;
-
-        console.log('[AUDIT_DEBUG] brandingY=%d, separatorY=%d', brandingY, separatorY);
+        const footerSeparatorY = brandingY - separatorPaddingBelow;
 
         const footerSeparator = new Konva.Line({
-          points: [margin, separatorY, pageWidth - margin, separatorY],
+          points: [margin, footerSeparatorY, pageWidth - margin, footerSeparatorY],
           stroke: '#e5e7eb',
           strokeWidth: separatorHeight,
         });
@@ -760,24 +756,27 @@ export async function renderAuditLogs({
     stage.add(page);
 
     const canvas = page.canvas._canvas as unknown as Canvas; // eslint-disable-line @typescript-eslint/consistent-type-assertions
-    console.log(
-      '[AUDIT_DEBUG] canvas dimensions: width=%d, height=%d',
-      canvas.width,
-      canvas.height,
-    );
     const buffer = await canvas.toBuffer('pdf');
-    console.log('[AUDIT_DEBUG] page %d buffer size: %d bytes', index, buffer.length);
     pages.push(new Uint8Array(buffer));
   }
 
   if (!hidePoweredBy && !isBrandingPlaced) {
-    console.log('[AUDIT_DEBUG] branding did NOT fit on last page, creating fallback page');
     stage.destroyChildren();
     const page = new Konva.Layer();
 
+    const brandingY = pageHeight - pageBottomMargin - brandingRect.height;
+    const footerSeparatorY = brandingY - separatorPaddingBelow;
+
+    const footerSeparator = new Konva.Line({
+      points: [margin, footerSeparatorY, pageWidth - margin, footerSeparatorY],
+      stroke: '#e5e7eb',
+      strokeWidth: separatorHeight,
+    });
+    page.add(footerSeparator);
+
     brandingGroup.setAttrs({
       x: pageWidth - brandingRect.width - margin,
-      y: pageTopMargin,
+      y: brandingY,
     } satisfies Partial<Konva.GroupConfig>);
 
     page.add(brandingGroup);
