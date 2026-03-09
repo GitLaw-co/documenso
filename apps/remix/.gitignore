@@ -7,3 +7,6 @@
 
 # Vite
 vite.config.*.timestamp*
+
+# Local PDF test output
+test-output/

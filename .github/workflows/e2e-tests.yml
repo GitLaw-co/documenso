@@ -11,11 +11,9 @@ concurrency:
 
 jobs:
   e2e_tests:
-    name: 'E2E Tests (Disabled)'
-    # Temporarily disabled - tests are flaky and blocking CI
-    if: false
+    name: 'E2E Tests'
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: warp-ubuntu-2204-x64-8x
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +41,7 @@ jobs:
         env:
           # Needed since we use next start which will set the NODE_ENV to production
           NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH: './example/cert.p12'
+          DANGEROUS_BYPASS_RATE_LIMITS: 'true'
 
       - uses: actions/upload-artifact@v4
         if: always()

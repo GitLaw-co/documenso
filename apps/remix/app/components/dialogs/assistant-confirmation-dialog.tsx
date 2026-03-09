@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { RecipientRole } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -79,7 +78,6 @@ export function AssistantConfirmationDialog({
       name: defaultNextSigner?.name ?? '',
       email: defaultNextSigner?.email ?? '',
     });
-    setConsentChecked(false);
 
     onClose();
   };
@@ -118,10 +116,12 @@ export function AssistantConfirmationDialog({
                   <div className="mt-4 flex flex-col gap-4">
                     {!isEditingNextSigner && (
                       <div>
-                        <p className="text-sm text-muted-foreground">
-                          The next recipient to sign this document will be{' '}
-                          <span className="font-semibold">{form.watch('name')}</span> (
-                          <span className="font-semibold">{form.watch('email')}</span>).
+                        <p className="text-muted-foreground text-sm">
+                          <Trans>
+                            The next recipient to sign this document will be{' '}
+                            <span className="font-semibold">{form.watch('name')}</span> (
+                            <span className="font-semibold">{form.watch('email')}</span>).
+                          </Trans>
                         </p>
 
                         <Button
@@ -188,7 +188,6 @@ export function AssistantConfirmationDialog({
                   className="mt-4"
                   checked={consentChecked}
                   onCheckedChange={setConsentChecked}
-                  role={RecipientRole.ASSISTANT}
                 />
               </div>
 
