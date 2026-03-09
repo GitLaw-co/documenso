@@ -18,6 +18,7 @@ import { Button } from '@documenso/ui/primitives/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -140,7 +141,6 @@ export const DocumentSigningCompleteDialog = ({
         name: defaultNextSigner?.name ?? '',
         email: defaultNextSigner?.email ?? '',
       });
-      setConsentChecked(false);
     }
 
     setShowDialog(open);
@@ -222,18 +222,35 @@ export const DocumentSigningCompleteDialog = ({
       <DialogContent position={position}>
         <DialogHeader>
           <DialogTitle>
-            {match(recipient.role)
-              .with(RecipientRole.VIEWER, () => <Trans>You are about to complete viewing:</Trans>)
-              .with(RecipientRole.SIGNER, () => (
-                <Trans>You are about to electronically sign:</Trans>
-              ))
-              .with(RecipientRole.APPROVER, () => <Trans>You are about to approve:</Trans>)
-              .with(RecipientRole.ASSISTANT, () => (
-                <Trans>You are about to complete assisting:</Trans>
-              ))
-              .with(RecipientRole.CC, () => <Trans>Confirm action</Trans>)
-              .exhaustive()}
+            <Trans>Are you sure?</Trans>
           </DialogTitle>
+          <DialogDescription>
+            <div className="max-w-[50ch] text-muted-foreground">
+              {match(recipient.role)
+                .with(RecipientRole.VIEWER, () => (
+                  <span className="inline-flex flex-wrap">
+                    <Trans>You are about to complete viewing the following document</Trans>
+                  </span>
+                ))
+                .with(RecipientRole.SIGNER, () => (
+                  <span className="inline-flex flex-wrap">
+                    <Trans>You are about to complete signing the following document</Trans>
+                  </span>
+                ))
+                .with(RecipientRole.APPROVER, () => (
+                  <span className="inline-flex flex-wrap">
+                    <Trans>You are about to complete approving the following document</Trans>
+                  </span>
+                ))
+                .with(RecipientRole.ASSISTANT, () => (
+                  <span className="inline-flex flex-wrap">
+                    <Trans>You are about to complete assisting the following document</Trans>
+                  </span>
+                ))
+                .with(RecipientRole.CC, () => null)
+                .exhaustive()}
+            </div>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="rounded-lg border border-border bg-muted/50 p-4 text-center">

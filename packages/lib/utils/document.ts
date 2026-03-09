@@ -66,6 +66,10 @@ export const extractDerivedDocumentMeta = (
     // External owner info for audit trail display (e.g., GitLaw user instead of API account)
     externalOwnerName: meta.externalOwnerName || null,
     externalOwnerEmail: meta.externalOwnerEmail || null,
+
+    // Envelope expiration.
+    envelopeExpirationPeriod:
+      meta.envelopeExpirationPeriod ?? settings.envelopeExpirationPeriod ?? null,
   } satisfies Omit<DocumentMeta, 'id'>;
 };
 

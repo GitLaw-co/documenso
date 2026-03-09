@@ -96,14 +96,14 @@ jobs:
         if: steps.check_existing.outputs.skip != 'true' && steps.check_commits.outputs.has_new_commits == 'true'
         id: merge
         run: |
-          if git merge "upstream/$upstream_branch" -X ours --no-edit; then
+          if git merge "upstream/$upstream_branch" --no-edit; then
             echo "merge_clean=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::Merge completed successfully (conflicts auto-resolved with -X ours)"
+            echo "::notice::Merge completed cleanly"
           else
             echo "merge_clean=false" >> "$GITHUB_OUTPUT"
 
             conflicting_files=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
-            echo "::error::Merge failed with structural conflicts that require manual resolution"
+            echo "::error::Merge has conflicts that require manual resolution"
             echo "::warning::Conflicting files:"
             echo "${conflicting_files:-<unable to detect specific files>}"
 
@@ -148,10 +148,6 @@ jobs:
 
           **Upstream range:** \`${BASE_SHA}...${UPSTREAM_SHA_FULL}\`
           **Compare:** https://github.com/documenso/documenso/compare/${BASE_SHA}...${UPSTREAM_SHA_FULL}
-
-          ### Conflict Resolution
-
-          Text-level conflicts were auto-resolved using \`-X ours\`, which preserves our fork's version of conflicting lines while accepting all non-conflicting upstream changes. Review the diff carefully to ensure no important upstream changes were inadvertently overridden.
 
           ### Review Checklist
 
@@ -200,11 +196,11 @@ jobs:
 
           git remote add upstream https://github.com/documenso/documenso.git 2>/dev/null || true
           git fetch upstream ${UPSTREAM_BRANCH}
-          git merge upstream/${UPSTREAM_BRANCH} -X ours
+          git merge upstream/${UPSTREAM_BRANCH}
 
-          # Resolve the remaining structural conflicts manually
-          # For each file listed above, decide whether to keep ours, theirs, or combine
+          # Resolve conflicts manually:
           git status  # shows unmerged files
+          # For each conflicting file, decide whether to keep ours, theirs, or combine
           # ... resolve each file ...
           git add -A
           git commit
@@ -215,4 +211,4 @@ jobs:
 
           ### Why This Happened
 
-          The \`-X ours\` merge strategy resolves text-level conflicts automatically by keeping our version. However, structural conflicts (a file deleted on one side but modified on the other, rename conflicts, binary file changes) require a human decision. This is expected and safe — no data was lost."
+          The automated sync does a standard merge without conflict auto-resolution to preserve all upstream changes. When both sides modify the same files (our customizations vs upstream updates), git cannot automatically decide which version to keep. This requires a human decision to ensure nothing is lost."
