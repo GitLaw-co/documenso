@@ -429,10 +429,11 @@ const renderRow = (options: RenderRowOptions) => {
   const { iconKey, label } = getAuditLogIconAndLabel(auditLog.type);
 
   const rowGroup = new Konva.Group();
-  const rowPaddingY = 12;
+  const rowPaddingTop = 12;
+  const rowPaddingBottom = 16;
 
   // Column 1: Icon + Type label (centered)
-  const col1Group = new Konva.Group({ x: 0, y: rowPaddingY });
+  const col1Group = new Konva.Group({ x: 0, y: rowPaddingTop });
   const iconGroup = renderIcon(iconKey, 16);
   iconGroup.setAttrs({ x: (col1Width - 16) / 2, y: 0 });
   col1Group.add(iconGroup);
@@ -453,7 +454,7 @@ const renderRow = (options: RenderRowOptions) => {
   rowGroup.add(col1Group);
 
   // Column 2: Date + Time
-  const col2Group = new Konva.Group({ x: col1Width, y: rowPaddingY });
+  const col2Group = new Konva.Group({ x: col1Width, y: rowPaddingTop });
   const dateTime = DateTime.fromJSDate(auditLog.createdAt).setLocale(
     APP_I18N_OPTIONS.defaultLocale,
   );
@@ -479,7 +480,7 @@ const renderRow = (options: RenderRowOptions) => {
   rowGroup.add(col2Group);
 
   // Column 3: Description + IP
-  const col3Group = new Konva.Group({ x: col1Width + col2Width, y: rowPaddingY });
+  const col3Group = new Konva.Group({ x: col1Width + col2Width, y: rowPaddingTop });
   const descriptionText = new Konva.Text({
     x: 0,
     y: 0,
@@ -508,7 +509,7 @@ const renderRow = (options: RenderRowOptions) => {
   // Bottom padding
   const bottomPad = new Konva.Rect({
     x: 0,
-    y: rowGroup.getClientRect().height + rowPaddingY,
+    y: rowGroup.getClientRect().height + rowPaddingBottom,
     width: 1,
     height: 1,
   });
@@ -551,109 +552,93 @@ const renderBranding = ({ i18n }: { i18n: I18n }) => {
   return branding;
 };
 
-type GroupRowsIntoPagesOptions = {
+/**
+ * Builds audit log pages in a single pass, using actual measured heights
+ * to decide page breaks. This eliminates any discrepancy between height
+ * budgeting and rendering -- the same bounding-box measurement that
+ * positions content also gates page breaks.
+ */
+const buildAuditLogPages = (options: {
   auditLogs: TDocumentAuditLog[];
-  maxHeight: number;
   contentWidth: number;
+  margin: number;
+  pageWidth: number;
+  pageHeight: number;
   i18n: I18n;
   overviewCard: Konva.Group;
   brandingReserve: number;
-};
+}): Konva.Group[] => {
+  const {
+    auditLogs,
+    contentWidth,
+    margin,
+    pageWidth,
+    pageHeight,
+    i18n,
+    overviewCard,
+    brandingReserve,
+  } = options;
 
-const groupRowsIntoPages = (options: GroupRowsIntoPagesOptions) => {
-  const { auditLogs, maxHeight, contentWidth, i18n, overviewCard, brandingReserve } = options;
-
-  const groupedRows: Konva.Group[][] = [[]];
-
-  const overviewCardHeight = overviewCard.getClientRect().height;
-  const sectionTitleHeight = 30;
-  const dividerHeight = 1;
-
-  const pageUsableHeight = maxHeight - pageTopMargin - pageBottomMargin - brandingReserve;
-
-  let availableHeight = pageUsableHeight - overviewCardHeight - sectionTitleHeight - 20;
-  let currentGroupedRowIndex = 0;
-
-  for (const auditLog of auditLogs) {
-    const row = renderRow({ auditLog, width: contentWidth, i18n });
-
-    const rowHeight = row.getClientRect().height;
-    const isFirstOnPage = groupedRows[currentGroupedRowIndex].length === 0;
-    const neededHeight = isFirstOnPage ? rowHeight : rowHeight + dividerHeight;
-
-    if (neededHeight > availableHeight) {
-      currentGroupedRowIndex++;
-      groupedRows[currentGroupedRowIndex] = [row];
-      availableHeight = pageUsableHeight - rowHeight;
-    } else {
-      groupedRows[currentGroupedRowIndex].push(row);
-      availableHeight -= neededHeight;
-    }
-  }
-
-  return groupedRows;
-};
-
-type RenderPagesOptions = {
-  groupedRows: Konva.Group[][];
-  margin: number;
-  pageWidth: number;
-  i18n: I18n;
-  overviewCard: Konva.Group;
-};
-
-const renderPages = (options: RenderPagesOptions) => {
-  const { groupedRows, margin, pageWidth, i18n, overviewCard } = options;
+  const maxContentBottom = pageHeight - pageBottomMargin - brandingReserve;
 
   const pages: Konva.Group[] = [];
+  let page!: Konva.Group;
+  let rowsOnPage = 0;
 
-  for (const [pageIndex, rows] of groupedRows.entries()) {
-    const pageGroup = new Konva.Group();
+  const startPage = (isFirst: boolean) => {
+    page = new Konva.Group();
+    rowsOnPage = 0;
 
-    const pageHeader = renderPageHeader({ i18n, width: pageWidth, margin });
-    pageGroup.add(pageHeader);
+    const header = renderPageHeader({ i18n, width: pageWidth, margin });
+    page.add(header);
 
-    if (pageIndex === 0) {
-      overviewCard.setAttrs({
-        x: margin,
-        y: pageTopMargin + 8,
-      });
-      pageGroup.add(overviewCard);
+    if (isFirst) {
+      overviewCard.setAttrs({ x: margin, y: pageTopMargin + 8 });
+      page.add(overviewCard);
 
       const historyTitle = new Konva.Text({
         x: margin,
-        y: pageGroup.getClientRect().height + 20,
+        y: page.getClientRect().height + 20,
         text: i18n._(msg`Document History`),
         fontFamily: 'Inter',
         fontSize: 12,
         fontStyle: fontMedium,
         fill: '#374151',
       });
-      pageGroup.add(historyTitle);
+      page.add(historyTitle);
+    }
+  };
+
+  startPage(true);
+
+  for (const auditLog of auditLogs) {
+    const row = renderRow({ auditLog, width: contentWidth, i18n });
+    const rowHeight = row.getClientRect().height;
+    const currentBottom = page.getClientRect().height;
+
+    if (currentBottom + rowHeight > maxContentBottom && rowsOnPage > 0) {
+      pages.push(page);
+      startPage(false);
     }
 
-    for (const [rowIndex, row] of rows.entries()) {
-      const currentY = pageGroup.getClientRect().height;
+    const y = page.getClientRect().height;
 
-      if (rowIndex > 0) {
-        const divider = new Konva.Line({
-          points: [margin, currentY, pageWidth - margin, currentY],
+    if (rowsOnPage > 0) {
+      page.add(
+        new Konva.Line({
+          points: [margin, y, pageWidth - margin, y],
           stroke: '#f3f4f6',
           strokeWidth: 1,
-        });
-        pageGroup.add(divider);
-      }
-
-      row.setAttrs({
-        x: margin,
-        y: currentY,
-      });
-      pageGroup.add(row);
+        }),
+      );
     }
 
-    pages.push(pageGroup);
+    row.setAttrs({ x: margin, y });
+    page.add(row);
+    rowsOnPage++;
   }
 
+  pages.push(page);
   return pages;
 };
 
@@ -701,21 +686,15 @@ export async function renderAuditLogs({
     ? 0
     : brandingTopPadding + separatorHeight + separatorPaddingBelow + brandingRect.height;
 
-  const groupedRows = groupRowsIntoPages({
+  const pageGroups = buildAuditLogPages({
     auditLogs,
-    maxHeight: pageHeight,
     contentWidth,
+    margin,
+    pageWidth,
+    pageHeight,
     i18n,
     overviewCard,
     brandingReserve,
-  });
-
-  const pageGroups = renderPages({
-    groupedRows,
-    margin,
-    pageWidth,
-    i18n,
-    overviewCard,
   });
 
   const pages: Uint8Array[] = [];
