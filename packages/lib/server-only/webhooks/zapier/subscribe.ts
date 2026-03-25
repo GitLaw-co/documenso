@@ -14,7 +14,9 @@ export const subscribeHandler = async (req: Request) => {
 
     const { webhookUrl, eventTrigger } = await req.json();
 
-    await assertNotPrivateUrl(webhookUrl);
+    if (process.env.NEXT_PRIVATE_ALLOW_PRIVATE_WEBHOOK_URLS !== 'true') {
+      await assertNotPrivateUrl(webhookUrl);
+    }
 
     const result = await validateApiToken({ authorization });
 

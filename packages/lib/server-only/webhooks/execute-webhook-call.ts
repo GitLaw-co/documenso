@@ -28,7 +28,9 @@ export const executeWebhookCall = async (options: {
   const { url, body, secret } = options;
 
   try {
-    await assertNotPrivateUrl(url);
+    if (process.env.NEXT_PRIVATE_ALLOW_PRIVATE_WEBHOOK_URLS !== 'true') {
+      await assertNotPrivateUrl(url);
+    }
 
     const response = await fetchWithTimeout(url, {
       method: 'POST',
