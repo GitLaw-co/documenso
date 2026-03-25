@@ -1,3 +1,4 @@
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import {
   Links,
   Meta,
@@ -148,24 +149,26 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         )} */}
 
-        <SessionProvider initialSession={session}>
-          <TooltipProvider>
-            <TrpcProvider>
-              {children}
+        <NuqsAdapter>
+          <SessionProvider initialSession={session}>
+            <TooltipProvider>
+              <TrpcProvider>
+                {children}
 
-              <Toaster />
-            </TrpcProvider>
-          </TooltipProvider>
-        </SessionProvider>
-
-        <ScrollRestoration />
-        <Scripts />
+                <Toaster />
+              </TrpcProvider>
+            </TooltipProvider>
+          </SessionProvider>
+        </NuqsAdapter>
 
         <script
           dangerouslySetInnerHTML={{
             __html: `window.__ENV__ = ${JSON.stringify(publicEnv)}`,
           }}
         />
+
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );

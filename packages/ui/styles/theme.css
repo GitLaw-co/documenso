@@ -162,6 +162,8 @@
     /* Surface */
     --new-surface-black: 0, 0%, 0%;
     --new-surface-white: 0, 0%, 91%;
+
+    --envelope-editor-background: 210 40% 98.04%;
   }
 }
 
@@ -210,6 +212,16 @@
   border-radius: 10px;
   scrollbar-gutter: stable;
 }
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 
 /* Custom Swagger Dark Theme */
 .swagger-dark-theme .swagger-ui {

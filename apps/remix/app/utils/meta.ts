@@ -1,12 +1,14 @@
+import { type MessageDescriptor, i18n } from '@lingui/core';
+
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 
-export const appMetaTags = (title?: string) => {
+export const appMetaTags = (title?: MessageDescriptor) => {
   const description =
     'GitLaw is an innovative platform offering free access to an extensive repository of legal contract templates. Powered by AI, our smart editor simplifies and clarifies legal documents, while our secure private repository allows you to store and manage your contracts effortlessly. Discover the future of legal documentation with GitLaw.';
 
   return [
     {
-      title: title ? `${title} - GitLaw` : 'GitLaw',
+      title: title ? `${i18n._(title)} - GitLaw` : 'GitLaw',
     },
     {
       name: 'description',

@@ -156,9 +156,12 @@ const handleV1Loader = async ({ params, request }: Route.LoaderArgs) => {
     );
   }
 
-  const [recipientSignature] = await getRecipientSignatures({ recipientId: recipient.id });
+  const [recipientSignatures, settings] = await Promise.all([
+    getRecipientSignatures({ recipientId: recipient.id }),
+    getTeamSettings({ teamId: document.teamId }),
+  ]);
 
-  const settings = await getTeamSettings({ teamId: document.teamId });
+  const [recipientSignature] = recipientSignatures;
 
   return {
     isDocumentAccessValid: true,
@@ -474,7 +477,12 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
         recipient={recipient}
         user={user}
       >
-        <EnvelopeRenderProvider envelope={envelope} token={recipient.token}>
+        <EnvelopeRenderProvider
+          version="current"
+          envelope={envelope}
+          envelopeItems={envelope.envelopeItems}
+          token={recipient.token}
+        >
           <DocumentSigningPageViewV2 />
         </EnvelopeRenderProvider>
       </DocumentSigningAuthProvider>
