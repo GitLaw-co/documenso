@@ -14,6 +14,7 @@ import { trpc } from '@documenso/trpc/react';
 import { cn } from '@documenso/ui/lib/utils';
 
 import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
+import { BrandingLogo } from '~/components/general/branding-logo';
 import { DocumentSigningAuthPageView } from '~/components/general/document-signing/document-signing-auth-page';
 
 import type { Route } from './+types/complete';
@@ -156,6 +157,7 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-primary px-6 py-16">
       <div className="w-full max-w-md">
+        <BrandingLogo className="mb-8 text-white" />
         <h1 className="mb-12 text-4xl font-light italic leading-tight text-white md:text-5xl">
           {roleLabel}
         </h1>
