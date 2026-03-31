@@ -1,10 +1,9 @@
 import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, FieldType, RecipientRole } from '@prisma/client';
-import { CheckCircle2, Clock8, DownloadIcon, Loader2 } from 'lucide-react';
 import { match } from 'ts-pattern';
 
-import signingCelebration from '@documenso/assets/images/signing-celebration.png';
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
+import { GITLAW_HOME_URL } from '@documenso/lib/constants/app';
 import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document/get-document-by-token';
 import { isRecipientAuthorized } from '@documenso/lib/server-only/document/is-recipient-authorized';
 import { getFieldsForToken } from '@documenso/lib/server-only/field/get-fields-for-token';
@@ -12,9 +11,7 @@ import { getRecipientByToken } from '@documenso/lib/server-only/recipient/get-re
 import { getRecipientSignatures } from '@documenso/lib/server-only/recipient/get-recipient-signatures';
 import { isDocumentCompleted } from '@documenso/lib/utils/document';
 import { trpc } from '@documenso/trpc/react';
-import { SigningCard3D } from '@documenso/ui/components/signing-card';
-import { Badge } from '@documenso/ui/primitives/badge';
-import { Button } from '@documenso/ui/primitives/button';
+import { cn } from '@documenso/ui/lib/utils';
 
 import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
 import { DocumentSigningAuthPageView } from '~/components/general/document-signing/document-signing-auth-page';
@@ -79,9 +76,29 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   };
 }
 
+type StepProps = {
+  title: React.ReactNode;
+  description: React.ReactNode;
+  isLast?: boolean;
+};
+
+function Step({ title, description, isLast }: StepProps) {
+  return (
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <div className="h-3 w-3 rounded-full bg-white" />
+        {!isLast && <div className="w-0.5 flex-1 bg-white/50" />}
+      </div>
+      <div className={cn('pb-8', isLast && 'pb-0')}>
+        <p className="text-lg font-bold leading-tight text-white md:text-xl">{title}</p>
+        <p className="mt-1 text-sm text-white/70 md:text-base">{description}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function CompletedSigningPage({ loaderData }: Route.ComponentProps) {
-  const { isDocumentAccessValid, recipientName, signatures, document, recipient, recipientEmail } =
-    loaderData;
+  const { isDocumentAccessValid, document, recipient, recipientEmail } = loaderData;
 
   // Poll signing status every few seconds
   const { data: signingStatusData } = trpc.envelope.signingStatus.useQuery(
@@ -98,122 +115,81 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
     },
   );
 
-  // Use signing status from query if available, otherwise fall back to document status
   const signingStatus = signingStatusData?.status ?? 'PENDING';
 
   if (!isDocumentAccessValid) {
     return <DocumentSigningAuthPageView email={recipientEmail} />;
   }
 
+  const roleLabel = match(recipient.role)
+    .with(RecipientRole.SIGNER, () => <Trans>Signed successfully!</Trans>)
+    .with(RecipientRole.VIEWER, () => <Trans>Viewed successfully!</Trans>)
+    .with(RecipientRole.APPROVER, () => <Trans>Approved successfully!</Trans>)
+    .otherwise(() => <Trans>Signed successfully!</Trans>);
+
+  const doneDescription = match({ status: signingStatus, deletedAt: document.deletedAt })
+    .with({ status: 'COMPLETED' }, () => (
+      <span>
+        <Trans>Document is fully signed and distributed</Trans>
+        {isDocumentCompleted(document) && (
+          <>
+            {' '}
+            <EnvelopeDownloadDialog
+              envelopeId={document.envelopeId}
+              envelopeStatus={document.status}
+              envelopeItems={document.envelopeItems}
+              token={recipient?.token}
+              trigger={
+                <button type="button" className="font-medium text-white underline">
+                  <Trans>Download</Trans>
+                </button>
+              }
+            />
+          </>
+        )}
+      </span>
+    ))
+    .with({ status: 'PROCESSING' }, () => <Trans>Document is being processed</Trans>)
+    .with({ deletedAt: null }, () => <Trans>Waiting for others to complete signing</Trans>)
+    .otherwise(() => <Trans>Document is no longer available</Trans>);
+
   return (
-    <div className="-mx-4 flex flex-col items-center overflow-hidden px-4 pt-16 md:-mx-8 md:px-8 lg:pt-20 xl:pt-28">
-      <div className="relative mt-6 flex w-full flex-col items-center justify-center">
-        <div className="flex flex-col items-center">
-          <Badge variant="neutral" size="default" className="mb-6 rounded-xl border bg-transparent">
-            <span className="block max-w-[10rem] truncate font-medium hover:underline md:max-w-[20rem]">
-              {document.title}
-            </span>
-          </Badge>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-primary px-6 py-16">
+      <div className="w-full max-w-md">
+        <h1 className="mb-12 text-4xl font-light italic leading-tight text-white md:text-5xl">
+          {roleLabel}
+        </h1>
 
-          {/* Card with recipient */}
-          <SigningCard3D
-            name={recipientName}
-            signature={signatures.at(0)}
-            signingCelebrationImage={signingCelebration}
+        <div className="mb-12">
+          <Step
+            title={<Trans>Got signature request</Trans>}
+            description={<Trans>Awaiting your signature</Trans>}
           />
-
-          <h2 className="mt-6 max-w-[35ch] text-center text-2xl font-semibold leading-normal md:text-3xl lg:text-4xl">
-            {recipient.role === RecipientRole.SIGNER && <Trans>Document Signed</Trans>}
-            {recipient.role === RecipientRole.VIEWER && <Trans>Document Viewed</Trans>}
-            {recipient.role === RecipientRole.APPROVER && <Trans>Document Approved</Trans>}
-          </h2>
-
-          {match({ status: signingStatus, deletedAt: document.deletedAt })
-            .with({ status: 'COMPLETED' }, () => (
-              <div className="text-primary mt-4 flex items-center text-center">
-                <CheckCircle2 className="mr-2 h-5 w-5" />
-                <span className="text-sm">
-                  <Trans>Everyone has signed</Trans>
-                </span>
-              </div>
-            ))
-            .with({ status: 'PROCESSING' }, () => (
-              <div className="mt-4 flex items-center text-center text-orange-600">
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                <span className="text-sm">
-                  <Trans>Processing document</Trans>
-                </span>
-              </div>
-            ))
-            .with({ deletedAt: null }, () => (
-              <div className="mt-4 flex items-center text-center text-blue-600">
-                <Clock8 className="mr-2 h-5 w-5" />
-                <span className="text-sm">
-                  <Trans>Waiting for others to sign</Trans>
-                </span>
-              </div>
-            ))
-            .otherwise(() => (
-              <div className="flex items-center text-center text-red-600">
-                <Clock8 className="mr-2 h-5 w-5" />
-                <span className="text-sm">
-                  <Trans>Document no longer available to sign</Trans>
-                </span>
-              </div>
-            ))}
-
-          {match({ status: signingStatus, deletedAt: document.deletedAt })
-            .with({ status: 'COMPLETED' }, () => (
-              <p className="text-muted-foreground/60 mt-2.5 max-w-[60ch] text-center text-sm font-medium md:text-base">
-                <Trans>
-                  Everyone has signed! You will receive an email copy of the signed document.
-                </Trans>
-              </p>
-            ))
-            .with({ status: 'PROCESSING' }, () => (
-              <p className="text-muted-foreground/60 mt-2.5 max-w-[60ch] text-center text-sm font-medium md:text-base">
-                <Trans>
-                  All recipients have signed. The document is being processed and you will receive
-                  an email copy shortly.
-                </Trans>
-              </p>
-            ))
-            .with({ deletedAt: null }, () => (
-              <p className="text-muted-foreground/60 mt-2.5 max-w-[60ch] text-center text-sm font-medium md:text-base">
-                <Trans>
-                  You will receive an email copy of the signed document once everyone has signed.
-                </Trans>
-              </p>
-            ))
-            .otherwise(() => (
-              <p className="text-muted-foreground/60 mt-2.5 max-w-[60ch] text-center text-sm font-medium md:text-base">
-                <Trans>
-                  This document has been cancelled by the owner and is no longer available for
-                  others to sign.
-                </Trans>
-              </p>
-            ))}
-
-          {/* GitLaw: Only show download button, hide share and go back home */}
-          <div className="mt-8 flex w-full max-w-xs flex-col items-stretch gap-4 md:w-auto md:max-w-none md:flex-row md:items-center">
-            {isDocumentCompleted(document) && (
-              <EnvelopeDownloadDialog
-                envelopeId={document.envelopeId}
-                envelopeStatus={document.status}
-                envelopeItems={document.envelopeItems}
-                token={recipient?.token}
-                trigger={
-                  <Button type="button" variant="outline" className="flex-1 md:flex-initial">
-                    <DownloadIcon className="mr-2 h-5 w-5" />
-                    <Trans>Download</Trans>
-                  </Button>
-                }
-              />
-            )}
-          </div>
+          <Step
+            title={match(recipient.role)
+              .with(RecipientRole.SIGNER, () => <Trans>Signed</Trans>)
+              .with(RecipientRole.VIEWER, () => <Trans>Viewed</Trans>)
+              .with(RecipientRole.APPROVER, () => <Trans>Approved</Trans>)
+              .otherwise(() => (
+                <Trans>Signed</Trans>
+              ))}
+            description={match(recipient.role)
+              .with(RecipientRole.SIGNER, () => <Trans>Your signature has been added</Trans>)
+              .with(RecipientRole.VIEWER, () => <Trans>Document has been viewed</Trans>)
+              .with(RecipientRole.APPROVER, () => <Trans>Your approval has been recorded</Trans>)
+              .otherwise(() => (
+                <Trans>Your signature has been added</Trans>
+              ))}
+          />
+          <Step title={<Trans>Done</Trans>} description={doneDescription} isLast />
         </div>
 
-        {/* GitLaw: Removed signup section */}
+        <a
+          href={GITLAW_HOME_URL()}
+          className="block w-full rounded-lg bg-white py-3.5 text-center text-base font-medium text-primary"
+        >
+          <Trans>Explore GitLaw</Trans>
+        </a>
       </div>
     </div>
   );
