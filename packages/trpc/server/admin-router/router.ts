@@ -4,6 +4,7 @@ import { createApiTokenForPlatformRoute } from './create-api-token-for-platform'
 import { createStripeCustomerRoute } from './create-stripe-customer';
 import { createSubscriptionClaimRoute } from './create-subscription-claim';
 import { createTeamForPlatformRoute } from './create-team-for-platform';
+import { deleteApiTokenForPlatformRoute } from './delete-api-token-for-platform';
 import { deleteDocumentRoute } from './delete-document';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
 import { deleteTeamForPlatformRoute } from './delete-team-for-platform';
@@ -88,6 +89,7 @@ export const adminRouter = router({
   },
   apiToken: {
     createForPlatform: createApiTokenForPlatformRoute,
+    deleteForPlatform: deleteApiTokenForPlatformRoute,
   },
   team: {
     createForPlatform: createTeamForPlatformRoute,
