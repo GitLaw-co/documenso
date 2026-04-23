@@ -5,6 +5,7 @@ import { createSubscriptionClaimRoute } from './create-subscription-claim';
 import { createTeamForPlatformRoute } from './create-team-for-platform';
 import { deleteDocumentRoute } from './delete-document';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
+import { deleteTeamForPlatformRoute } from './delete-team-for-platform';
 import { deleteUserRoute } from './delete-user';
 import { disableUserRoute } from './disable-user';
 import { downloadDocumentAuditLogsRoute } from './download-document-audit-logs';
@@ -85,8 +86,9 @@ export const adminRouter = router({
     reregister: reregisterEmailDomainRoute,
   },
   team: {
-    get: getAdminTeamRoute,
     createForPlatform: createTeamForPlatformRoute,
+    deleteForPlatform: deleteTeamForPlatformRoute,
+    get: getAdminTeamRoute,
   },
   updateSiteSetting: updateSiteSettingRoute,
 });
