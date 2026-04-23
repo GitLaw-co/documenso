@@ -2,6 +2,7 @@ import { router } from '../trpc';
 import { createAdminOrganisationRoute } from './create-admin-organisation';
 import { createStripeCustomerRoute } from './create-stripe-customer';
 import { createSubscriptionClaimRoute } from './create-subscription-claim';
+import { createTeamForPlatformRoute } from './create-team-for-platform';
 import { deleteDocumentRoute } from './delete-document';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
 import { deleteUserRoute } from './delete-user';
@@ -85,6 +86,7 @@ export const adminRouter = router({
   },
   team: {
     get: getAdminTeamRoute,
+    createForPlatform: createTeamForPlatformRoute,
   },
   updateSiteSetting: updateSiteSettingRoute,
 });
