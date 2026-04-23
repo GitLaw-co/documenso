@@ -20,20 +20,9 @@ import { getEmailContext } from '../email/get-email-context';
 export type DeleteTeamOptions = {
   userId: number;
   teamId: number;
-  /**
-   * When true, do not enqueue the `send.team-deleted.email` job. Intended for
-   * automated teardown flows (e.g. env-ctl on-demand environments) where the
-   * team represents an ephemeral infrastructure artefact rather than a
-   * user-facing resource. UI callers should leave this unset (defaults false).
-   */
-  skipNotifications?: boolean;
 };
 
-export const deleteTeam = async ({
-  userId,
-  teamId,
-  skipNotifications = false,
-}: DeleteTeamOptions) => {
+export const deleteTeam = async ({ userId, teamId }: DeleteTeamOptions) => {
   const team = await prisma.team.findFirst({
     where: buildTeamWhereQuery({
       teamId,
@@ -107,19 +96,17 @@ export const deleteTeam = async ({
     });
   });
 
-  if (!skipNotifications) {
-    await jobs.triggerJob({
-      name: 'send.team-deleted.email',
-      payload: {
-        team: {
-          name: team.name,
-          url: team.url,
-        },
-        members: membersToNotify,
-        organisationId: team.organisationId,
+  await jobs.triggerJob({
+    name: 'send.team-deleted.email',
+    payload: {
+      team: {
+        name: team.name,
+        url: team.url,
       },
-    });
-  }
+      members: membersToNotify,
+      organisationId: team.organisationId,
+    },
+  });
 };
 
 type SendTeamDeleteEmailOptions = {

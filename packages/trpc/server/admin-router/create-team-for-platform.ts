@@ -1,4 +1,4 @@
-import { createTeam } from '@documenso/lib/server-only/team/create-team';
+import { createTeamForPlatform } from '@documenso/lib/server-only/team/create-team-for-platform';
 import { env } from '@documenso/lib/utils/env';
 import { prisma } from '@documenso/prisma';
 
@@ -26,7 +26,7 @@ export const createTeamForPlatformRoute = adminTokenProcedure
       return { team: existing, created: false };
     }
 
-    const team = await createTeam({
+    const team = await createTeamForPlatform({
       userId: ctx.user.id,
       teamName: input.teamName ?? input.teamUrl,
       teamUrl: input.teamUrl,

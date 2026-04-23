@@ -28,10 +28,14 @@ export const deleteTeamForPlatformRoute = adminTokenProcedure
       return { deleted: false, reason: 'not_found' as const };
     }
 
+    // Accepted trade-off: upstream deleteTeam emits a team-deleted email to
+    // every org member. For env-ctl automated teardown this means one email
+    // per delete to the platform-admin (the only owner-group member). Cost
+    // is low; avoiding it would require modifying the upstream helper and
+    // carrying the change through every upstream sync.
     await deleteTeam({
       userId: ctx.user.id,
       teamId: input.teamId,
-      skipNotifications: true,
     });
 
     return { deleted: true };

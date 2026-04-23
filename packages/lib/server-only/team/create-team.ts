@@ -136,7 +136,7 @@ export const createTeam = async ({
         .exhaustive(),
     );
 
-  const createdTeam = await prisma
+  await prisma
     .$transaction(
       async (tx) => {
         const teamSettings = await tx.teamGlobalSettings.create({
@@ -188,14 +188,6 @@ export const createTeam = async ({
             }),
           ),
         );
-
-        // Re-read within the transaction so `teamGroups` reflects the state
-        // after the INTERNAL_TEAM groups above were attached (the `team`
-        // captured earlier only has the org-inherited teamGroups).
-        return tx.team.findUniqueOrThrow({
-          where: { id: team.id },
-          include: { teamGroups: true },
-        });
       },
       {
         timeout: 7500,
@@ -210,6 +202,4 @@ export const createTeam = async ({
 
       throw err;
     });
-
-  return createdTeam;
 };

@@ -17,10 +17,7 @@ export const createTeamRoute = authenticatedProcedure
       },
     });
 
-    // createTeam now returns the created team; this route's output schema is
-    // z.void() for backwards compatibility with the UI caller (which discards
-    // the return value), so the return value is deliberately not forwarded.
-    await createTeam({
+    return await createTeam({
       userId: user.id,
       teamName,
       teamUrl,
