@@ -3,6 +3,7 @@ import { contextStorage } from 'hono/context-storage';
 import { cors } from 'hono/cors';
 import type { RequestIdVariables } from 'hono/request-id';
 import { requestId } from 'hono/request-id';
+import type { MiddlewareHandler } from 'hono/types';
 import type { Logger } from 'pino';
 
 import { tsRestHonoApp } from '@documenso/api/hono';
@@ -43,15 +44,32 @@ export interface HonoEnv {
 const app = new Hono<HonoEnv>();
 
 /**
+ * Wraps an existing middleware so that it short-circuits to `next()` for any
+ * request whose path begins with one of the given prefixes. Used below to let
+ * the general `/api/v2/*` rate-limit middleware skip `/api/v2/admin/*` traffic
+ * (which is counted against its own dedicated bucket mounted earlier). Without
+ * this, Hono runs ALL matching `app.use(path, mw)` handlers on the happy path,
+ * and admin requests would double-count. Implemented as a local composition
+ * here (instead of extending `createRateLimitMiddleware`) to keep the upstream
+ * factory byte-for-byte identical so upstream-sync never conflicts on it.
+ */
+const bypassForPathPrefixes =
+  (mw: MiddlewareHandler, prefixes: string[]): MiddlewareHandler =>
+  async (c, next) => {
+    if (prefixes.some((prefix) => c.req.path.startsWith(prefix))) {
+      return next();
+    }
+    return mw(c, next);
+  };
+
+/**
  * Database-backed rate limiting for API routes.
  */
 const apiV1RateLimitMiddleware = createRateLimitMiddleware(apiV1RateLimit);
 const adminV2RateLimitMiddleware = createRateLimitMiddleware(adminV2RateLimit);
-// The general /api/v2/* bucket must bypass admin paths so they aren't double-counted
-// (Hono runs every matching `app.use(path, mw)` on the happy path).
-const apiV2RateLimitMiddleware = createRateLimitMiddleware(apiV2RateLimit, {
-  bypassForPathPrefixes: ['/api/v2/admin'],
-});
+const apiV2RateLimitMiddleware = bypassForPathPrefixes(createRateLimitMiddleware(apiV2RateLimit), [
+  '/api/v2/admin',
+]);
 const aiRateLimitMiddleware = createRateLimitMiddleware(aiRateLimit);
 const trpcRateLimitMiddleware = createRateLimitMiddleware(apiTrpcRateLimit);
 const fileRateLimitMiddleware = createRateLimitMiddleware(fileUploadRateLimit);
