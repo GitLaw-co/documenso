@@ -1,5 +1,3 @@
-import { TRPCError } from '@trpc/server';
-
 import { createTeam } from '@documenso/lib/server-only/team/create-team';
 import { env } from '@documenso/lib/utils/env';
 import { prisma } from '@documenso/prisma';
@@ -16,14 +14,9 @@ export const createTeamForPlatformRoute = adminTokenProcedure
   .input(ZCreateTeamForPlatformRequestSchema)
   .output(ZCreateTeamForPlatformResponseSchema)
   .mutation(async ({ input, ctx }) => {
-    const orgId = env('DOCUMENSO_ONDEMAND_ORG_ID');
+    ctx.logger.info({ input: { teamUrl: input.teamUrl } });
 
-    if (!orgId) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Admin API not configured: DOCUMENSO_ONDEMAND_ORG_ID missing.',
-      });
-    }
+    const orgId = env('DOCUMENSO_ONDEMAND_ORG_ID')!;
 
     const existing = await prisma.team.findFirst({
       where: { url: input.teamUrl, organisationId: orgId },

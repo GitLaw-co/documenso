@@ -19,7 +19,7 @@ export const ZCreateTeamForPlatformRequestSchema = z.object({
   inheritMembers: z.boolean().optional(),
 });
 
-const ZAdminTeamSchema = z.object({
+export const ZAdminTeamSchema = z.object({
   id: z.number(),
   url: z.string(),
   name: z.string(),
