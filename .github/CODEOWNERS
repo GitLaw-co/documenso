@@ -1,0 +1,22 @@
+# Code owners for GitLaw fork deltas (see FORK-DELTAS.md at repo root).
+#
+# Forces a review request on any PR — including the weekly upstream-sync PR
+# opened by .github/workflows/sync-upstream.yml — that touches files carrying
+# non-trivial fork modifications. Prevents accidental semantic regressions
+# from auto-merging upstream edits that overlap our deltas.
+
+# Admin API surface
+/packages/trpc/server/admin-router/                       @GitLaw-co/admin-api-maintainers
+/packages/trpc/server/open-api-public.ts                  @GitLaw-co/admin-api-maintainers
+/packages/lib/server-only/team/create-team-for-platform.ts @GitLaw-co/admin-api-maintainers
+/packages/lib/server-only/organisation/get-organisation-with-owner-for-admin-token.ts @GitLaw-co/admin-api-maintainers
+
+# Files where we carry inline modifications — upstream changes here are the
+# highest conflict risk.
+/packages/trpc/server/trpc.ts                             @GitLaw-co/admin-api-maintainers
+/apps/remix/server/router.ts                              @GitLaw-co/admin-api-maintainers
+
+# Low-risk additions — still worth a heads-up review.
+/packages/lib/server-only/rate-limit/rate-limits.ts       @GitLaw-co/admin-api-maintainers
+/packages/lib/universal/extract-request-metadata.ts       @GitLaw-co/admin-api-maintainers
+/packages/lib/utils/logger.ts                             @GitLaw-co/admin-api-maintainers

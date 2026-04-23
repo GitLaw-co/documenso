@@ -71,6 +71,7 @@ The steps below are **stg-specific**. Production has a compliance variation note
 - **`platform-admin@git.law` must NOT be used interactively via the Documenso UI** except for the one-time bootstrap above. Admin-API actions are attributed to this user in audit logs; if a human also uses the account via UI, audit attribution becomes ambiguous.
 - The user is flagged with ADMIN role to allow inspection via the Documenso admin panel (for debugging only, not for routine operations).
 - `env-ctl` is the only legitimate caller of the admin API in automated flows. Other callers should be reviewed for fit.
+- **`admin.team.deleteForPlatform` triggers the upstream team-deleted email** to every member of the `on-demand-envs` ADMIN group (i.e. `platform-admin@git.law`) on every automated teardown. This is an accepted trade-off: suppressing the email would require modifying the upstream `deleteTeam` helper, which would cost a merge conflict on every upstream sync touching the team module. Expect ~1 email per env teardown; filter or auto-archive on the receiver side if the volume becomes noisy.
 
 ---
 
