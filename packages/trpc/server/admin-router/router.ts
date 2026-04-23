@@ -10,6 +10,7 @@ import { deleteDocumentRoute } from './delete-document';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
 import { deleteTeamForPlatformRoute } from './delete-team-for-platform';
 import { deleteUserRoute } from './delete-user';
+import { deleteWebhookForPlatformRoute } from './delete-webhook-for-platform';
 import { disableUserRoute } from './disable-user';
 import { downloadDocumentAuditLogsRoute } from './download-document-audit-logs';
 import { enableUserRoute } from './enable-user';
@@ -99,6 +100,7 @@ export const adminRouter = router({
   },
   webhook: {
     createForPlatform: createWebhookForPlatformRoute,
+    deleteForPlatform: deleteWebhookForPlatformRoute,
   },
   updateSiteSetting: updateSiteSettingRoute,
 });
