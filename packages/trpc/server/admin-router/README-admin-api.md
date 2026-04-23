@@ -19,6 +19,8 @@ This is a fork-only surface — not present in upstream Documenso. See the full 
 
 All requests: `Authorization: Bearer $DOCUMENSO_ADMIN_API_KEY`, `Content-Type: application/json`. Responses: tRPC-standard JSON.
 
+**Idempotency scope.** The create endpoints are idempotent under sequential single-caller usage (env-ctl's real access pattern, backed by its registry-level locking). True concurrent duplicate requests with the same idempotency key are NOT guaranteed idempotent at the Documenso layer — two simultaneous `team/create` calls with the same `teamUrl` may yield one 200 + one 400 `ALREADY_EXISTS`; two simultaneous `webhook/create` or `api-token/create` calls with the same name/URL may silently produce duplicate rows. Upstream schemas lack DB-level uniqueness on these idempotency keys. Callers that need concurrency safety must serialize at their own layer.
+
 ---
 
 ## 2. Bootstrap (one-time per Documenso instance)
@@ -111,7 +113,7 @@ Admin endpoints share a dedicated bucket at 300 req/min (IP-keyed), separate fro
 
 ## 8. OpenAPI visibility
 
-Admin paths are filtered out of the public `/api/v2/openapi.json` document. Future readers with out-of-band knowledge of this surface can construct calls from this README. The filter is in `packages/trpc/server/open-api.ts`.
+Admin paths are filtered out of the public `/api/v2/openapi.json` document. Future readers with out-of-band knowledge of this surface can construct calls from this README. The filter is in `packages/trpc/server/open-api-public.ts` — it wraps the upstream-generated document from `open-api.ts` rather than modifying it (FORK-DELTAS.md has the rationale).
 
 ---
 
