@@ -1,5 +1,6 @@
 import { router } from '../trpc';
 import { createAdminOrganisationRoute } from './create-admin-organisation';
+import { createApiTokenForPlatformRoute } from './create-api-token-for-platform';
 import { createStripeCustomerRoute } from './create-stripe-customer';
 import { createSubscriptionClaimRoute } from './create-subscription-claim';
 import { createTeamForPlatformRoute } from './create-team-for-platform';
@@ -84,6 +85,9 @@ export const adminRouter = router({
     find: findEmailDomainsRoute,
     get: getEmailDomainRoute,
     reregister: reregisterEmailDomainRoute,
+  },
+  apiToken: {
+    createForPlatform: createApiTokenForPlatformRoute,
   },
   team: {
     createForPlatform: createTeamForPlatformRoute,
