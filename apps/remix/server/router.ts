@@ -23,7 +23,7 @@ import { migrateDeletedAccountServiceAccount } from '@documenso/lib/server-only/
 import { migrateLegacyServiceAccount } from '@documenso/lib/server-only/user/service-accounts/legacy-service-account';
 import { env } from '@documenso/lib/utils/env';
 import { logger } from '@documenso/lib/utils/logger';
-import { openApiDocument } from '@documenso/trpc/server/open-api';
+import { openApiDocument } from '@documenso/trpc/server/open-api-public';
 
 import { aiRoute } from './api/ai/route';
 import { downloadRoute } from './api/download/download';
