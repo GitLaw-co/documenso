@@ -20,12 +20,26 @@ const setRateLimitHeaders = (c: Context, result: RateLimitCheckResult) => {
  *
  * Uses IP address for identification. Optionally accepts an identifier
  * function for per-user/per-entity limiting.
+ *
+ * `bypassForPathPrefixes` lets a middleware registered on a broad pattern
+ * (e.g. `/api/v2/*`) delegate accounting for a subtree (e.g. `/api/v2/admin/*`)
+ * to a separate middleware mounted earlier. Without this bypass, a request
+ * to the subtree would be counted against BOTH buckets because Hono runs
+ * every matching `app.use(path, mw)` handler in registration order on the
+ * happy path (short-circuit only occurs when a middleware returns 429).
  */
 export const createRateLimitMiddleware = (
   limiter: ReturnType<typeof createRateLimit>,
-  options?: { identifierFn?: (c: Context) => string | undefined },
+  options?: {
+    identifierFn?: (c: Context) => string | undefined;
+    bypassForPathPrefixes?: string[];
+  },
 ): MiddlewareHandler => {
   return async (c, next) => {
+    if (options?.bypassForPathPrefixes?.some((prefix) => c.req.path.startsWith(prefix))) {
+      return next();
+    }
+
     let ip: string;
 
     try {

@@ -11,6 +11,7 @@ import { jobsClient } from '@documenso/lib/jobs/client';
 import { LicenseClient } from '@documenso/lib/server-only/license/license-client';
 import { createRateLimitMiddleware } from '@documenso/lib/server-only/rate-limit/rate-limit-middleware';
 import {
+  adminV2RateLimit,
   aiRateLimit,
   apiTrpcRateLimit,
   apiV1RateLimit,
@@ -45,7 +46,12 @@ const app = new Hono<HonoEnv>();
  * Database-backed rate limiting for API routes.
  */
 const apiV1RateLimitMiddleware = createRateLimitMiddleware(apiV1RateLimit);
-const apiV2RateLimitMiddleware = createRateLimitMiddleware(apiV2RateLimit);
+const adminV2RateLimitMiddleware = createRateLimitMiddleware(adminV2RateLimit);
+// The general /api/v2/* bucket must bypass admin paths so they aren't double-counted
+// (Hono runs every matching `app.use(path, mw)` on the happy path).
+const apiV2RateLimitMiddleware = createRateLimitMiddleware(apiV2RateLimit, {
+  bypassForPathPrefixes: ['/api/v2/admin'],
+});
 const aiRateLimitMiddleware = createRateLimitMiddleware(aiRateLimit);
 const trpcRateLimitMiddleware = createRateLimitMiddleware(apiTrpcRateLimit);
 const fileRateLimitMiddleware = createRateLimitMiddleware(fileUploadRateLimit);
@@ -79,6 +85,11 @@ app.use(async (c, next) => {
 // Apply cors and rate limits to API routes.
 app.use(`/api/v1/*`, cors());
 app.use('/api/v1/*', apiV1RateLimitMiddleware);
+// Admin rate limit mounted before the general /api/v2/* one so the dedicated
+// bucket receives admin traffic first. The general middleware is configured
+// with bypassForPathPrefixes so it skips admin paths entirely (no double-count).
+app.use(`/api/v2/admin/*`, cors());
+app.use('/api/v2/admin/*', adminV2RateLimitMiddleware);
 app.use(`/api/v2/*`, cors());
 app.use('/api/v2/*', apiV2RateLimitMiddleware);
 app.use(`/api/v2-beta/*`, cors());
