@@ -1,10 +1,16 @@
 import { router } from '../trpc';
 import { createAdminOrganisationRoute } from './create-admin-organisation';
+import { createApiTokenForPlatformRoute } from './create-api-token-for-platform';
 import { createStripeCustomerRoute } from './create-stripe-customer';
 import { createSubscriptionClaimRoute } from './create-subscription-claim';
+import { createTeamForPlatformRoute } from './create-team-for-platform';
+import { createWebhookForPlatformRoute } from './create-webhook-for-platform';
+import { deleteApiTokenForPlatformRoute } from './delete-api-token-for-platform';
 import { deleteDocumentRoute } from './delete-document';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
+import { deleteTeamForPlatformRoute } from './delete-team-for-platform';
 import { deleteUserRoute } from './delete-user';
+import { deleteWebhookForPlatformRoute } from './delete-webhook-for-platform';
 import { disableUserRoute } from './disable-user';
 import { downloadDocumentAuditLogsRoute } from './download-document-audit-logs';
 import { enableUserRoute } from './enable-user';
@@ -83,8 +89,18 @@ export const adminRouter = router({
     get: getEmailDomainRoute,
     reregister: reregisterEmailDomainRoute,
   },
+  apiToken: {
+    createForPlatform: createApiTokenForPlatformRoute,
+    deleteForPlatform: deleteApiTokenForPlatformRoute,
+  },
   team: {
+    createForPlatform: createTeamForPlatformRoute,
+    deleteForPlatform: deleteTeamForPlatformRoute,
     get: getAdminTeamRoute,
+  },
+  webhook: {
+    createForPlatform: createWebhookForPlatformRoute,
+    deleteForPlatform: deleteWebhookForPlatformRoute,
   },
   updateSiteSetting: updateSiteSettingRoute,
 });

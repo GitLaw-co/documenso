@@ -1,0 +1,26 @@
+# Code owners for GitLaw fork deltas (see FORK-DELTAS.md at repo root).
+#
+# Forces a review request on any PR — including the weekly upstream-sync PR
+# opened by .github/workflows/sync-upstream.yml — that touches files carrying
+# non-trivial fork modifications. Prevents accidental semantic regressions
+# from auto-merging upstream edits that overlap our deltas.
+#
+# Split:
+#   @neptunix-gl   — owns the admin API surface (fork-only files and
+#                    anything introduced to support it).
+#   @camballe      — owns upstream-modified shared files that he already
+#                    resolves during weekly upstream-sync merges.
+
+# --- Admin API surface (pure fork-only code) — owned by admin API author ---
+/packages/trpc/server/admin-router/                                                    @neptunix-gl
+/packages/trpc/server/open-api-public.ts                                               @neptunix-gl
+/packages/lib/server-only/team/create-team-for-platform.ts                             @neptunix-gl
+/packages/lib/server-only/organisation/get-organisation-with-owner-for-admin-token.ts  @neptunix-gl
+
+# --- Upstream-modified shared files — owned by fork maintainer ---
+# These files are where merge conflicts during upstream-sync typically land.
+/packages/trpc/server/trpc.ts                                                          @camballe
+/apps/remix/server/router.ts                                                           @camballe
+/packages/lib/server-only/rate-limit/rate-limits.ts                                    @camballe
+/packages/lib/universal/extract-request-metadata.ts                                    @camballe
+/packages/lib/utils/logger.ts                                                          @camballe

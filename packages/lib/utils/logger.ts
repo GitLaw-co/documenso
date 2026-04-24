@@ -28,6 +28,21 @@ if (loggingFilePath) {
 
 export const logger = pino({
   level: 'info',
+  redact: {
+    paths: [
+      'authorization',
+      'Authorization',
+      '*.authorization',
+      '*.Authorization',
+      'req.headers.authorization',
+      'req.headers.Authorization',
+      'request.headers.authorization',
+      'request.headers.Authorization',
+      'headers.authorization',
+      'headers.Authorization',
+    ],
+    censor: '[REDACTED]',
+  },
   transport:
     transports.length > 0
       ? {
