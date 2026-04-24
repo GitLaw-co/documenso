@@ -1,6 +1,6 @@
 ---
-name: admin-api
-description: Platform admin API for GitLaw's Documenso fork — fork-only HTTP surface at /api/v2/admin/* used for programmatic platform automation. This skill should be used when the user asks about "admin API", "admin-api", "env-ctl", "on-demand envs", "per-env team", "create team via API", "programmatic team/token/webhook", "DOCUMENSO_ADMIN_API_KEY", "DOCUMENSO_ONDEMAND_ORG_ID", "admin.team.createForPlatform", "/api/v2/admin/...", or when touching files under packages/trpc/server/admin-router/ (e.g. *-for-platform.ts, *-for-platform.types.ts). Triggers include "add an admin endpoint", "call the admin API", "how does admin authentication work", "idempotent team creation", or any task involving the six existing admin procedures (team/create, team/delete, api-token/create, api-token/delete, webhook/create, webhook/delete).
+name: documenso-admin
+description: Platform admin API for GitLaw's Documenso fork — fork-only HTTP surface at /api/v2/admin/* used for programmatic platform automation. This skill should be used when the user asks about "admin API", "admin-api", "documenso-admin", "env-ctl", "on-demand envs", "per-env team", "create team via API", "programmatic team/token/webhook", "DOCUMENSO_ADMIN_API_KEY", "DOCUMENSO_ONDEMAND_ORG_ID", "admin.team.createForPlatform", "/api/v2/admin/...", or when touching files under packages/trpc/server/admin-router/ (e.g. *-for-platform.ts, *-for-platform.types.ts). Triggers include "add an admin endpoint", "call the admin API", "how does admin authentication work", "idempotent team creation", or any task involving the six existing admin procedures (team/create, team/delete, api-token/create, api-token/delete, webhook/create, webhook/delete).
 ---
 
 # Platform Admin API
@@ -47,7 +47,7 @@ All six endpoints are `POST`. All are mounted under `/api/v2/admin/`.
 |---|---|---|---|---|
 | POST | `/api/v2/admin/team/create` | `teamUrl`, `teamName?`, `inheritMembers?` | `{team, created}` | by `teamUrl` within org |
 | POST | `/api/v2/admin/team/delete` | `teamId` | `{deleted, reason?}` | not-found → `{deleted:false, reason:"not_found"}` HTTP 200 |
-| POST | `/api/v2/admin/api-token/create` | `teamId`, `tokenName` | `{token, plaintext?, created, plaintextAvailable}` | by `tokenName` within team; plaintext only on first create |
+| POST | `/api/v2/admin/api-token/create` | `teamId`, `tokenName` | `{token, plaintext?, created, plaintextAvailable}` | by `tokenName` within team; `plaintext` key present only on first create (omitted on replay) |
 | POST | `/api/v2/admin/api-token/delete` | `teamId`, `tokenId` | `{deleted, reason?}` | idempotent-noop on absent |
 | POST | `/api/v2/admin/webhook/create` | `teamId`, `webhookUrl`, `secret` (min 16 chars), `eventTriggers[]`, `enabled?` | `{webhook, created}` | by `webhookUrl` within team |
 | POST | `/api/v2/admin/webhook/delete` | `teamId`, `webhookId` | `{deleted, reason?}` | idempotent-noop |
@@ -88,8 +88,8 @@ curl -s -X POST https://esign.stg.gitlaw.co/api/v2/admin/api-token/create \
   -H "Authorization: Bearer $KEY" \
   -H "Content-Type: application/json" \
   -d '{"teamId":42,"tokenName":"env-ctl-token"}' | jq .
-# first call  → {"token":{...},"plaintext":"tk_...","created":true,"plaintextAvailable":true}
-# replay      → {"token":{...},"plaintext":null,"created":false,"plaintextAvailable":false}
+# first call  → {"token":{...},"plaintext":"api_...","created":true,"plaintextAvailable":true}
+# replay      → {"token":{...},"created":false,"plaintextAvailable":false}   # note: plaintext key omitted
 ```
 
 Store the `plaintext` value immediately — it cannot be retrieved again.
@@ -104,7 +104,7 @@ curl -s -X POST https://esign.stg.gitlaw.co/api/v2/admin/webhook/create \
     "teamId": 42,
     "webhookUrl": "http://env-ctl.env-ctl.svc.cluster.local/hooks/documenso",
     "secret": "a-secret-with-16plus-chars",
-    "eventTriggers": ["document.completed","document.sent"],
+    "eventTriggers": ["DOCUMENT_COMPLETED","DOCUMENT_SENT"],
     "enabled": true
   }' | jq .
 ```
@@ -116,7 +116,7 @@ curl -s -X POST https://esign.stg.gitlaw.co/api/v2/admin/webhook/create \
 curl -s -X POST https://esign.stg.gitlaw.co/api/v2/admin/webhook/delete \
   -H "Authorization: Bearer $KEY" \
   -H "Content-Type: application/json" \
-  -d '{"teamId":42,"webhookId":7}' | jq .
+  -d '{"teamId":42,"webhookId":"clz8abc123xyz000"}' | jq .  # webhookId is a cuid string
 
 # 2. Delete API token
 curl -s -X POST https://esign.stg.gitlaw.co/api/v2/admin/api-token/delete \
