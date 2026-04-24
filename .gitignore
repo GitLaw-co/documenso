@@ -55,7 +55,8 @@ yarn-error.log*
 logs.json
 
 # claude
-.claude
+.claude/*
+!.claude/skills/
 CLAUDE.md
 
 # agents
