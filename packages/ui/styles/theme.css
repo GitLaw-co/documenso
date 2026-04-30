@@ -6,8 +6,8 @@
   :root,
   .dark-mode-disabled,
   .dark {
-    /* GitLaw Light Theme - matches front-law colors.css exactly */
-    /* Force light mode always - no dark mode support (same as front-law) */
+    /* GitLaw Light Theme — palette aligned with the platform's primary product. */
+    /* Force light mode always — no dark mode support. */
     
     /* lilac-50: #f7f6ff */
     --background: 249 100% 98%;

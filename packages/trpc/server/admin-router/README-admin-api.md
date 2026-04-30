@@ -1,8 +1,8 @@
 # Admin API (platform automation)
 
-HTTP surface at `/api/v2/admin/*` for automated platform operations (primary consumer: `env-ctl`, the on-demand-environments orchestrator). Authenticates via a single static bearer token (`DOCUMENSO_ADMIN_API_KEY`) and impersonates the owner of a fixed Organisation identified by `DOCUMENSO_ONDEMAND_ORG_ID`.
+HTTP surface at `/api/v2/admin/*` for automated platform operations (primary consumer: an external on-demand-environments orchestrator). Authenticates via a single static bearer token (`DOCUMENSO_ADMIN_API_KEY`) and impersonates the owner of a fixed Organisation identified by `DOCUMENSO_ONDEMAND_ORG_ID`.
 
-This is a fork-only surface — not present in upstream Documenso. See the full design rationale and rejected alternatives in the GitLaw on-demand-envs working directory (external reference).
+This is a fork-only surface — not present in upstream Documenso. See `FORK-DELTAS.md` at the repo root for the full inventory of fork modifications.
 
 ---
 
@@ -19,61 +19,76 @@ This is a fork-only surface — not present in upstream Documenso. See the full 
 
 All requests: `Authorization: Bearer $DOCUMENSO_ADMIN_API_KEY`, `Content-Type: application/json`. Responses: tRPC-standard JSON.
 
-**Idempotency scope.** The create endpoints are idempotent under sequential single-caller usage (env-ctl's real access pattern, backed by its registry-level locking). True concurrent duplicate requests with the same idempotency key are NOT guaranteed idempotent at the Documenso layer — two simultaneous `team/create` calls with the same `teamUrl` may yield one 200 + one 400 `ALREADY_EXISTS`; two simultaneous `webhook/create` or `api-token/create` calls with the same name/URL may silently produce duplicate rows. Upstream schemas lack DB-level uniqueness on these idempotency keys. Callers that need concurrency safety must serialize at their own layer.
+**Idempotency scope.** The create endpoints are idempotent under sequential single-caller usage (the orchestrator's real access pattern, backed by its own external locking). True concurrent duplicate requests with the same idempotency key are NOT guaranteed idempotent at the Documenso layer — two simultaneous `team/create` calls with the same `teamUrl` may yield one 200 + one 400 `ALREADY_EXISTS`; two simultaneous `webhook/create` or `api-token/create` calls with the same name/URL may silently produce duplicate rows. Upstream schemas lack DB-level uniqueness on these idempotency keys. Callers that need concurrency safety must serialize at their own layer.
 
 ---
 
 ## 2. Bootstrap (one-time per Documenso instance)
 
-The steps below are **stg-specific**. Production has a compliance variation noted at the end.
+Generic outline. Operator-specific details (hostnames, k8s namespace, secret store, post-deploy smoke procedure) live in the operator's internal runbook.
 
-1. Sign up the platform-admin user at `https://esign.stg.gitlaw.co/signup` with email `platform-admin@git.law`.
+1. Sign up the platform-admin user via the standard Documenso signup flow at `<your-documenso-host>/signup`. Use a dedicated automation email address that no human will use interactively (e.g. `<platform-admin-email>`).
 
-2. **Stg-only shortcut** — mark email verified + promote to ADMIN role via SQL:
-   ```bash
-   kubectl -n stg exec stg-postgresql-0 -- bash -c "PGPASSWORD=gitea psql -U gitea -d documenso -c \"UPDATE \\\"User\\\" SET \\\"emailVerified\\\" = NOW(), roles = ARRAY['USER', 'ADMIN']::\\\"Role\\\"[] WHERE email = 'platform-admin@git.law';\""
+2. Mark the user's email verified and grant ADMIN role. In production, complete email verification through the standard email-link flow; in staging or self-hosted dev, an operator may run an equivalent SQL update directly against the Documenso database. Generic shape:
+
+   ```sql
+   UPDATE "User"
+   SET "emailVerified" = NOW(),
+       roles = ARRAY['USER', 'ADMIN']::"Role"[]
+   WHERE email = '<platform-admin-email>';
    ```
 
-3. Log in as platform-admin, create the `on-demand-envs` Organisation via the Documenso UI. The platform-admin user automatically becomes owner.
+3. Log in as platform-admin, create the parent Organisation via the Documenso UI. The platform-admin user automatically becomes the owner. Choose any unique Organisation name; the admin API does not depend on it semantically.
 
-4. Capture the Organisation ID:
-   ```bash
-   kubectl -n stg exec stg-postgresql-0 -- bash -c "PGPASSWORD=gitea psql -U gitea -d documenso -c \"SELECT id FROM \\\"Organisation\\\" WHERE name = 'on-demand-envs';\""
+4. Capture the Organisation ID from the database:
+
+   ```sql
+   SELECT id FROM "Organisation" WHERE name = '<your-org-name>';
    ```
+
    Format: `org_<16 chars>`.
 
-5. Generate the admin key: `openssl rand -base64 32`. Store it somewhere secret (1Password or the deployer's secret store) — it will be added to the `documenso-secrets` SealedSecret.
+5. Generate the admin key:
 
-6. Add to the Documenso pod env (via SealedSecret + Helm values):
-   - `DOCUMENSO_ADMIN_API_KEY=<key>` (in `documenso-secrets` SealedSecret, not plain values)
-   - `DOCUMENSO_ONDEMAND_ORG_ID=<org_xxx>` (non-secret; plain `values-documenso.yaml` or SealedSecret — deployer's choice)
-
-7. Store the same `DOCUMENSO_ADMIN_API_KEY` in env-ctl's secret store (out of scope here; see env-ctl bootstrap docs).
-
-8. Smoke test:
    ```bash
-   KEY=<admin-key>
-   curl -fsS -X POST https://esign.stg.gitlaw.co/api/v2/admin/team/create \
-     -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+   openssl rand -base64 32
+   ```
+
+   Store it in your secret manager (cloud KMS, Kubernetes SealedSecret, Vault, 1Password, etc.).
+
+6. Inject the following environment variables into the Documenso pod / process:
+
+   - `DOCUMENSO_ADMIN_API_KEY=<generated key>` — secret; load from your secret manager.
+   - `DOCUMENSO_ONDEMAND_ORG_ID=<org_xxx>` — non-secret; can live in plain config.
+
+7. Provide the same `DOCUMENSO_ADMIN_API_KEY` to the orchestrator's secret store.
+
+8. Smoke test (replace `<documenso-host>` and `<admin-key>` with your values):
+
+   ```bash
+   curl -fsS -X POST https://<documenso-host>/api/v2/admin/team/create \
+     -H "Authorization: Bearer <admin-key>" \
+     -H "Content-Type: application/json" \
      -d '{"teamUrl":"smoke-test"}'
    # Expect HTTP 200 with {"team":{...},"created":true}
    # Repeat same call → {"created":false}
    # Delete:
-   curl -fsS -X POST https://esign.stg.gitlaw.co/api/v2/admin/team/delete \
-     -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
-     -d "{\"teamId\":<id>}"
+   curl -fsS -X POST https://<documenso-host>/api/v2/admin/team/delete \
+     -H "Authorization: Bearer <admin-key>" \
+     -H "Content-Type: application/json" \
+     -d '{"teamId":<id>}'
    ```
 
-**Production bootstrap difference:** step 2's email-verified shortcut is NOT permitted in prod — the user must verify via real email. Role promotion can still be done via SQL if needed, but should be via admin UI if possible.
+**Production note:** the SQL shortcut for email verification is appropriate only in staging or self-hosted dev. In production, complete email verification through the standard email-link flow. Role promotion can still be performed via SQL if necessary, but should go through the admin UI when possible.
 
 ---
 
 ## 3. Operational invariants
 
-- **`platform-admin@git.law` must NOT be used interactively via the Documenso UI** except for the one-time bootstrap above. Admin-API actions are attributed to this user in audit logs; if a human also uses the account via UI, audit attribution becomes ambiguous.
+- The platform-admin user **must not** be used interactively via the Documenso UI except for the one-time bootstrap above. Admin-API actions are attributed to this user in audit logs; if a human also uses the account via UI, audit attribution becomes ambiguous.
 - The user is flagged with ADMIN role to allow inspection via the Documenso admin panel (for debugging only, not for routine operations).
-- `env-ctl` is the only legitimate caller of the admin API in automated flows. Other callers should be reviewed for fit.
-- **`admin.team.deleteForPlatform` triggers the upstream team-deleted email** to every member of the `on-demand-envs` ADMIN group (i.e. `platform-admin@git.law`) on every automated teardown. This is an accepted trade-off: suppressing the email would require modifying the upstream `deleteTeam` helper, which would cost a merge conflict on every upstream sync touching the team module. Expect ~1 email per env teardown; filter or auto-archive on the receiver side if the volume becomes noisy.
+- The orchestrator is the only legitimate caller of the admin API in automated flows. Other callers should be reviewed for fit.
+- **`admin.team.deleteForPlatform` triggers the upstream team-deleted email** to every member of the parent Organisation's ADMIN group on every automated teardown. This is an accepted trade-off: suppressing the email would require modifying the upstream `deleteTeam` helper, which would cost a merge conflict on every upstream sync touching the team module. Expect approximately one email per env teardown; filter or auto-archive on the receiver side if the volume becomes noisy.
 
 ---
 
@@ -85,9 +100,9 @@ Admin API requests impersonate the Organisation owner identified by `DOCUMENSO_O
 
 ## 5. Observability
 
-Each admin API request emits a structured pino log line with `auth: 'apiAdminToken'`, `userId: <owner id>`, `organisationId: <org id>`, `path: <procedure path>`. Stackdriver log-based metrics and alert policies live separately in `GitLaw-co/k8s` (Terraform).
+Each admin API request emits a structured pino log line with `auth: 'apiAdminToken'`, `userId: <owner id>`, `organisationId: <org id>`, `path: <procedure path>`. Operator-side log-based metrics and alert policies are out of scope for this fork.
 
-A post-deploy smoke-test Job in `GitLaw-co/k8s` runs the admin API create→delete sequence against a throwaway slug on every Documenso deploy. Failure alerts via standard k8s Job-failure signals.
+A post-deploy smoke-test that runs the admin API create→delete sequence against a throwaway slug on every Documenso deploy is recommended; the operator owns its implementation.
 
 ---
 
@@ -96,24 +111,24 @@ A post-deploy smoke-test Job in `GitLaw-co/k8s` runs the admin API create→dele
 No automation. If the admin key is ever compromised:
 
 1. Generate a new value: `openssl rand -base64 32`.
-2. Update `documenso-secrets` SealedSecret (`DOCUMENSO_ADMIN_API_KEY` → new value).
-3. `kubectl -n stg rollout restart deployment/documenso`.
-4. Approximately 30-second window where env-ctl receives 401s — env-ctl retries absorb this.
-5. Update env-ctl's secret store with the new key.
+2. Update the secret in your secret manager (`DOCUMENSO_ADMIN_API_KEY` → new value).
+3. Roll the Documenso deployment so the new env var is loaded.
+4. Brief 401 window for the orchestrator until its secret is updated and it retries; the orchestrator's retry budget should absorb this.
+5. Update the orchestrator's secret store with the new key.
 
-Leak-scenario likelihood for stg: low (key access is gated by corp-VPN + cluster RBAC, stored in SealedSecret, not plaintext in git). No scheduled rotation policy for stg.
+The fork does not impose a scheduled rotation policy; operators decide based on their threat model.
 
 ---
 
 ## 7. Rate limiting
 
-Admin endpoints share a dedicated bucket at 300 req/min (IP-keyed), separate from the general `/api/v2/*` bucket (100 req/min). Mounted in `apps/remix/server/router.ts`. Env-ctl burst profile (~6 calls per env operation) fits comfortably.
+Admin endpoints have a dedicated bucket at 300 req/min (IP-keyed), separate from the general `/api/v2/*` bucket (100 req/min). Mounted in `apps/remix/server/router.ts`. The orchestrator's expected burst profile (a small number of calls per env operation) fits comfortably.
 
 ---
 
 ## 8. OpenAPI visibility
 
-Admin paths are filtered out of the public `/api/v2/openapi.json` document. Future readers with out-of-band knowledge of this surface can construct calls from this README. The filter is in `packages/trpc/server/open-api-public.ts` — it wraps the upstream-generated document from `open-api.ts` rather than modifying it (FORK-DELTAS.md has the rationale).
+Admin paths are filtered out of the public `/api/v2/openapi.json` document. Future readers with out-of-band knowledge of this surface can construct calls from this README. The filter is in `packages/trpc/server/open-api-public.ts` — it wraps the upstream-generated document from `open-api.ts` rather than modifying it (`FORK-DELTAS.md` has the rationale).
 
 ---
 
@@ -123,7 +138,7 @@ Admin paths are filtered out of the public `/api/v2/openapi.json` document. Futu
 | --- | --- |
 | `401 Unauthorized` | Missing or invalid admin key. |
 | `403 Forbidden` | Owner account disabled. |
-| `404 Not Found` | Team not in our organisation (for token/webhook create); organisation misconfigured. |
+| `404 Not Found` | Team not in the parent organisation (for token/webhook create); organisation misconfigured. |
 | `500 Internal Server Error` | Configuration issue (`DOCUMENSO_ONDEMAND_ORG_ID` unset / invalid, etc.). |
 
 Idempotent-delete noop returns `200` with `{deleted: false, reason: 'not_found'}`, NOT 404.

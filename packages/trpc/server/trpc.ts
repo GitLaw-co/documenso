@@ -331,8 +331,8 @@ const constantTimeEqualString = (a: string, b: string): boolean => {
  * organisation's ADMIN group and therefore has ADMIN role on every team in
  * the organisation.
  *
- * See `/Users/nep/Developer/gl/on-demand-envs/documenso-admin-api-design.v3.md`
- * §4-§5 for the full identity-model rationale.
+ * See the admin API README (`packages/trpc/server/admin-router/README-admin-api.md`)
+ * §4 Identity & permissions model for the full rationale.
  */
 export const adminTokenMiddleware = t.middleware(async ({ ctx, next, path }) => {
   const infoToLog: TrpcApiLog = {
