@@ -3,6 +3,7 @@ import { contextStorage } from 'hono/context-storage';
 import { cors } from 'hono/cors';
 import type { RequestIdVariables } from 'hono/request-id';
 import { requestId } from 'hono/request-id';
+import type { MiddlewareHandler } from 'hono/types';
 import type { Logger } from 'pino';
 
 import { tsRestHonoApp } from '@documenso/api/hono';
@@ -11,6 +12,7 @@ import { jobsClient } from '@documenso/lib/jobs/client';
 import { LicenseClient } from '@documenso/lib/server-only/license/license-client';
 import { createRateLimitMiddleware } from '@documenso/lib/server-only/rate-limit/rate-limit-middleware';
 import {
+  adminV2RateLimit,
   aiRateLimit,
   apiTrpcRateLimit,
   apiV1RateLimit,
@@ -22,7 +24,7 @@ import { migrateDeletedAccountServiceAccount } from '@documenso/lib/server-only/
 import { migrateLegacyServiceAccount } from '@documenso/lib/server-only/user/service-accounts/legacy-service-account';
 import { env } from '@documenso/lib/utils/env';
 import { logger } from '@documenso/lib/utils/logger';
-import { openApiDocument } from '@documenso/trpc/server/open-api';
+import { openApiDocument } from '@documenso/trpc/server/open-api-public';
 
 import { aiRoute } from './api/ai/route';
 import { downloadRoute } from './api/download/download';
@@ -42,10 +44,32 @@ export interface HonoEnv {
 const app = new Hono<HonoEnv>();
 
 /**
+ * Wraps an existing middleware so that it short-circuits to `next()` for any
+ * request whose path begins with one of the given prefixes. Used below to let
+ * the general `/api/v2/*` rate-limit middleware skip `/api/v2/admin/*` traffic
+ * (which is counted against its own dedicated bucket mounted earlier). Without
+ * this, Hono runs ALL matching `app.use(path, mw)` handlers on the happy path,
+ * and admin requests would double-count. Implemented as a local composition
+ * here (instead of extending `createRateLimitMiddleware`) to keep the upstream
+ * factory byte-for-byte identical so upstream-sync never conflicts on it.
+ */
+const bypassForPathPrefixes =
+  (mw: MiddlewareHandler, prefixes: string[]): MiddlewareHandler =>
+  async (c, next) => {
+    if (prefixes.some((prefix) => c.req.path.startsWith(prefix))) {
+      return next();
+    }
+    return mw(c, next);
+  };
+
+/**
  * Database-backed rate limiting for API routes.
  */
 const apiV1RateLimitMiddleware = createRateLimitMiddleware(apiV1RateLimit);
-const apiV2RateLimitMiddleware = createRateLimitMiddleware(apiV2RateLimit);
+const adminV2RateLimitMiddleware = createRateLimitMiddleware(adminV2RateLimit);
+const apiV2RateLimitMiddleware = bypassForPathPrefixes(createRateLimitMiddleware(apiV2RateLimit), [
+  '/api/v2/admin',
+]);
 const aiRateLimitMiddleware = createRateLimitMiddleware(aiRateLimit);
 const trpcRateLimitMiddleware = createRateLimitMiddleware(apiTrpcRateLimit);
 const fileRateLimitMiddleware = createRateLimitMiddleware(fileUploadRateLimit);
@@ -79,6 +103,11 @@ app.use(async (c, next) => {
 // Apply cors and rate limits to API routes.
 app.use(`/api/v1/*`, cors());
 app.use('/api/v1/*', apiV1RateLimitMiddleware);
+// Admin rate limit mounted before the general /api/v2/* one so the dedicated
+// bucket receives admin traffic first. The general middleware is configured
+// with bypassForPathPrefixes so it skips admin paths entirely (no double-count).
+app.use(`/api/v2/admin/*`, cors());
+app.use('/api/v2/admin/*', adminV2RateLimitMiddleware);
 app.use(`/api/v2/*`, cors());
 app.use('/api/v2/*', apiV2RateLimitMiddleware);
 app.use(`/api/v2-beta/*`, cors());
