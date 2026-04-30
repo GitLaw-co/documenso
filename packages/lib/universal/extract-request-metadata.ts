@@ -28,7 +28,7 @@ export type ApiRequestMetadata = {
    * - `api`: per-team API token (Authorization: Bearer api_xxx).
    * - `session`: user web session (cookie).
    * - `apiAdminToken`: platform-admin API token (Authorization: Bearer <DOCUMENSO_ADMIN_API_KEY>),
-   *   used by automation such as env-ctl. Scoped to the organisation identified by
+   *   used by external platform automation. Scoped to the organisation identified by
    *   DOCUMENSO_ONDEMAND_ORG_ID; actions are attributed to the organisation owner.
    * - `null`: the request is not authenticated.
    */

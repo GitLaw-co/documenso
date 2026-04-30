@@ -80,11 +80,11 @@ export const apiV2RateLimit = createRateLimit({
   window: '1m',
 });
 
-// Dedicated bucket for `/api/v2/admin/*` (platform admin API, env-ctl automation).
-// Kept separate from apiV2RateLimit to decouple env-ctl's burst profile (concurrent
-// env teardowns) from back-law's document/template flows on `/api/v2/*`. 300/min
-// is roomy for ~50-env concurrent teardown bursts while bounding abuse potential
-// if the admin key is ever compromised.
+// Dedicated bucket for `/api/v2/admin/*` (platform admin API, automation use).
+// Kept separate from apiV2RateLimit so the orchestrator's burst profile (concurrent
+// env teardowns) is decoupled from regular client document/template flows on
+// `/api/v2/*`. 300/min is roomy for batched teardown operations while bounding
+// abuse potential if the admin key is ever compromised.
 export const adminV2RateLimit = createRateLimit({
   action: 'api.v2.admin',
   max: 300,
