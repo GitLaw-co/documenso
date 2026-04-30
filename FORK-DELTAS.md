@@ -59,5 +59,4 @@ All other team, webhook, api-token, and open-api upstream helpers are **byte-for
 ## Related
 
 - `packages/trpc/server/admin-router/README-admin-api.md` — operational contract for the admin API.
-- `.github/CODEOWNERS` — forces review on files listed above when upstream-sync opens a PR.
 - `.github/workflows/sync-upstream.yml` — the weekly sync itself.
