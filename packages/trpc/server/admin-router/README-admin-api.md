@@ -12,6 +12,7 @@ This is a fork-only surface — not present in upstream Documenso. See `FORK-DEL
 | --- | --- | --- |
 | POST | `/api/v2/admin/team/create` | Create team (idempotent by `teamUrl`) |
 | POST | `/api/v2/admin/team/delete` | Delete team (idempotent, noop on not-found) |
+| POST | `/api/v2/admin/team/delete-by-url` | Delete team by canonical URL (idempotent, cascades all team-scoped child resources) |
 | POST | `/api/v2/admin/api-token/create` | Issue API token for a team (idempotent by `tokenName`; plaintext returned ONCE) |
 | POST | `/api/v2/admin/api-token/delete` | Revoke API token |
 | POST | `/api/v2/admin/webhook/create` | Register webhook (idempotent by `webhookUrl`) |
@@ -142,3 +143,48 @@ Admin paths are filtered out of the public `/api/v2/openapi.json` document. Futu
 | `500 Internal Server Error` | Configuration issue (`DOCUMENSO_ONDEMAND_ORG_ID` unset / invalid, etc.). |
 
 Idempotent-delete noop returns `200` with `{deleted: false, reason: 'not_found'}`, NOT 404.
+
+---
+
+## 10. Endpoint detail: `team/delete-by-url`
+
+#### POST `/api/v2/admin/team/delete-by-url`
+
+Idempotent canonical-by-URL team teardown. Used by `env-cli delete <slug>` to clean up per-env Documenso resources without persisting team IDs across the env-cli run.
+
+**Request:**
+
+```json
+{ "teamUrl": "env-<slug>" }
+```
+
+**Response:**
+
+```json
+{ "deleted": true }
+```
+
+or:
+
+```json
+{ "deleted": false, "reason": "not_found" }
+```
+
+(HTTP 200 in both cases — matches the `*.delete` idempotency contract in §1.)
+
+**Behavior:**
+
+- Looks up the team by `url` scoped to `DOCUMENSO_ONDEMAND_ORG_ID`. Returns `not_found` if the team does not exist or lives in another organisation.
+- Cascade scope (Prisma FK relations + helper-side cleanup):
+  - `ApiToken`, `Webhook`, `TeamProfile`, `TeamEmail`, `TeamEmailVerification`, `TeamGroup`, `Folder`, `Envelope` plus indirect envelope children (`EnvelopeItem`, `DocumentAuditLog`, `EnvelopeAttachment`, `Recipient`, `Field`, `Signature`, `DocumentShareLink`) — DB cascade via `onDelete: Cascade`.
+  - `TeamGlobalSettings` — explicit cleanup inside the helper transaction.
+  - Empty internal `OrganisationGroup` rows — purged by the helper.
+
+**Concurrency:** idempotent under serialized callers per §1. True concurrent duplicates may surface a P2025 (record-not-found) on the loser; callers should retry or treat as success.
+
+**Side effects (inherited from `team/delete`):**
+
+- The `send.team-deleted.email` job is queued and dispatches an email to all members of the platform-admin organisation. Accepted noise — see §3 ("Operational invariants").
+- FK-cascade child deletes do NOT generate per-resource entries in `DocumentAuditLog`. The audit trail records only the parent team-delete attributed to the platform admin user; child rows disappear silently.
+
+**Why not delete by ID?** `*.create` endpoints are idempotent by canonical names (`teamUrl`, `tokenName`, `webhookUrl`); `*.delete` accepted only IDs. env-cli orchestration could lose IDs on partial failure between create-step and state-commit — leaving orphan teams. Delete-by-URL closes the identification asymmetry.
