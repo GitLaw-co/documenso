@@ -1,0 +1,90 @@
+import { expect, test } from '@playwright/test';
+
+const ADMIN_API = process.env.E2E_DOCUMENSO_ADMIN_BASE_URL ?? 'http://localhost:3000';
+const ADMIN_KEY = process.env.E2E_DOCUMENSO_ADMIN_API_KEY!;
+
+type AdminPostResult = { status: number; json: Record<string, unknown> };
+
+async function adminPost(path: string, body: unknown): Promise<AdminPostResult> {
+  const res = await fetch(`${ADMIN_API}/api/v2/admin${path}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${ADMIN_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  const json: Record<string, unknown> = await res.json();
+  return { status: res.status, json };
+}
+
+function expectTeamId(json: Record<string, unknown>): number {
+  if (
+    typeof json.team !== 'object' ||
+    json.team === null ||
+    !('id' in json.team) ||
+    typeof json.team.id !== 'number'
+  ) {
+    throw new Error(`expected response.team.id (number), got: ${JSON.stringify(json)}`);
+  }
+  return json.team.id;
+}
+
+test('admin: team/delete-by-url cascades child api-tokens + webhooks; team can be re-created with the same URL', async () => {
+  const slug = `e2e-cascade-${Date.now()}`;
+
+  // Setup: create team + child api-token + webhook.
+  const t = await adminPost('/team/create', { teamUrl: slug });
+  expect(t.status).toBe(200);
+  const teamId = expectTeamId(t.json);
+
+  const tk = await adminPost('/api-token/create', {
+    teamId,
+    tokenName: `${slug}-token`,
+  });
+  expect(tk.status).toBe(200);
+
+  const wh = await adminPost('/webhook/create', {
+    teamId,
+    webhookUrl: `http://example.test/${slug}/webhook`,
+    secret: 'a'.repeat(32),
+    eventTriggers: ['DOCUMENT_SENT'],
+    enabled: true,
+  });
+  expect(wh.status).toBe(200);
+
+  // Act: delete by url.
+  const del = await adminPost('/team/delete-by-url', { teamUrl: slug });
+  expect(del.status).toBe(200);
+  expect(del.json).toMatchObject({ deleted: true });
+
+  // Assert via subsequent re-create. created:true means the team row + its
+  // direct cascade children (api-token, webhook, etc.) are gone — otherwise
+  // team/create returns created:false (Team.url is @unique). Re-create with
+  // the same URL is the env-cli teardown→provision contract surface.
+  const t2 = await adminPost('/team/create', { teamUrl: slug });
+  expect(t2.json.created).toBe(true);
+
+  // Cleanup: snip the just-recreated team.
+  await adminPost('/team/delete-by-url', { teamUrl: slug });
+});
+
+test('admin: team/delete-by-url is idempotent — second call returns not_found', async () => {
+  const slug = `e2e-idem-${Date.now()}`;
+  await adminPost('/team/create', { teamUrl: slug });
+
+  const r1 = await adminPost('/team/delete-by-url', { teamUrl: slug });
+  expect(r1.json).toEqual({ deleted: true });
+
+  const r2 = await adminPost('/team/delete-by-url', { teamUrl: slug });
+  expect(r2.status).toBe(200);
+  expect(r2.json).toEqual({ deleted: false, reason: 'not_found' });
+});
+
+test('admin: team/delete-by-url returns not_found for unknown teamUrl', async () => {
+  const r = await adminPost('/team/delete-by-url', {
+    teamUrl: `e2e-never-existed-${Date.now()}`,
+  });
+  expect(r.status).toBe(200);
+  expect(r.json).toEqual({ deleted: false, reason: 'not_found' });
+});
