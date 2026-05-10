@@ -3,7 +3,9 @@ import { expect, test } from '@playwright/test';
 const ADMIN_API = process.env.E2E_DOCUMENSO_ADMIN_BASE_URL ?? 'http://localhost:3000';
 const ADMIN_KEY = process.env.E2E_DOCUMENSO_ADMIN_API_KEY!;
 
-async function adminPost(path: string, body: unknown) {
+type AdminPostResult = { status: number; json: Record<string, unknown> };
+
+async function adminPost(path: string, body: unknown): Promise<AdminPostResult> {
   const res = await fetch(`${ADMIN_API}/api/v2/admin${path}`, {
     method: 'POST',
     headers: {
@@ -12,7 +14,20 @@ async function adminPost(path: string, body: unknown) {
     },
     body: JSON.stringify(body),
   });
-  return { status: res.status, json: (await res.json()) as Record<string, unknown> };
+  const json: Record<string, unknown> = await res.json();
+  return { status: res.status, json };
+}
+
+function expectTeamId(json: Record<string, unknown>): number {
+  if (
+    typeof json.team !== 'object' ||
+    json.team === null ||
+    !('id' in json.team) ||
+    typeof json.team.id !== 'number'
+  ) {
+    throw new Error(`expected response.team.id (number), got: ${JSON.stringify(json)}`);
+  }
+  return json.team.id;
 }
 
 test('admin: team/delete-by-url cascades child api-tokens + webhooks; team can be re-created with the same URL', async () => {
@@ -21,7 +36,7 @@ test('admin: team/delete-by-url cascades child api-tokens + webhooks; team can b
   // Setup: create team + child api-token + webhook.
   const t = await adminPost('/team/create', { teamUrl: slug });
   expect(t.status).toBe(200);
-  const teamId = (t.json.team as { id: number }).id;
+  const teamId = expectTeamId(t.json);
 
   const tk = await adminPost('/api-token/create', {
     teamId,
