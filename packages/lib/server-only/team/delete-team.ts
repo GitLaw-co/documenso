@@ -85,15 +85,6 @@ export const deleteTeam = async ({ userId, teamId }: DeleteTeamOptions) => {
       },
     });
 
-    // Clean up the linked TeamGlobalSettings row. The Team→TGS relation has
-    // onDelete: Cascade on the Team side (schema.prisma:931-932), which fires
-    // only when TGS is deleted; deleting Team leaves TGS orphan. Every caller
-    // of this helper had been leaking these rows. Drop the TGS row explicitly
-    // inside the same transaction.
-    await tx.teamGlobalSettings.delete({
-      where: { id: team.teamGlobalSettingsId },
-    });
-
     // Purge all internal organisation groups that have no teams.
     await tx.organisationGroup.deleteMany({
       where: {

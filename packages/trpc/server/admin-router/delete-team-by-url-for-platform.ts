@@ -37,10 +37,14 @@ export const deleteTeamByUrlForPlatformRoute = adminTokenProcedure
     //   - prisma.team.delete (cascades ApiToken, Webhook, TeamProfile,
     //     TeamEmail, TeamEmailVerification, TeamGroup, Folder, Envelope
     //     and indirect envelope children via Prisma onDelete: Cascade).
-    //   - TeamGlobalSettings cleanup (added in PR-A Task 1).
     //   - empty internal OrganisationGroup purge.
     //   - team-deleted email job dispatch (accepted side effect, see
     //     README-admin-api.md).
+    //
+    // Known orphans NOT cleaned up here (see README §10): TeamGlobalSettings,
+    // DocumentMeta, DocumentData. Functionally harmless; storage waste only.
+    // Cleanup would require modifying upstream files, increasing fork
+    // merge-conflict surface — explicitly deferred.
     //
     // Auth invariant: deleteTeam's buildTeamWhereQuery requires the user
     // to have DELETE_TEAM role on the team via team-group membership.
@@ -63,9 +67,9 @@ export const deleteTeamByUrlForPlatformRoute = adminTokenProcedure
       //   - deleteTeam's internal findFirst returns null (the team is gone
       //     before the helper looks) → AppError(UNAUTHORIZED). The helper
       //     cannot tell "team gone" from "caller lacks rights".
-      //   - The helper's findFirst saw the team but tx.team.delete (or
-      //     tx.teamGlobalSettings.delete) inside its transaction loses to a
-      //     concurrent commit → Prisma P2025 (record-not-found).
+      //   - The helper's findFirst saw the team but tx.team.delete inside its
+      //     transaction loses to a concurrent commit → Prisma P2025
+      //     (record-not-found).
       // In both cases, re-check existence here: if the team is genuinely
       // absent, return the sequential not-found shape for symmetry. If the
       // team is still present, the auth invariant has broken (e.g.

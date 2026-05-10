@@ -177,13 +177,13 @@ or:
 - Looks up the team by `url` scoped to `DOCUMENSO_ONDEMAND_ORG_ID`. Returns `not_found` if the team does not exist or lives in another organisation.
 - Cascade scope (Prisma FK relations + helper-side cleanup):
   - `ApiToken`, `Webhook`, `TeamProfile`, `TeamEmail`, `TeamEmailVerification`, `TeamGroup`, `Folder`, `Envelope` plus indirect envelope children (`EnvelopeItem`, `DocumentAuditLog`, `EnvelopeAttachment`, `Recipient`, `Field`, `Signature`, `DocumentShareLink`) — DB cascade via `onDelete: Cascade`.
-  - `TeamGlobalSettings` — explicit cleanup inside the helper transaction.
   - Empty internal `OrganisationGroup` rows — purged by the helper.
 
-**Cascade caveats (known leaks not fixed by this endpoint):**
+**Cascade caveats (known orphan leaks not fixed by this endpoint):**
 
 - `WebhookCall` rows are deleted via the `Webhook → WebhookCall` cascade (silently included in the `Webhook` line above; mentioned here to make the scope explicit).
-- `DocumentMeta` rows linked to deleted `Envelope`s are NOT cascaded — `Envelope.documentMeta` declares no `onDelete` — so `DocumentMeta` rows are left orphan after a teardown. <!-- TODO(2026-05-10): track DocumentMeta orphan cleanup; same class as TGS pre-PR-A. -->
+- `TeamGlobalSettings` rows are NOT cascaded — `Team.teamGlobalSettings` declares `onDelete: Cascade` on the `Team` side, which fires only when `TeamGlobalSettings` is deleted (not when `Team` is). Deleting a `Team` leaves its `TeamGlobalSettings` orphan. Functionally harmless: `TGS.id` is freshly generated per team-create, so orphan rows do not block re-creation; only storage waste. Cleanup is deliberately not done here — would require modifying upstream `delete-team.ts`, increasing fork merge-conflict surface.
+- `DocumentMeta` rows linked to deleted `Envelope`s are NOT cascaded — `Envelope.documentMeta` declares no `onDelete` — so `DocumentMeta` rows are left orphan after a teardown. <!-- TODO(2026-05-10): track DocumentMeta orphan cleanup. -->
 - `DocumentData` rows referenced by deleted `EnvelopeItem`s are NOT cascaded — the `onDelete: Cascade` on `EnvelopeItem.documentData` fires only when `DocumentData` is deleted (not when `EnvelopeItem` is). Deleting an `Envelope` cascades to its `EnvelopeItem`s but leaves their `DocumentData` rows orphan. Same shape as the `DocumentMeta` orphan; same follow-up.
 
 **Concurrency:** idempotent including under concurrent duplicates. Two simultaneous calls for the same `teamUrl` both pass the handler's `findFirst` pre-check; the helper then runs its own `findFirst` inside `deleteTeam` (with auth scoping) and throws `UNAUTHORIZED` for the loser because the team is already gone — the helper cannot distinguish "team deleted by a concurrent caller" from "caller lacks DELETE_TEAM rights." The handler narrowly catches `AppError(UNAUTHORIZED)`, re-checks team existence, and translates a confirmed-absent team to `{ deleted: false, reason: 'not_found' }` for symmetry with the sequential not-found path. If the team is still present at re-check time, the error propagates — that signals a genuine auth invariant break (caller lost ADMIN-group membership), not a race.

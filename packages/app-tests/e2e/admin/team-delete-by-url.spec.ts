@@ -15,7 +15,7 @@ async function adminPost(path: string, body: unknown) {
   return { status: res.status, json: (await res.json()) as Record<string, unknown> };
 }
 
-test('admin: team/delete-by-url cascades child api-tokens + webhooks; TGS cleanup verified by re-create', async () => {
+test('admin: team/delete-by-url cascades child api-tokens + webhooks; team can be re-created with the same URL', async () => {
   const slug = `e2e-cascade-${Date.now()}`;
 
   // Setup: create team + child api-token + webhook.
@@ -43,12 +43,10 @@ test('admin: team/delete-by-url cascades child api-tokens + webhooks; TGS cleanu
   expect(del.status).toBe(200);
   expect(del.json).toMatchObject({ deleted: true });
 
-  // Assert via subsequent re-create. created:true means:
-  //   1. The team row is gone (otherwise team/create returns created:false).
-  //   2. The TeamGlobalSettings row from the previous team is gone too —
-  //      otherwise Prisma would refuse to create a new Team since the new
-  //      TGS would conflict with the orphan one via the @unique constraint
-  //      chain. This indirectly validates the helper's TGS cleanup (Task 1).
+  // Assert via subsequent re-create. created:true means the team row + its
+  // direct cascade children (api-token, webhook, etc.) are gone — otherwise
+  // team/create returns created:false (Team.url is @unique). Re-create with
+  // the same URL is the env-cli teardown→provision contract surface.
   const t2 = await adminPost('/team/create', { teamUrl: slug });
   expect(t2.json.created).toBe(true);
 
