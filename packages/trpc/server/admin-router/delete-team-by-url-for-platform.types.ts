@@ -13,8 +13,14 @@ export const deleteTeamByUrlForPlatformMeta: TrpcRouteMeta = {
   adminToken: true,
 };
 
+// Normalize on input: trim + lowercase to match the `Team.url` storage form
+// produced by `ZTeamUrlSchema` on team creation. Keeps the lookup robust
+// against a future caller that capitalizes a slug or adds whitespace, even
+// though the current sole caller (env-cli) always sends `env-<slug>` already
+// in canonical form. Skip the format/regex/PROTECTED_TEAM_URLS checks from
+// `ZTeamUrlSchema` — none of them are appropriate for a delete-side input.
 export const ZDeleteTeamByUrlForPlatformRequestSchema = z.object({
-  teamUrl: z.string().min(1),
+  teamUrl: z.string().trim().toLowerCase().min(1),
 });
 
 export const ZDeleteTeamByUrlForPlatformResponseSchema = z.object({

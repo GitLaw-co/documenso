@@ -1,3 +1,4 @@
+import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { deleteTeam } from '@documenso/lib/server-only/team/delete-team';
 import { env } from '@documenso/lib/utils/env';
 import { prisma } from '@documenso/prisma';
@@ -48,10 +49,31 @@ export const deleteTeamByUrlForPlatformRoute = adminTokenProcedure
     // ADMIN-group inheritance for platform-admin teams, this endpoint
     // will silently break with a misleading UNAUTHORIZED — keep the
     // invariant intact.
-    await deleteTeam({
-      userId: ctx.user.id,
-      teamId: team.id,
-    });
+    try {
+      await deleteTeam({
+        userId: ctx.user.id,
+        teamId: team.id,
+      });
+    } catch (err) {
+      // Race window: a concurrent caller may have deleted the same team
+      // between our findFirst above and deleteTeam's own internal findFirst.
+      // In that case deleteTeam's lookup returns null and it throws
+      // UNAUTHORIZED (it cannot tell "team gone" from "caller lacks rights").
+      // Re-check existence here: if the team is genuinely absent, return the
+      // sequential not-found shape for symmetry. If the team is still
+      // present, the auth invariant has broken (e.g. create-team-for-platform
+      // stopped propagating the platform-org ADMIN group onto new teams) and
+      // we MUST surface it — silencing would mask a real auth regression.
+      if (err instanceof AppError && err.code === AppErrorCode.UNAUTHORIZED) {
+        const stillExists = await prisma.team.findFirst({
+          where: { url: input.teamUrl, organisationId: orgId },
+        });
+        if (!stillExists) {
+          return { deleted: false, reason: 'not_found' as const };
+        }
+      }
+      throw err;
+    }
 
     return { deleted: true };
   });

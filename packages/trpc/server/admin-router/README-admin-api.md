@@ -180,7 +180,12 @@ or:
   - `TeamGlobalSettings` — explicit cleanup inside the helper transaction.
   - Empty internal `OrganisationGroup` rows — purged by the helper.
 
-**Concurrency:** idempotent under serialized callers per §1. True concurrent duplicates may surface a P2025 (record-not-found) on the loser; callers should retry or treat as success.
+**Cascade caveats (known leaks not fixed by this endpoint):**
+
+- `WebhookCall` rows are deleted via the `Webhook → WebhookCall` cascade (silently included in the `Webhook` line above; mentioned here to make the scope explicit).
+- `DocumentMeta` rows linked to deleted `Envelope`s are NOT cascaded — `Envelope.documentMeta` declares no `onDelete` — so `DocumentMeta` rows are left orphan after a teardown. Same class of orphan as `TeamGlobalSettings` was before this PR; deferred as a separate follow-up.
+
+**Concurrency:** idempotent including under concurrent duplicates. Two simultaneous calls for the same `teamUrl` both pass the handler's `findFirst` pre-check; the helper then runs its own `findFirst` inside `deleteTeam` (with auth scoping) and throws `UNAUTHORIZED` for the loser because the team is already gone — the helper cannot distinguish "team deleted by a concurrent caller" from "caller lacks DELETE_TEAM rights." The handler narrowly catches `AppError(UNAUTHORIZED)`, re-checks team existence, and translates a confirmed-absent team to `{ deleted: false, reason: 'not_found' }` for symmetry with the sequential not-found path. If the team is still present at re-check time, the error propagates — that signals a genuine auth invariant break (caller lost ADMIN-group membership), not a race.
 
 **Side effects (inherited from `team/delete`):**
 
