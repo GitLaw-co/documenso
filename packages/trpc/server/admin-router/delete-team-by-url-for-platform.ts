@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { deleteTeam } from '@documenso/lib/server-only/team/delete-team';
 import { env } from '@documenso/lib/utils/env';
@@ -56,15 +58,24 @@ export const deleteTeamByUrlForPlatformRoute = adminTokenProcedure
       });
     } catch (err) {
       // Race window: a concurrent caller may have deleted the same team
-      // between our findFirst above and deleteTeam's own internal findFirst.
-      // In that case deleteTeam's lookup returns null and it throws
-      // UNAUTHORIZED (it cannot tell "team gone" from "caller lacks rights").
-      // Re-check existence here: if the team is genuinely absent, return the
-      // sequential not-found shape for symmetry. If the team is still
-      // present, the auth invariant has broken (e.g. create-team-for-platform
-      // stopped propagating the platform-org ADMIN group onto new teams) and
-      // we MUST surface it — silencing would mask a real auth regression.
-      if (err instanceof AppError && err.code === AppErrorCode.UNAUTHORIZED) {
+      // between our findFirst above and deleteTeam's own work. Two distinct
+      // races land here:
+      //   - deleteTeam's internal findFirst returns null (the team is gone
+      //     before the helper looks) → AppError(UNAUTHORIZED). The helper
+      //     cannot tell "team gone" from "caller lacks rights".
+      //   - The helper's findFirst saw the team but tx.team.delete (or
+      //     tx.teamGlobalSettings.delete) inside its transaction loses to a
+      //     concurrent commit → Prisma P2025 (record-not-found).
+      // In both cases, re-check existence here: if the team is genuinely
+      // absent, return the sequential not-found shape for symmetry. If the
+      // team is still present, the auth invariant has broken (e.g.
+      // create-team-for-platform stopped propagating the platform-org ADMIN
+      // group onto new teams) — re-throw, never silence.
+      const isAuthRaceCandidate = err instanceof AppError && err.code === AppErrorCode.UNAUTHORIZED;
+      const isPrismaRaceCandidate =
+        err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025';
+
+      if (isAuthRaceCandidate || isPrismaRaceCandidate) {
         const stillExists = await prisma.team.findFirst({
           where: { url: input.teamUrl, organisationId: orgId },
         });
