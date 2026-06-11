@@ -9,6 +9,7 @@ import { prisma } from '@documenso/prisma';
 import { getI18nInstance } from '../../../client-only/providers/i18n-server';
 import { NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
 import { getEmailContext } from '../../../server-only/email/get-email-context';
+import { resolveEnvelopeOwnerContact } from '../../../utils/document';
 import { renderEmailWithI18N } from '../../../utils/render-email-with-i18n';
 import { formatDocumentsPath } from '../../../utils/teams';
 import type { TSendDocumentCreatedFromDirectTemplateEmailJobDefinition } from './send-document-created-from-direct-template-email';
@@ -55,7 +56,7 @@ export const run = async ({
   }
 
   const [recipient] = envelope.recipients;
-  const { user: templateOwner } = envelope;
+  const owner = resolveEnvelopeOwnerContact(envelope);
 
   const { branding, emailLanguage, senderEmail } = await getEmailContext({
     emailType: 'INTERNAL',
@@ -88,8 +89,8 @@ export const run = async ({
   await mailer.sendMail({
     to: [
       {
-        name: templateOwner.name || '',
-        address: templateOwner.email,
+        name: owner.name,
+        address: owner.address,
       },
     ],
     from: senderEmail,

@@ -14,6 +14,7 @@ import { NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
 import { DOCUMENSO_INTERNAL_EMAIL } from '../../../constants/email';
 import { getEmailContext } from '../../../server-only/email/get-email-context';
 import { extractDerivedDocumentEmailSettings } from '../../../types/document-email';
+import { resolveEnvelopeOwnerContact } from '../../../utils/document';
 import { unsafeBuildEnvelopeIdQuery } from '../../../utils/envelope';
 import { renderEmailWithI18N } from '../../../utils/render-email-with-i18n';
 import { formatDocumentsPath } from '../../../utils/teams';
@@ -64,7 +65,7 @@ export const run = async ({
     }),
   ]);
 
-  const { user: documentOwner } = envelope;
+  const owner = resolveEnvelopeOwnerContact(envelope);
 
   const isEmailEnabled = extractDerivedDocumentEmailSettings(
     envelope.documentMeta,
@@ -91,7 +92,7 @@ export const run = async ({
       const recipientTemplate = createElement(DocumentRejectionConfirmedEmail, {
         recipientName: recipient.name,
         documentName: envelope.title,
-        documentOwnerName: envelope.user.name || envelope.user.email,
+        documentOwnerName: owner.name || owner.address,
         reason: recipient.rejectionReason || '',
         assetBaseUrl: NEXT_PUBLIC_WEBAPP_URL(),
       });
@@ -142,8 +143,8 @@ export const run = async ({
 
     await mailer.sendMail({
       to: {
-        name: documentOwner.name || '',
-        address: documentOwner.email,
+        name: owner.name,
+        address: owner.address,
       },
       from: DOCUMENSO_INTERNAL_EMAIL, // Purposefully using internal email here.
       subject: i18n._(msg`Document "${envelope.title}" - Rejected by ${recipient.name}`),

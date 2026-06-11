@@ -12,6 +12,7 @@ import { getI18nInstance } from '../../../client-only/providers/i18n-server';
 import { NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
 import { getEmailContext } from '../../../server-only/email/get-email-context';
 import { extractDerivedDocumentEmailSettings } from '../../../types/document-email';
+import { resolveEnvelopeOwnerContact } from '../../../utils/document';
 import { unsafeBuildEnvelopeIdQuery } from '../../../utils/envelope';
 import { renderEmailWithI18N } from '../../../utils/render-email-with-i18n';
 import type { JobRunIO } from '../../client/_internal/job';
@@ -63,7 +64,8 @@ export const run = async ({
     meta: envelope.documentMeta,
   });
 
-  const { documentMeta, user: documentOwner } = envelope;
+  const { documentMeta } = envelope;
+  const owner = resolveEnvelopeOwnerContact(envelope);
 
   // Check if document cancellation emails are enabled
   const isEmailEnabled = extractDerivedDocumentEmailSettings(documentMeta).documentDeleted;
@@ -87,8 +89,8 @@ export const run = async ({
       recipientsToNotify.map(async (recipient) => {
         const template = createElement(DocumentCancelTemplate, {
           documentName: envelope.title,
-          inviterName: documentOwner.name || undefined,
-          inviterEmail: documentOwner.email,
+          inviterName: owner.name || undefined,
+          inviterEmail: owner.address,
           assetBaseUrl: NEXT_PUBLIC_WEBAPP_URL(),
           cancellationReason: cancellationReason || 'The document has been cancelled.',
         });
