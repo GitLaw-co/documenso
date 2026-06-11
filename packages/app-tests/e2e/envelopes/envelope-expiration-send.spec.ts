@@ -24,7 +24,7 @@ const examplePdf = fs.readFileSync(path.join(__dirname, '../../../../assets/exam
 
 test.describe.configure({ mode: 'parallel' });
 
-test('[ENVELOPE_EXPIRATION]: sending document sets expiresAt on recipients', async ({
+test('[ENVELOPE_EXPIRATION]: sending document without an expiration period sets no expiry', async ({
   request,
 }) => {
   const { user, team } = await seedUser();
@@ -79,23 +79,14 @@ test('[ENVELOPE_EXPIRATION]: sending document sets expiresAt on recipients', asy
 
   expect(distributeRes.ok()).toBeTruthy();
 
-  // Check that recipients now have expiresAt set.
+  // With no expiration period configured, recipients must NOT get an expiry.
+  // GitLaw never intended documents to auto-expire, so "unset" means "no expiry".
   const recipients = await prisma.recipient.findMany({
     where: { envelopeId },
   });
 
   expect(recipients.length).toBe(1);
-  expect(recipients[0].expiresAt).not.toBeNull();
-
-  // The default expiration period is 3 months. Verify it's roughly correct.
-  const expiresAt = recipients[0].expiresAt!;
-  const now = new Date();
-  const diffMs = expiresAt.getTime() - now.getTime();
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-  // 3 months is roughly 89-92 days. Allow a generous range.
-  expect(diffDays).toBeGreaterThan(80);
-  expect(diffDays).toBeLessThan(100);
+  expect(recipients[0].expiresAt).toBeNull();
 });
 
 test('[ENVELOPE_EXPIRATION]: sending document with custom org expiration period', async ({
@@ -249,6 +240,13 @@ test('[ENVELOPE_EXPIRATION]: resending refreshes expiresAt', async ({ page }) =>
   const document = await seedPendingDocument(user, team.id, ['resend-target@test.documenso.com']);
 
   const recipient = document.recipients[0];
+
+  // Configure an explicit expiration period so resending recomputes a fresh
+  // deadline (with no period configured the default is now "no expiry").
+  await prisma.documentMeta.update({
+    where: { id: document.documentMetaId },
+    data: { envelopeExpirationPeriod: { unit: 'month', amount: 1 } },
+  });
 
   // Set an initial expiresAt that's 1 day from now.
   const initialExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
