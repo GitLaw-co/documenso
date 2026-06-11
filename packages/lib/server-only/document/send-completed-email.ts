@@ -13,6 +13,7 @@ import { DOCUMENT_AUDIT_LOG_TYPE } from '../../types/document-audit-logs';
 import { extractDerivedDocumentEmailSettings } from '../../types/document-email';
 import type { RequestMetadata } from '../../universal/extract-request-metadata';
 import { getFileServerSide } from '../../universal/upload/get-file.server';
+import { resolveEnvelopeOwnerContact } from '../../utils/document';
 import { createDocumentAuditLogData } from '../../utils/document-audit-logs';
 import type { EnvelopeIdOptions } from '../../utils/envelope';
 import { unsafeBuildEnvelopeIdQuery } from '../../utils/envelope';
@@ -80,6 +81,7 @@ export const sendCompletedEmail = async ({ id, requestMetadata }: SendDocumentOp
   });
 
   const { user: owner } = envelope;
+  const ownerContact = resolveEnvelopeOwnerContact(envelope);
 
   const completedDocumentEmailAttachments = await Promise.all(
     envelope.envelopeItems.map(async (envelopeItem) => {
@@ -120,7 +122,7 @@ export const sendCompletedEmail = async ({ id, requestMetadata }: SendDocumentOp
   //    - Recipient emails are disabled
   if (
     isOwnerDocumentCompletedEmailEnabled &&
-    (!envelope.recipients.find((recipient) => recipient.email === owner.email) ||
+    (!envelope.recipients.find((recipient) => recipient.email === ownerContact.address) ||
       !isDocumentCompletedEmailEnabled)
   ) {
     const template = createElement(DocumentCompletedEmailTemplate, {
@@ -143,8 +145,8 @@ export const sendCompletedEmail = async ({ id, requestMetadata }: SendDocumentOp
     await mailer.sendMail({
       to: [
         {
-          name: owner.name || '',
-          address: owner.email,
+          name: ownerContact.name,
+          address: ownerContact.address,
         },
       ],
       from: senderEmail,
@@ -163,8 +165,8 @@ export const sendCompletedEmail = async ({ id, requestMetadata }: SendDocumentOp
         requestMetadata,
         data: {
           emailType: 'DOCUMENT_COMPLETED',
-          recipientEmail: owner.email,
-          recipientName: owner.name ?? '',
+          recipientEmail: ownerContact.address,
+          recipientName: ownerContact.name,
           recipientId: owner.id,
           recipientRole: 'OWNER',
           isResending: false,
@@ -194,7 +196,8 @@ export const sendCompletedEmail = async ({ id, requestMetadata }: SendDocumentOp
       const template = createElement(DocumentCompletedEmailTemplate, {
         documentName: envelope.title,
         assetBaseUrl,
-        downloadLink: recipient.email === owner.email ? documentOwnerDownloadLink : downloadLink,
+        downloadLink:
+          recipient.email === ownerContact.address ? documentOwnerDownloadLink : downloadLink,
         customBody:
           isDirectTemplate && envelope.documentMeta?.message
             ? renderCustomEmailTemplate(envelope.documentMeta.message, customEmailTemplate)

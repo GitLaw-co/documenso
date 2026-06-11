@@ -10,6 +10,7 @@ import { getI18nInstance } from '../../../client-only/providers/i18n-server';
 import { NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
 import { getEmailContext } from '../../../server-only/email/get-email-context';
 import { extractDerivedDocumentEmailSettings } from '../../../types/document-email';
+import { resolveEnvelopeOwnerContact } from '../../../utils/document';
 import { renderEmailWithI18N } from '../../../utils/render-email-with-i18n';
 import { formatDocumentsPath } from '../../../utils/teams';
 import type { JobRunIO } from '../../client/_internal/job';
@@ -62,7 +63,8 @@ export const run = async ({
     throw new Error(`Recipient ${recipientId} not found on envelope ${envelopeId}`);
   }
 
-  const { documentMeta, user: documentOwner } = envelope;
+  const { documentMeta } = envelope;
+  const owner = resolveEnvelopeOwnerContact(envelope);
 
   const isEmailEnabled = extractDerivedDocumentEmailSettings(documentMeta).ownerRecipientExpired;
 
@@ -103,8 +105,8 @@ export const run = async ({
 
     await mailer.sendMail({
       to: {
-        name: documentOwner.name || '',
-        address: documentOwner.email,
+        name: owner.name,
+        address: owner.address,
       },
       from: senderEmail,
       subject: i18n._(

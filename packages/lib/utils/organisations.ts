@@ -8,7 +8,6 @@ import {
 import type { ORGANISATION_MEMBER_ROLE_MAP } from '@documenso/lib/constants/organisations-translations';
 
 import { DEFAULT_DOCUMENT_DATE_FORMAT } from '../constants/date-formats';
-import { DEFAULT_ENVELOPE_EXPIRATION_PERIOD } from '../constants/envelope-expiration';
 import {
   LOWEST_ORGANISATION_ROLE,
   ORGANISATION_MEMBER_ROLE_HIERARCHY,
@@ -140,7 +139,9 @@ export const generateDefaultOrganisationSettings = (): Omit<
 
     defaultRecipients: null,
 
-    envelopeExpirationPeriod: DEFAULT_ENVELOPE_EXPIRATION_PERIOD,
+    // No auto-expiry by default. GitLaw never intended documents to expire, and
+    // an unset/disabled period resolves to "never expires" in resolveExpiresAt.
+    envelopeExpirationPeriod: { disabled: true },
 
     aiFeaturesEnabled: false,
   };
