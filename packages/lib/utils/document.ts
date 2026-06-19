@@ -20,6 +20,35 @@ export const isDocumentCompleted = (document: Pick<Envelope, 'status'> | Documen
   return status === DocumentStatus.COMPLETED || status === DocumentStatus.REJECTED;
 };
 
+type EnvelopeOwnerContactSource = {
+  user: Pick<User, 'name' | 'email'>;
+  documentMeta?: Pick<DocumentMeta, 'externalOwnerName' | 'externalOwnerEmail'> | null;
+};
+
+/**
+ * Resolve the contact details for the real owner of an envelope.
+ *
+ * In GitLaw's integration every envelope is created under a single shared API
+ * service account, so `envelope.user` is NOT the real document owner. The real
+ * owner is stored separately on `documentMeta.externalOwnerName` /
+ * `documentMeta.externalOwnerEmail` (populated by back-law, and already used by
+ * the audit-log and certificate PDFs).
+ *
+ * Prefer the external owner so owner-directed emails reach the actual customer,
+ * falling back to `envelope.user` for standalone/upstream Documenso usage where
+ * the external owner fields are null.
+ */
+export const resolveEnvelopeOwnerContact = (
+  envelope: EnvelopeOwnerContactSource,
+): { name: string; address: string } => {
+  const { user, documentMeta } = envelope;
+
+  return {
+    name: documentMeta?.externalOwnerName || user.name || '',
+    address: documentMeta?.externalOwnerEmail || user.email,
+  };
+};
+
 /**
  * Extracts the derived document meta which should be used when creating a document
  * from scratch, or from a template.

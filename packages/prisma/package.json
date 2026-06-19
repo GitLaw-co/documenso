@@ -15,7 +15,8 @@
     "prisma:migrate-deploy": "prisma migrate deploy",
     "prisma:migrate-reset": "prisma migrate reset",
     "prisma:seed": "prisma db seed",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "script:clear-recipient-expirations": "tsx ./scripts/clear-unintended-recipient-expirations.ts"
   },
   "prisma": {
     "seed": "tsx ./seed-database.ts"

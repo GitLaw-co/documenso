@@ -24,6 +24,13 @@ test('[ENVELOPE_EXPIRATION]: set custom expiration period at organisation level'
   // Wait for the form to load.
   await expect(page.getByRole('button', { name: 'Update' }).first()).toBeVisible();
 
+  // The default is now "Never expires"; switch to a custom duration first.
+  const expirationModeTrigger = page
+    .locator('button[role="combobox"]')
+    .filter({ hasText: 'Never expires' });
+  await expirationModeTrigger.click();
+  await page.getByRole('option', { name: 'Custom duration' }).click();
+
   // Change the amount to 2.
   const amountInput = page.getByRole('spinbutton');
   await amountInput.clear();
@@ -54,6 +61,13 @@ test('[ENVELOPE_EXPIRATION]: set custom expiration period at organisation level'
 test('[ENVELOPE_EXPIRATION]: disable expiration at organisation level', async ({ page }) => {
   const { user, organisation } = await seedUser({
     isPersonalOrganisation: false,
+  });
+
+  // Start from a custom duration so we can exercise disabling it
+  // (the default is now "Never expires").
+  await prisma.organisationGlobalSettings.update({
+    where: { id: organisation.organisationGlobalSettingsId },
+    data: { envelopeExpirationPeriod: { unit: 'month', amount: 3 } },
   });
 
   await apiSignin({

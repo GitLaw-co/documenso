@@ -11,6 +11,7 @@ import { getI18nInstance } from '../../../client-only/providers/i18n-server';
 import { NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
 import { getEmailContext } from '../../../server-only/email/get-email-context';
 import { extractDerivedDocumentEmailSettings } from '../../../types/document-email';
+import { resolveEnvelopeOwnerContact } from '../../../utils/document';
 import { unsafeBuildEnvelopeIdQuery } from '../../../utils/envelope';
 import { isRecipientEmailValidForSending } from '../../../utils/recipients';
 import { renderEmailWithI18N } from '../../../utils/render-email-with-i18n';
@@ -76,12 +77,12 @@ export const run = async ({
 
   const [recipient] = envelope.recipients;
   const { email: recipientEmail, name: recipientName } = recipient;
-  const { user: owner } = envelope;
+  const owner = resolveEnvelopeOwnerContact(envelope);
 
   const recipientReference = recipientName || recipientEmail;
 
   // Don't send notification if the owner is the one who signed.
-  if (owner.email === recipientEmail || !isRecipientEmailValidForSending(recipient)) {
+  if (owner.address === recipientEmail || !isRecipientEmailValidForSending(recipient)) {
     return;
   }
 
@@ -117,8 +118,8 @@ export const run = async ({
 
     await mailer.sendMail({
       to: {
-        name: owner.name ?? '',
-        address: owner.email,
+        name: owner.name,
+        address: owner.address,
       },
       from: senderEmail,
       subject: i18n._(msg`${recipientReference} has signed "${envelope.title}"`),

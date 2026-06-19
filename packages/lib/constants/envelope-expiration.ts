@@ -43,15 +43,13 @@ export const getEnvelopeExpirationDuration = (
 /**
  * Resolve the concrete expiresAt timestamp from a raw expiration period (from JSON column).
  *
- * - `null` means use the default period (3 months).
+ * - `null` / unset means never expires (returns null).
  * - `{ disabled: true }` means never expires (returns null).
  * - `{ unit, amount }` means compute the timestamp from now + duration.
  */
 export const resolveExpiresAt = (rawPeriod: unknown): Date | null => {
   if (rawPeriod === null || rawPeriod === undefined) {
-    const duration = getEnvelopeExpirationDuration(DEFAULT_ENVELOPE_EXPIRATION_PERIOD);
-
-    return new Date(Date.now() + duration.toMillis());
+    return null;
   }
 
   const parsed = ZEnvelopeExpirationPeriod.parse(rawPeriod);

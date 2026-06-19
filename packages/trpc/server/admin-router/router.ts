@@ -8,6 +8,7 @@ import { createWebhookForPlatformRoute } from './create-webhook-for-platform';
 import { deleteApiTokenForPlatformRoute } from './delete-api-token-for-platform';
 import { deleteDocumentRoute } from './delete-document';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
+import { deleteTeamByUrlForPlatformRoute } from './delete-team-by-url-for-platform';
 import { deleteTeamForPlatformRoute } from './delete-team-for-platform';
 import { deleteUserRoute } from './delete-user';
 import { deleteWebhookForPlatformRoute } from './delete-webhook-for-platform';
@@ -96,6 +97,7 @@ export const adminRouter = router({
   team: {
     createForPlatform: createTeamForPlatformRoute,
     deleteForPlatform: deleteTeamForPlatformRoute,
+    deleteByUrlForPlatform: deleteTeamByUrlForPlatformRoute,
     get: getAdminTeamRoute,
   },
   webhook: {
