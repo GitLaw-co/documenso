@@ -62,7 +62,7 @@ export const run = async ({ payload, io }: { payload: TSendDocumentCancelledEmai
   const owner = resolveEnvelopeOwnerContact(envelope);
 
   // Don't send cancellation emails if the organisation has email sending disabled or the owner is disabled (e.g. banned).
-  if (emailsDisabled || documentOwner.disabled) {
+  if (emailsDisabled || envelope.user.disabled) {
     return;
   }
 
