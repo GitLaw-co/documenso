@@ -1,3 +1,7 @@
+import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
+import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT, IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
+import { getAllowedUploadMimeTypes } from '@documenso/lib/constants/document-conversion';
+import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
 import type { MessageDescriptor } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
@@ -7,10 +11,6 @@ import { AlertTriangle, Plus } from 'lucide-react';
 import type { FileRejection } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 import { Link } from 'react-router';
-
-import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
-import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT, IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
-import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
 
 import {
   DocumentDropzoneCardCenterVariants,
@@ -55,9 +55,7 @@ export const DocumentDropzone = ({
   const organisation = useCurrentOrganisation();
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      'application/pdf': ['.pdf'],
-    },
+    accept: getAllowedUploadMimeTypes(),
     multiple: allowMultiple,
     disabled,
     onDrop: (acceptedFiles) => {
@@ -71,19 +69,12 @@ export const DocumentDropzone = ({
   });
 
   const heading = {
-    document: disabled
-      ? disabledHeading || msg`You have reached your document limit.`
-      : msg`Add a document`,
+    document: disabled ? disabledHeading || msg`You have reached your document limit.` : msg`Add a document`,
     template: msg`Upload Template Document`,
   };
 
   return (
-    <motion.div
-      variants={DocumentDropzoneContainerVariants}
-      initial="initial"
-      animate="animate"
-      whileHover="hover"
-    >
+    <motion.div variants={DocumentDropzoneContainerVariants} initial="initial" animate="animate" whileHover="hover">
       <Card
         role="button"
         className={cn(
@@ -162,7 +153,7 @@ export const DocumentDropzone = ({
           <p className="mt-6 font-medium text-foreground">{_(heading[type])}</p>
 
           <p className="mt-1 text-center text-sm text-muted-foreground/80">
-            {_(disabled ? disabledMessage : msg`Drag & drop your PDF here.`)}
+            {_(disabled ? disabledMessage : msg`Drag & drop your document here.`)}
           </p>
 
           {disabled && IS_BILLING_ENABLED() && (
