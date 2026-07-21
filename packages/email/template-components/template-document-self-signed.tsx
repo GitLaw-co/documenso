@@ -8,10 +8,7 @@ export interface TemplateDocumentSelfSignedProps {
   assetBaseUrl: string;
 }
 
-export const TemplateDocumentSelfSigned = ({
-  documentName,
-  assetBaseUrl,
-}: TemplateDocumentSelfSignedProps) => {
+export const TemplateDocumentSelfSigned = ({ documentName, assetBaseUrl }: TemplateDocumentSelfSignedProps) => {
   const getAssetUrl = (path: string) => {
     return new URL(path, assetBaseUrl).toString();
   };
@@ -23,21 +20,18 @@ export const TemplateDocumentSelfSigned = ({
       <Section className="flex-row items-center justify-center">
         <Section>
           <Column align="center">
-            <Text className="text-base font-semibold text-[#7AC455]">
-              <Img
-                src={getAssetUrl('/static/completed.png')}
-                className="-mt-0.5 mr-2 inline h-7 w-7 align-middle"
-              />
+            <Text className="font-semibold text-[#7AC455] text-base">
+              <Img src={getAssetUrl('/static/completed.png')} className="-mt-0.5 mr-2 inline h-7 w-7 align-middle" />
               <Trans>Completed</Trans>
             </Text>
           </Column>
         </Section>
 
-        <Text className="text-primary mb-0 mt-6 text-center text-lg font-semibold">
+        <Text className="mt-6 mb-0 text-center font-semibold text-lg text-primary">
           <Trans>You have signed "{documentName}"</Trans>
         </Text>
 
-        <Text className="mx-auto mb-6 mt-1 max-w-[80%] text-center text-base text-slate-400">
+        <Text className="mx-auto mt-1 mb-6 max-w-[80%] text-center text-base text-slate-400">
           <Trans>Your signed document is now complete.</Trans>
         </Text>
       </Section>

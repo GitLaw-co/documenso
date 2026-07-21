@@ -70,6 +70,7 @@ export default function EmbedPlaygroundPage() {
     allowDistributing: false,
     allowDirectLink: false,
     allowDuplication: false,
+    allowSaveAsTemplate: false,
     allowDownloadPDF: false,
     allowDeletion: false,
   });
@@ -294,9 +295,7 @@ export default function EmbedPlaygroundPage() {
     const hash = btoa(encodeURIComponent(JSON.stringify(hashData)));
 
     const basePath =
-      mode === 'create'
-        ? '/embed/v2/authoring/envelope/create'
-        : `/embed/v2/authoring/envelope/edit/${envelopeId}`;
+      mode === 'create' ? '/embed/v2/authoring/envelope/create' : `/embed/v2/authoring/envelope/edit/${envelopeId}`;
 
     const buildIframeSrc = (path: string, tokenValue: string, hashValue: string): string => {
       // Ensure the token is treated strictly as a query parameter value.
@@ -373,9 +372,7 @@ export default function EmbedPlaygroundPage() {
     state: T,
     setState: React.Dispatch<React.SetStateAction<T>>,
   ) => (
-    <fieldset
-      style={{ border: '1px solid #ccc', padding: '8px', marginBottom: '8px', borderRadius: '4px' }}
-    >
+    <fieldset style={{ border: '1px solid #ccc', padding: '8px', marginBottom: '8px', borderRadius: '4px' }}>
       <legend style={{ fontWeight: 'bold', fontSize: '13px' }}>{label}</legend>
       {Object.entries(state).map(([key, value]) => (
         <label key={key} style={{ display: 'block', fontSize: '12px', marginBottom: '2px' }}>
@@ -418,15 +415,11 @@ export default function EmbedPlaygroundPage() {
               placeholder="api_... or presign token"
               required
             />
-            {tokenError && (
-              <div style={{ color: 'red', fontSize: '11px', marginTop: '4px' }}>{tokenError}</div>
-            )}
+            {tokenError && <div style={{ color: 'red', fontSize: '11px', marginTop: '4px' }}>{tokenError}</div>}
           </div>
 
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>
-              External ID (optional)
-            </label>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>External ID (optional)</label>
             <input
               type="text"
               value={externalId}
@@ -451,9 +444,7 @@ export default function EmbedPlaygroundPage() {
           {mode === 'create' && (
             <>
               <div style={{ marginBottom: '8px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>
-                  Envelope Type
-                </label>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>Envelope Type</label>
                 <select
                   value={envelopeType}
                   onChange={(e) => setEnvelopeType(e.target.value as 'DOCUMENT' | 'TEMPLATE')}
@@ -465,9 +456,7 @@ export default function EmbedPlaygroundPage() {
               </div>
 
               <div style={{ marginBottom: '8px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>
-                  Folder ID (optional)
-                </label>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>Folder ID (optional)</label>
                 <input
                   type="text"
                   value={folderId}
@@ -481,9 +470,7 @@ export default function EmbedPlaygroundPage() {
 
           {mode === 'edit' && (
             <div style={{ marginBottom: '8px' }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>
-                Envelope ID
-              </label>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>Envelope ID</label>
               <input
                 type="text"
                 value={envelopeId}
@@ -496,9 +483,7 @@ export default function EmbedPlaygroundPage() {
           )}
 
           <div style={{ marginBottom: '8px' }}>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>
-              Language (optional)
-            </label>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>Language (optional)</label>
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
@@ -680,9 +665,7 @@ export default function EmbedPlaygroundPage() {
               wordBreak: 'break-all',
             }}
           >
-            {messages.length === 0 && (
-              <span style={{ color: '#999' }}>Waiting for messages...</span>
-            )}
+            {messages.length === 0 && <span style={{ color: '#999' }}>Waiting for messages...</span>}
             {messages.map((msg, i) => (
               <div key={i} style={{ borderBottom: '1px solid #eee', padding: '2px 0' }}>
                 {msg}

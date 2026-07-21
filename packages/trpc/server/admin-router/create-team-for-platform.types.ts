@@ -1,6 +1,7 @@
+import { ZNameSchema } from '@documenso/lib/types/name';
 import { z } from 'zod';
 
-import { ZTeamNameSchema, ZTeamUrlSchema } from '../team-router/schema';
+import { ZTeamUrlSchema } from '../team-router/schema';
 import type { TrpcRouteMeta } from '../trpc';
 
 export const createTeamForPlatformMeta: TrpcRouteMeta = {
@@ -15,7 +16,7 @@ export const createTeamForPlatformMeta: TrpcRouteMeta = {
 
 export const ZCreateTeamForPlatformRequestSchema = z.object({
   teamUrl: ZTeamUrlSchema,
-  teamName: ZTeamNameSchema.optional(),
+  teamName: ZNameSchema.optional(),
   inheritMembers: z.boolean().optional(),
 });
 

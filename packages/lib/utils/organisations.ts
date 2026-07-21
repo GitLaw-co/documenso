@@ -1,13 +1,9 @@
-import type { Organisation, OrganisationGlobalSettings, Prisma } from '@prisma/client';
-import {
-  DocumentVisibility,
-  type OrganisationGroup,
-  type OrganisationMemberRole,
-} from '@prisma/client';
-
 import type { ORGANISATION_MEMBER_ROLE_MAP } from '@documenso/lib/constants/organisations-translations';
+import type { Organisation, OrganisationGlobalSettings, Prisma } from '@prisma/client';
+import { DocumentVisibility, type OrganisationGroup, type OrganisationMemberRole } from '@prisma/client';
 
 import { DEFAULT_DOCUMENT_DATE_FORMAT } from '../constants/date-formats';
+import { DEFAULT_ENVELOPE_REMINDER_SETTINGS } from '../constants/envelope-reminder';
 import {
   LOWEST_ORGANISATION_ROLE,
   ORGANISATION_MEMBER_ROLE_HIERARCHY,
@@ -55,8 +51,7 @@ export const getHighestOrganisationRoleInGroup = (
 
   groups.forEach((group) => {
     const currentRolePriority = ORGANISATION_MEMBER_ROLE_HIERARCHY[group.organisationRole].length;
-    const highestOrganisationRolePriority =
-      ORGANISATION_MEMBER_ROLE_HIERARCHY[highestOrganisationRole].length;
+    const highestOrganisationRolePriority = ORGANISATION_MEMBER_ROLE_HIERARCHY[highestOrganisationRole].length;
 
     if (currentRolePriority > highestOrganisationRolePriority) {
       highestOrganisationRole = group.organisationRole;
@@ -108,10 +103,7 @@ export const buildOrganisationWhereQuery = ({
   };
 };
 
-export const generateDefaultOrganisationSettings = (): Omit<
-  OrganisationGlobalSettings,
-  'id' | 'organisation'
-> => {
+export const generateDefaultOrganisationSettings = (): Omit<OrganisationGlobalSettings, 'id' | 'organisation'> => {
   return {
     documentVisibility: DocumentVisibility.EVERYONE,
     documentLanguage: 'en',
@@ -131,6 +123,8 @@ export const generateDefaultOrganisationSettings = (): Omit<
     brandingLogo: '',
     brandingUrl: '',
     brandingCompanyDetails: '',
+    brandingColors: null,
+    brandingCss: '',
 
     emailId: null,
     emailReplyTo: null,
@@ -142,6 +136,8 @@ export const generateDefaultOrganisationSettings = (): Omit<
     // No auto-expiry by default. GitLaw never intended documents to expire, and
     // an unset/disabled period resolves to "never expires" in resolveExpiresAt.
     envelopeExpirationPeriod: { disabled: true },
+
+    reminderSettings: DEFAULT_ENVELOPE_REMINDER_SETTINGS,
 
     aiFeaturesEnabled: false,
   };
