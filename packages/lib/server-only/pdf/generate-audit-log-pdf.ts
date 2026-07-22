@@ -1,4 +1,5 @@
-import type { TDocumentAuditLog } from '@documenso/lib/types/document-audit-logs';
+import type { TDocumentAuditLog, TDocumentAuditLogType } from '@documenso/lib/types/document-audit-logs';
+import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import { prisma } from '@documenso/prisma';
 import { PDF } from '@libpdf/core';
 import { i18n } from '@lingui/core';
@@ -9,6 +10,29 @@ import { getTranslations } from '../../utils/i18n';
 import { getOrganisationClaimByTeamId } from '../organisation/get-organisation-claims';
 import type { GenerateCertificatePdfOptions } from './generate-certificate-pdf';
 import { renderAuditLogs } from './render-audit-logs';
+
+/**
+ * Audit log event types rendered in the audit trail PDF.
+ *
+ * The PDF is a lifecycle record of the document's signing journey, so only
+ * events that describe that journey are kept: creation, distribution
+ * (sent/emails), recipient activity (opened/viewed/signed/rejected) and
+ * completion. Setup noise — field/recipient/envelope-item create, update and
+ * delete events, document meta/settings/title updates — is intentionally
+ * excluded to keep the trail readable.
+ */
+export const AUDIT_TRAIL_PDF_EVENT_TYPES: TDocumentAuditLogType[] = [
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_CREATED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_SENT,
+  DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_INSERTED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_UNINSERTED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_COMPLETED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_REJECTED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED,
+];
 
 type GenerateAuditLogPdfOptions = GenerateCertificatePdfOptions & {
   envelopeItems: string[];
@@ -69,6 +93,9 @@ const getAuditLogs = async (envelopeId: string) => {
   const auditLogs = await prisma.documentAuditLog.findMany({
     where: {
       envelopeId,
+      type: {
+        in: AUDIT_TRAIL_PDF_EVENT_TYPES,
+      },
     },
     orderBy: {
       createdAt: 'desc',

@@ -1,22 +1,20 @@
 import type { I18n } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
-import type { DocumentMeta } from '@prisma/client';
-import type { Envelope, RecipientRole, SigningStatus } from '@prisma/client';
+import type { DocumentMeta, Envelope, RecipientRole, SigningStatus } from '@prisma/client';
 import Konva from 'konva';
 import 'konva/skia-backend';
-import { DateTime } from 'luxon';
 import fs from 'node:fs';
 import path from 'node:path';
+import { DateTime } from 'luxon';
 import type { Canvas } from 'skia-canvas';
 import { Image as SkiaImage } from 'skia-canvas';
-import { match } from 'ts-pattern';
-import { P } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 import { DOCUMENT_STATUS } from '../../constants/document';
 import { APP_I18N_OPTIONS } from '../../constants/i18n';
 import { RECIPIENT_ROLES_DESCRIPTION } from '../../constants/recipient-roles';
-import { DOCUMENT_AUDIT_LOG_TYPE } from '../../types/document-audit-logs';
 import type { TDocumentAuditLog } from '../../types/document-audit-logs';
+import { DOCUMENT_AUDIT_LOG_TYPE } from '../../types/document-audit-logs';
 import { formatDocumentAuditLogAction } from '../../utils/document-audit-logs';
 import { ensureFontLibrary } from './helpers';
 
@@ -50,7 +48,7 @@ const textSm = 9;
 const fontMedium = '500';
 
 const pageTopMargin = 72;
-const pageBottomMargin = 15;
+const pageBottomMargin = 24;
 const contentMaxWidth = 768;
 
 // Lucide icon SVG path data (24x24 viewBox, stroke-based)
@@ -111,10 +109,10 @@ const ICON_PATHS: Record<
 const getAuditLogIconAndLabel = (type: string): { iconKey: string; label: string } =>
   match(type)
     .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_SENT, () => ({ iconKey: 'send', label: 'SENT' }))
-    .with(
-      P.union(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED, DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED),
-      () => ({ iconKey: 'eye', label: 'VIEWED' }),
-    )
+    .with(P.union(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED, DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED), () => ({
+      iconKey: 'eye',
+      label: 'VIEWED',
+    }))
     .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_COMPLETED, () => ({
       iconKey: 'penLine',
       label: 'SIGNED',
@@ -128,13 +126,14 @@ const getAuditLogIconAndLabel = (type: string): { iconKey: string; label: string
       label: 'REJECTED',
     }))
     .with(DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT, () => ({ iconKey: 'mail', label: 'EMAIL SENT' }))
-    .with(
-      P.union(
-        DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_INSERTED,
-        DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_UNINSERTED,
-      ),
-      () => ({ iconKey: 'fileText', label: 'FIELD' }),
-    )
+    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_INSERTED, () => ({
+      iconKey: 'penLine',
+      label: 'FIELD SIGNED',
+    }))
+    .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_UNINSERTED, () => ({
+      iconKey: 'fileText',
+      label: 'FIELD CLEARED',
+    }))
     .otherwise(() => ({
       iconKey: 'fileText',
       label: type.replace(/_/g, ' ').replace('DOCUMENT ', ''),
@@ -187,15 +186,7 @@ const renderIcon = (iconKey: string, size: number) => {
   return group;
 };
 
-const renderPageHeader = ({
-  i18n,
-  width,
-  margin,
-}: {
-  i18n: I18n;
-  width: number;
-  margin: number;
-}) => {
+const renderPageHeader = ({ i18n, width, margin }: { i18n: I18n; width: number; margin: number }) => {
   const header = new Konva.Group();
   const headerHeight = pageTopMargin;
   const logoHeight = 32;
@@ -230,12 +221,7 @@ const renderPageHeader = ({
   });
 
   const separator = new Konva.Line({
-    points: [
-      margin,
-      headerHeight - separatorPadding,
-      width - margin,
-      headerHeight - separatorPadding,
-    ],
+    points: [margin, headerHeight - separatorPadding, width - margin, headerHeight - separatorPadding],
     stroke: '#e5e7eb',
     strokeWidth: 1,
   });
@@ -260,17 +246,7 @@ type RenderOverviewCardOptions = {
   i18n: I18n;
 };
 
-const renderOverviewRow = ({
-  label,
-  value,
-  width,
-  y,
-}: {
-  label: string;
-  value: string;
-  width: number;
-  y: number;
-}) => {
+const renderOverviewRow = ({ label, value, width, y }: { label: string; value: string; width: number; y: number }) => {
   const labelWidth = 130;
   const group = new Konva.Group({ y });
 
@@ -302,18 +278,12 @@ const renderOverviewRow = ({
   return group;
 };
 
-const deriveEffectiveStatus = (
-  envelope: Omit<Envelope, 'completedAt'>,
-  recipients: AuditLogRecipient[],
-) => {
+const deriveEffectiveStatus = (envelope: Omit<Envelope, 'completedAt'>, recipients: AuditLogRecipient[]) => {
   let effectiveStatus = envelope.status;
 
   if (envelope.status === 'PENDING') {
-    const signingRecipients = recipients.filter(
-      (r) => r.role === 'SIGNER' || r.role === 'APPROVER',
-    );
-    const allSigned =
-      signingRecipients.length > 0 && signingRecipients.every((r) => r.signingStatus === 'SIGNED');
+    const signingRecipients = recipients.filter((r) => r.role === 'SIGNER' || r.role === 'APPROVER');
+    const allSigned = signingRecipients.length > 0 && signingRecipients.every((r) => r.signingStatus === 'SIGNED');
     const anyRejected = recipients.some((r) => r.signingStatus === 'REJECTED');
 
     if (anyRejected) {
@@ -351,9 +321,7 @@ const renderOverviewCard = (options: RenderOverviewCardOptions) => {
   overviewCard.add(docIdRow);
   currentY = overviewCard.getClientRect().height + rowSpacing;
 
-  const ownerText = envelopeOwner.email
-    ? `${envelopeOwner.name} (${envelopeOwner.email})`
-    : envelopeOwner.name;
+  const ownerText = envelopeOwner.email ? `${envelopeOwner.name} (${envelopeOwner.email})` : envelopeOwner.name;
   const ownerRow = renderOverviewRow({
     label: i18n._(msg`Owner`),
     value: ownerText,
@@ -364,9 +332,7 @@ const renderOverviewCard = (options: RenderOverviewCardOptions) => {
   currentY = overviewCard.getClientRect().height + rowSpacing;
 
   const effectiveStatus = deriveEffectiveStatus(envelope, recipients);
-  const statusDescription = i18n._(
-    envelope.deletedAt ? msg`Deleted` : DOCUMENT_STATUS[effectiveStatus].description,
-  );
+  const statusDescription = i18n._(envelope.deletedAt ? msg`Deleted` : DOCUMENT_STATUS[effectiveStatus].description);
 
   const statusGroup = new Konva.Group({ y: currentY });
   const statusLabelText = new Konva.Text({
@@ -455,9 +421,7 @@ const renderRow = (options: RenderRowOptions) => {
 
   // Column 2: Date + Time
   const col2Group = new Konva.Group({ x: col1Width, y: rowPaddingTop });
-  const dateTime = DateTime.fromJSDate(auditLog.createdAt).setLocale(
-    APP_I18N_OPTIONS.defaultLocale,
-  );
+  const dateTime = DateTime.fromJSDate(auditLog.createdAt).setLocale(APP_I18N_OPTIONS.defaultLocale);
   const dateText = new Konva.Text({
     x: 0,
     y: 0,
@@ -568,16 +532,7 @@ const buildAuditLogPages = (options: {
   overviewCard: Konva.Group;
   brandingReserve: number;
 }): Konva.Group[] => {
-  const {
-    auditLogs,
-    contentWidth,
-    margin,
-    pageWidth,
-    pageHeight,
-    i18n,
-    overviewCard,
-    brandingReserve,
-  } = options;
+  const { auditLogs, contentWidth, margin, pageWidth, pageHeight, i18n, overviewCard, brandingReserve } = options;
 
   const maxContentBottom = pageHeight - pageBottomMargin - brandingReserve;
 
@@ -655,7 +610,8 @@ export async function renderAuditLogs({
 }: GenerateAuditLogsOptions) {
   ensureFontLibrary();
 
-  const minimumMargin = 10;
+  // Comfortable document margin — keep in sync with render-certificate.ts.
+  const minimumMargin = 48;
 
   const contentWidth = Math.min(pageWidth - minimumMargin * 2, contentMaxWidth);
   const margin = (pageWidth - contentWidth) / 2;
