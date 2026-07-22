@@ -14,21 +14,22 @@ import { renderAuditLogs } from './render-audit-logs';
 /**
  * Audit log event types rendered in the audit trail PDF.
  *
- * The PDF is a lifecycle record of the document's signing journey, so only
- * events that describe that journey are kept: creation, distribution
- * (sent/emails), recipient activity (opened/viewed/signed/rejected) and
- * completion. Setup noise — field/recipient/envelope-item create, update and
- * delete events, document meta/settings/title updates — is intentionally
- * excluded to keep the trail readable.
+ * Parity with the DocuSign Certificate of Completion / Dropbox Sign
+ * (HelloSign) audit trail: lifecycle events only, ~3 rows per signer
+ * (sent / viewed / signed) plus document-level created and completed
+ * milestones.
+ *
+ * EMAIL_SENT is the per-recipient "sent to recipient X" event, so
+ * DOCUMENT_SENT (the envelope-level DRAFT -> PENDING transition) is
+ * excluded to avoid each send appearing twice. Field-level
+ * inserted/uninserted events are excluded — the benchmarks show a single
+ * per-signer "Signed" row, which DOCUMENT_RECIPIENT_COMPLETED covers.
  */
 export const AUDIT_TRAIL_PDF_EVENT_TYPES: TDocumentAuditLogType[] = [
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_CREATED,
-  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_SENT,
   DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED,
-  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_INSERTED,
-  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_UNINSERTED,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_COMPLETED,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_RECIPIENT_REJECTED,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_COMPLETED,

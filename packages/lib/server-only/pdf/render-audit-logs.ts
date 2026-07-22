@@ -125,7 +125,9 @@ const getAuditLogIconAndLabel = (type: string): { iconKey: string; label: string
       iconKey: 'xCircle',
       label: 'REJECTED',
     }))
-    .with(DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT, () => ({ iconKey: 'mail', label: 'EMAIL SENT' }))
+    // EMAIL_SENT is the per-recipient send event kept in the audit trail
+    // PDF, so it renders as the benchmark-style "SENT" row.
+    .with(DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT, () => ({ iconKey: 'send', label: 'SENT' }))
     .with(DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_FIELD_INSERTED, () => ({
       iconKey: 'penLine',
       label: 'FIELD SIGNED',
@@ -375,6 +377,18 @@ const renderOverviewCard = (options: RenderOverviewCardOptions) => {
     y: currentY,
   });
   overviewCard.add(recipientsRow);
+  currentY = overviewCard.getClientRect().height + rowSpacing;
+
+  // Declared time policy for the trail — every event row below renders its
+  // timestamp in UTC. DocuSign / Dropbox Sign declare their time policy once
+  // in the header the same way.
+  const timeZoneRow = renderOverviewRow({
+    label: i18n._(msg`Time zone`),
+    value: 'UTC (MM/DD/YYYY HH:mm:ss)',
+    width,
+    y: currentY,
+  });
+  overviewCard.add(timeZoneRow);
 
   return overviewCard;
 };
@@ -421,7 +435,7 @@ const renderRow = (options: RenderRowOptions) => {
 
   // Column 2: Date + Time
   const col2Group = new Konva.Group({ x: col1Width, y: rowPaddingTop });
-  const dateTime = DateTime.fromJSDate(auditLog.createdAt).setLocale(APP_I18N_OPTIONS.defaultLocale);
+  const dateTime = DateTime.fromJSDate(auditLog.createdAt).toUTC().setLocale(APP_I18N_OPTIONS.defaultLocale);
   const dateText = new Konva.Text({
     x: 0,
     y: 0,

@@ -9,15 +9,15 @@
  * Run from apps/remix/ so fonts and logo resolve correctly:
  *   cd apps/remix && npx tsx ../../packages/lib/server-only/pdf/test-pdf-render.ts
  */
-import { PDF } from '@libpdf/core';
-import { i18n } from '@lingui/core';
+
 import fs from 'node:fs';
 import path from 'node:path';
-
-import { renderAuditLogs } from './render-audit-logs';
+import { PDF } from '@libpdf/core';
+import { i18n } from '@lingui/core';
 import type { AuditLogRecipient } from './render-audit-logs';
-import { renderCertificate } from './render-certificate';
+import { renderAuditLogs } from './render-audit-logs';
 import type { CertificateRecipient } from './render-certificate';
+import { renderCertificate } from './render-certificate';
 
 // ---------------------------------------------------------------------------
 // i18n setup -- activate English with an empty catalog so msg() source
@@ -52,10 +52,7 @@ function makeBaseAuditLog(minutesAgo: number) {
   };
 }
 
-function makeCertRecipient(
-  id: number,
-  overrides: Partial<CertificateRecipient> = {},
-): CertificateRecipient {
+function makeCertRecipient(id: number, overrides: Partial<CertificateRecipient> = {}): CertificateRecipient {
   const base: CertificateRecipient = {
     id,
     name: `Recipient ${id}`,
@@ -81,10 +78,7 @@ function makeCertRecipient(
   return { ...base, ...overrides };
 }
 
-function makeAuditRecipient(
-  id: number,
-  overrides: Partial<AuditLogRecipient> = {},
-): AuditLogRecipient {
+function makeAuditRecipient(id: number, overrides: Partial<AuditLogRecipient> = {}): AuditLogRecipient {
   return {
     id,
     name: `Recipient ${id}`,
@@ -197,9 +191,7 @@ async function writePdf(name: string, pages: Uint8Array[]) {
   const outPath = path.join(OUTPUT_DIR, name);
   fs.writeFileSync(outPath, bytes);
   const pageCount = pages.length;
-  console.log(
-    `  ✓ ${name} (${pageCount} page${pageCount === 1 ? '' : 's'}, ${bytes.length} bytes)`,
-  );
+  console.log(`  ✓ ${name} (${pageCount} page${pageCount === 1 ? '' : 's'}, ${bytes.length} bytes)`);
 }
 
 // ---------------------------------------------------------------------------
@@ -221,9 +213,7 @@ async function certSingleRecipient() {
 async function certManyRecipients() {
   const recipients = Array.from({ length: 10 }, (_, i) =>
     makeCertRecipient(i + 1, {
-      role: (['SIGNER', 'APPROVER', 'VIEWER', 'CC', 'ASSISTANT'] as const)[
-        i % 5
-      ] as CertificateRecipient['role'],
+      role: (['SIGNER', 'APPROVER', 'VIEWER', 'CC', 'ASSISTANT'] as const)[i % 5] as CertificateRecipient['role'],
       signingStatus:
         i < 8
           ? ('SIGNED' as CertificateRecipient['signingStatus'])
@@ -256,10 +246,12 @@ async function certNoBranding() {
 async function auditFewEntries() {
   const auditLogs = [
     makeAuditLog(1, 'DOCUMENT_CREATED', { title: 'Test Document' }),
-    makeAuditLog(2, 'DOCUMENT_SENT', {
+    makeAuditLog(2, 'EMAIL_SENT', {
       recipientEmail: 'recipient1@example.com',
       recipientName: 'Recipient 1',
       recipientId: 1,
+      emailType: 'SIGNING_REQUEST',
+      isResending: false,
     }),
     makeAuditLog(3, 'DOCUMENT_OPENED', {
       recipientEmail: 'recipient1@example.com',
@@ -288,13 +280,13 @@ async function auditFewEntries() {
 }
 
 async function auditManyEntries() {
+  // Mirrors AUDIT_TRAIL_PDF_EVENT_TYPES in generate-audit-log-pdf.ts — the
+  // script bypasses the DB query, so keep this list in sync with the filter.
   const types = [
     'DOCUMENT_CREATED',
     'EMAIL_SENT',
-    'DOCUMENT_SENT',
     'DOCUMENT_OPENED',
     'DOCUMENT_VIEWED',
-    'DOCUMENT_FIELD_INSERTED',
     'DOCUMENT_RECIPIENT_COMPLETED',
     'DOCUMENT_COMPLETED',
   ];
@@ -309,14 +301,6 @@ async function auditManyEntries() {
         recipientId: (i % 3) + 1,
         ...(type === 'DOCUMENT_CREATED' ? { title: 'Test Document' } : {}),
         ...(type === 'EMAIL_SENT' ? { emailType: 'SIGNING_REQUEST', isResending: false } : {}),
-        ...(type === 'DOCUMENT_FIELD_INSERTED'
-          ? {
-              fieldId: `field-${i}`,
-              fieldRecipientEmail: `recipient${(i % 3) + 1}@example.com`,
-              fieldRecipientId: (i % 3) + 1,
-              fieldType: 'SIGNATURE',
-            }
-          : {}),
         ...(type === 'DOCUMENT_COMPLETED' ? { transactionId: `tx-${i}` } : {}),
       }),
     );
@@ -399,9 +383,7 @@ async function main() {
   await auditLongText();
 
   console.log(`\nAll PDFs written to ${OUTPUT_DIR}/`);
-  console.log(
-    'Open them to visually inspect pagination, footer positioning, and content clipping.',
-  );
+  console.log('Open them to visually inspect pagination, footer positioning, and content clipping.');
 }
 
 main().catch((err) => {
