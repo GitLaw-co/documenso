@@ -515,11 +515,11 @@ export const EmbedDirectTemplateClientPage = ({
       </div>
 
       {!hidePoweredBy && (
-        <div className="fixed bottom-0 left-0 z-40 rounded-tr bg-primary px-2 py-1 font-medium text-primary-foreground text-xs opacity-60 hover:opacity-100">
+        <div className="fixed bottom-0 left-0 z-40 flex items-center gap-1.5 rounded-tr bg-primary px-2.5 py-1 font-medium text-primary-foreground text-xs opacity-60 hover:opacity-100">
           <span>
             <Trans>Powered by</Trans>
           </span>
-          <BrandingLogo className="ml-2 inline-block h-[14px] text-primary-foreground" />
+          <BrandingLogo className="h-3.5 text-primary-foreground" />
         </div>
       )}
     </div>

@@ -283,15 +283,15 @@ export const DocumentSigningPageViewV2 = () => {
 
               {!hidePoweredBy && (
                 <a
-                  href="https://documenso.com"
+                  href="https://git.law"
                   target="_blank"
-                  className="fixed right-0 bottom-0 z-40 hidden cursor-pointer rounded-tl bg-primary px-2 py-1 font-medium text-primary-foreground text-xs opacity-60 hover:opacity-100 lg:block"
+                  className="fixed right-0 bottom-0 z-40 hidden cursor-pointer items-center gap-1.5 rounded-tl bg-primary px-2.5 py-1 font-medium text-primary-foreground text-xs opacity-60 hover:opacity-100 lg:flex"
                   rel="noopener"
                 >
                   <span>
                     <Trans>Powered by</Trans>
                   </span>
-                  <BrandingLogo className="ml-2 inline-block h-[14px] text-primary-foreground" />
+                  <BrandingLogo className="h-3.5 text-primary-foreground" />
                 </a>
               )}
             </div>
