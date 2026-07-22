@@ -3,7 +3,7 @@ import { match } from 'ts-pattern';
 
 import { DEFAULT_STANDARD_FONT_SIZE } from '../../constants/pdf';
 import type { TCheckboxFieldMeta } from '../../types/field-meta';
-import { parseCheckboxCustomText } from '../../utils/fields';
+import { normalizeCheckboxRadioValues, parseCheckboxCustomText } from '../../utils/fields';
 import {
   createFieldHoverInteraction,
   konvaTextFill,
@@ -28,7 +28,7 @@ export const renderCheckboxFieldElement = (field: FieldToRender, options: Render
   const { fieldWidth, fieldHeight } = calculateFieldPosition(field, pageWidth, pageHeight);
 
   const checkboxMeta: TCheckboxFieldMeta | null = (field.fieldMeta as TCheckboxFieldMeta) || null;
-  const checkboxValues = checkboxMeta?.values || [];
+  const checkboxValues = normalizeCheckboxRadioValues(checkboxMeta?.values);
 
   const isFirstRender = !pageLayer.findOne(`#${field.renderId}`);
 

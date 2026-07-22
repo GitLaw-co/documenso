@@ -14,7 +14,7 @@ import {
   ZRadioFieldMeta,
   ZTextFieldMeta,
 } from '@documenso/lib/types/field-meta';
-import { toCheckboxCustomText, toRadioCustomText } from '@documenso/lib/utils/fields';
+import { normalizeCheckboxRadioValues, toCheckboxCustomText, toRadioCustomText } from '@documenso/lib/utils/fields';
 import { zEmail } from '@documenso/lib/utils/zod';
 import type { TSignEnvelopeFieldValue } from '@documenso/trpc/server/envelope-router/sign-envelope-field.types';
 import { checkboxValidationSigns } from '@documenso/ui/primitives/document-flow/field-items-advanced-settings/constants';
@@ -146,7 +146,9 @@ export const extractFieldInsertionValues = ({
       }
 
       const parsedRadioFieldParsedMeta = ZRadioFieldMeta.parse(field.fieldMeta);
-      const radioFieldValues = parsedRadioFieldParsedMeta.values || [];
+      // Must match the fallback the canvas renderer and click handler use so
+      // the signed index of the fallback option is accepted.
+      const radioFieldValues = normalizeCheckboxRadioValues(parsedRadioFieldParsedMeta.values);
 
       if (!radioFieldValues[fieldValue.value]) {
         throw new AppError(AppErrorCode.INVALID_BODY, {
@@ -168,7 +170,9 @@ export const extractFieldInsertionValues = ({
       }
 
       const parsedCheckboxFieldParsedMeta = ZCheckboxFieldMeta.parse(field.fieldMeta);
-      const checkboxFieldValues = parsedCheckboxFieldParsedMeta.values || [];
+      // Must match the fallback the canvas renderer and click handler use so
+      // the signed indices of the fallback option are accepted.
+      const checkboxFieldValues = normalizeCheckboxRadioValues(parsedCheckboxFieldParsedMeta.values);
 
       const { value } = fieldValue;
 
