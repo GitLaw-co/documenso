@@ -1,13 +1,11 @@
-import type { HTMLAttributes } from 'react';
-
+import { cn } from '@documenso/ui/lib/utils';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { RecipientRole } from '@prisma/client';
+import type { HTMLAttributes } from 'react';
 import { Link } from 'react-router';
-
-import { cn } from '@documenso/ui/lib/utils';
-import { Checkbox } from '@documenso/ui/primitives/checkbox';
 
 export type DocumentSigningDisclosureProps = HTMLAttributes<HTMLDivElement> & {
   checked: boolean;
@@ -49,13 +47,10 @@ export const DocumentSigningDisclosure = ({
         onCheckedChange={(value) => onCheckedChange(value === true)}
         className="mt-0.5"
       />
-      <label
-        htmlFor="consent-checkbox"
-        className="cursor-pointer text-sm leading-relaxed text-muted-foreground"
-      >
+      <label htmlFor="consent-checkbox" className="cursor-pointer text-muted-foreground text-sm leading-relaxed">
         <Trans>
-          I agree to {actionText} this document electronically and receive records in electronic
-          form, as described in the{' '}
+          I agree to {actionText} this document electronically and receive records in electronic form, as described in
+          the{' '}
           <Link
             className="text-documenso-700 underline"
             to="/articles/signature-disclosure"

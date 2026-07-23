@@ -4,9 +4,9 @@ import { prisma } from '@documenso/prisma';
 
 import { adminTokenProcedure } from '../trpc';
 import {
+  createTeamForPlatformMeta,
   ZCreateTeamForPlatformRequestSchema,
   ZCreateTeamForPlatformResponseSchema,
-  createTeamForPlatformMeta,
 } from './create-team-for-platform.types';
 
 export const createTeamForPlatformRoute = adminTokenProcedure

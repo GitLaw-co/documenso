@@ -1,8 +1,16 @@
+import { i18n } from '@lingui/core';
+import { msg } from '@lingui/core/macro';
 import { Outlet, isRouteErrorResponse } from 'react-router';
 
 import { GenericErrorLayout } from '~/components/general/generic-error-layout';
-
 import type { Route } from './+types/_layout';
+
+export function meta() {
+  return [
+    { title: i18n._(msg`Sign Document - GitLaw`) },
+    { name: 'robots', content: 'noindex, nofollow, noarchive, nosnippet, noimageindex' },
+  ];
+}
 
 /**
  * A layout to handle scenarios where the user is a recipient of a given resource

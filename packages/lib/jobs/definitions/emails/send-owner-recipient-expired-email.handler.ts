@@ -1,10 +1,7 @@
-import { createElement } from 'react';
-
-import { msg } from '@lingui/core/macro';
-
-import { mailer } from '@documenso/email/mailer';
 import { RecipientExpiredTemplate } from '@documenso/email/templates/recipient-expired';
 import { prisma } from '@documenso/prisma';
+import { msg } from '@lingui/core/macro';
+import { createElement } from 'react';
 
 import { getI18nInstance } from '../../../client-only/providers/i18n-server';
 import { NEXT_PUBLIC_WEBAPP_URL } from '../../../constants/app';
@@ -16,13 +13,7 @@ import { formatDocumentsPath } from '../../../utils/teams';
 import type { JobRunIO } from '../../client/_internal/job';
 import type { TSendOwnerRecipientExpiredEmailJobDefinition } from './send-owner-recipient-expired-email';
 
-export const run = async ({
-  payload,
-  io,
-}: {
-  payload: TSendOwnerRecipientExpiredEmailJobDefinition;
-  io: JobRunIO;
-}) => {
+export const run = async ({ payload, io }: { payload: TSendOwnerRecipientExpiredEmailJobDefinition; io: JobRunIO }) => {
   const { recipientId, envelopeId } = payload;
 
   const envelope = await prisma.envelope.findFirst({
@@ -72,7 +63,7 @@ export const run = async ({
     return;
   }
 
-  const { branding, emailLanguage, senderEmail } = await getEmailContext({
+  const { branding, emailLanguage, senderEmail, emailsDisabled, emailTransport } = await getEmailContext({
     emailType: 'RECIPIENT',
     source: {
       type: 'team',
@@ -80,6 +71,11 @@ export const run = async ({
     },
     meta: documentMeta,
   });
+
+  // Don't send any emails if the organisation has email sending disabled.
+  if (emailsDisabled) {
+    return;
+  }
 
   const i18n = await getI18nInstance(emailLanguage);
 
@@ -103,15 +99,13 @@ export const run = async ({
       }),
     ]);
 
-    await mailer.sendMail({
+    await emailTransport.sendMail({
       to: {
         name: owner.name,
         address: owner.address,
       },
       from: senderEmail,
-      subject: i18n._(
-        msg`Signing window expired for "${recipient.name || recipient.email}" on "${envelope.title}"`,
-      ),
+      subject: i18n._(msg`Signing window expired for "${recipient.name || recipient.email}" on "${envelope.title}"`),
       html,
       text,
     });

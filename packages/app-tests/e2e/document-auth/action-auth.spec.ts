@@ -1,16 +1,9 @@
+import { ZRecipientAuthOptionsSchema } from '@documenso/lib/types/document-auth';
+import { createDocumentAuthOptions, createRecipientAuthOptions } from '@documenso/lib/utils/document-auth';
+import { seedPendingDocumentNoFields, seedPendingDocumentWithFullFields } from '@documenso/prisma/seed/documents';
+import { seedTestEmail, seedUser } from '@documenso/prisma/seed/users';
 import { expect, test } from '@playwright/test';
 import { FieldType } from '@prisma/client';
-
-import { ZRecipientAuthOptionsSchema } from '@documenso/lib/types/document-auth';
-import {
-  createDocumentAuthOptions,
-  createRecipientAuthOptions,
-} from '@documenso/lib/utils/document-auth';
-import {
-  seedPendingDocumentNoFields,
-  seedPendingDocumentWithFullFields,
-} from '@documenso/prisma/seed/documents';
-import { seedTestEmail, seedUser } from '@documenso/prisma/seed/users';
 
 import { apiSignin, apiSignout } from '../fixtures/authentication';
 import { signSignaturePad } from '../fixtures/signature';
@@ -108,9 +101,7 @@ test('[DOCUMENT_AUTH]: should allow signing with valid global auth', async ({ pa
 });
 
 // Currently document auth for signing/approving/viewing is not required.
-test.skip('[DOCUMENT_AUTH]: should deny signing document when required for global auth', async ({
-  page,
-}) => {
+test.skip('[DOCUMENT_AUTH]: should deny signing document when required for global auth', async ({ page }) => {
   const { user, team } = await seedUser();
 
   const { user: recipientWithAccount } = await seedUser();
@@ -135,14 +126,10 @@ test.skip('[DOCUMENT_AUTH]: should deny signing document when required for globa
   await expect(page.getByRole('heading', { name: 'Sign Document' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Complete' }).click();
-  await expect(page.getByRole('paragraph')).toContainText(
-    'Reauthentication is required to sign the document',
-  );
+  await expect(page.getByRole('paragraph')).toContainText('Reauthentication is required to sign the document');
 });
 
-test('[DOCUMENT_AUTH]: should deny signing fields when required for global auth', async ({
-  page,
-}) => {
+test('[DOCUMENT_AUTH]: should deny signing fields when required for global auth', async ({ page }) => {
   const { user, team } = await seedUser();
 
   const { user: recipientWithAccount } = await seedUser();
@@ -172,17 +159,13 @@ test('[DOCUMENT_AUTH]: should deny signing fields when required for global auth'
       }
 
       await page.locator(`#field-${field.id}`).getByRole('button').click();
-      await expect(page.getByRole('paragraph')).toContainText(
-        'Reauthentication is required to sign this field',
-      );
+      await expect(page.getByRole('paragraph')).toContainText('Reauthentication is required to sign this field');
       await page.getByRole('button', { name: 'Cancel' }).click();
     }
   }
 });
 
-test('[DOCUMENT_AUTH]: should allow field signing when required for recipient auth', async ({
-  page,
-}) => {
+test('[DOCUMENT_AUTH]: should allow field signing when required for recipient auth', async ({ page }) => {
   const { user, team } = await seedUser();
 
   const { user: recipientWithInheritAuth } = await seedUser();
@@ -192,11 +175,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient au
   const { recipients } = await seedPendingDocumentWithFullFields({
     owner: user,
     teamId: team.id,
-    recipients: [
-      recipientWithInheritAuth,
-      recipientWithExplicitNoneAuth,
-      recipientWithExplicitAccountAuth,
-    ],
+    recipients: [recipientWithInheritAuth, recipientWithExplicitNoneAuth, recipientWithExplicitAccountAuth],
     recipientsCreateOptions: [
       {
         authOptions: createRecipientAuthOptions({
@@ -239,9 +218,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient au
         }
 
         await page.locator(`#field-${field.id}`).getByRole('button').click();
-        await expect(page.getByRole('paragraph')).toContainText(
-          'Reauthentication is required to sign this field',
-        );
+        await expect(page.getByRole('paragraph')).toContainText('Reauthentication is required to sign this field');
         await page.getByRole('button', { name: 'Cancel' }).click();
       }
 
@@ -281,9 +258,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient au
   }
 });
 
-test('[DOCUMENT_AUTH]: should allow field signing when required for recipient and global auth', async ({
-  page,
-}) => {
+test('[DOCUMENT_AUTH]: should allow field signing when required for recipient and global auth', async ({ page }) => {
   const { user, team } = await seedUser();
 
   const { user: recipientWithInheritAuth } = await seedUser();
@@ -293,11 +268,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient an
   const { recipients } = await seedPendingDocumentWithFullFields({
     owner: user,
     teamId: team.id,
-    recipients: [
-      recipientWithInheritAuth,
-      recipientWithExplicitNoneAuth,
-      recipientWithExplicitAccountAuth,
-    ],
+    recipients: [recipientWithInheritAuth, recipientWithExplicitNoneAuth, recipientWithExplicitAccountAuth],
     recipientsCreateOptions: [
       {
         authOptions: createRecipientAuthOptions({
@@ -346,9 +317,7 @@ test('[DOCUMENT_AUTH]: should allow field signing when required for recipient an
         }
 
         await page.locator(`#field-${field.id}`).getByRole('button').click();
-        await expect(page.getByRole('paragraph')).toContainText(
-          'Reauthentication is required to sign this field',
-        );
+        await expect(page.getByRole('paragraph')).toContainText('Reauthentication is required to sign this field');
         await page.getByRole('button', { name: 'Cancel' }).click();
       }
 
