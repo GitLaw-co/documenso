@@ -15,7 +15,6 @@ import { APP_I18N_OPTIONS } from '../../constants/i18n';
 import { getSignatureFontFamily } from '../../constants/pdf';
 import { RECIPIENT_ROLE_SIGNING_REASONS, RECIPIENT_ROLES_DESCRIPTION } from '../../constants/recipient-roles';
 import type { TDocumentAuditLogBaseSchema } from '../../types/document-audit-logs';
-import { svgToPng } from '../../utils/images/svg-to-png';
 import { ensureFontLibrary } from './helpers';
 
 type ColumnWidths = [number, number, number];
@@ -79,7 +78,7 @@ const textXs = 8;
 const fontMedium = '500';
 
 const columnWidthPercentages = [30, 30, 40];
-const rowPadding = 12;
+const rowPadding = 16;
 const tableHeaderHeight = 38;
 const pageTopMargin = 72;
 const pageBottomMargin = 24;
@@ -375,7 +374,7 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
     label: i18n._(msg`IP Address`),
     text: relevantLog?.ipAddress ?? i18n._(msg`Unknown`),
     width,
-    y: column.getClientRect().height + 6,
+    y: column.getClientRect().height + 8,
   });
   column.add(ipLabelAndText);
 
@@ -383,7 +382,7 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
     label: i18n._(msg`Device`),
     text: getDevice(relevantLog?.userAgent),
     width,
-    y: column.getClientRect().height + 6,
+    y: column.getClientRect().height + 8,
   });
   column.add(deviceLabelAndText);
 
@@ -547,15 +546,7 @@ const renderRow = (options: RenderRowOptions) => {
   return rowGroup;
 };
 
-const renderPageHeader = ({
-  i18n,
-  width,
-  margin,
-}: {
-  i18n: I18n;
-  width: number;
-  margin: number;
-}) => {
+const renderPageHeader = ({ i18n, width, margin }: { i18n: I18n; width: number; margin: number }) => {
   const header = new Konva.Group();
   const headerHeight = pageTopMargin;
   const logoHeight = 32;
@@ -590,12 +581,7 @@ const renderPageHeader = ({
   });
 
   const separator = new Konva.Line({
-    points: [
-      margin,
-      headerHeight - separatorPadding,
-      width - margin,
-      headerHeight - separatorPadding,
-    ],
+    points: [margin, headerHeight - separatorPadding, width - margin, headerHeight - separatorPadding],
     stroke: '#e5e7eb',
     strokeWidth: 1,
   });
@@ -726,7 +712,8 @@ export async function renderCertificate({
 }: GenerateCertificateOptions) {
   ensureFontLibrary();
 
-  const minimumMargin = 10;
+  // Comfortable document margin — keep in sync with render-audit-logs.ts.
+  const minimumMargin = 48;
 
   const tableWidth = Math.min(pageWidth - minimumMargin * 2, contentMaxWidth);
   const tableContentWidth = tableWidth - rowPadding * 2;

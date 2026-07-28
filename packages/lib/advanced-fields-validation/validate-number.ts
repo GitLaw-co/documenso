@@ -14,12 +14,15 @@ export const validateNumberField = (
   if (numberFormat && value.length > 0) {
     const foundRegex = numberFormatValues.find((item) => item.value === numberFormat)?.regex;
 
-    if (!foundRegex) {
-      errors.push(`Invalid number format - ${numberFormat}`);
-    }
-
-    if (foundRegex && !foundRegex.test(value)) {
-      errors.push(`Value ${value} does not match the number format - ${numberFormat}`);
+    if (foundRegex) {
+      if (!foundRegex.test(value)) {
+        errors.push(`Value ${value} does not match the number format - ${numberFormat}`);
+      }
+    } else if (Number.isNaN(Number(value.replace(/,/g, '')))) {
+      // Unknown/legacy formats fall back to plain numeric validation instead of
+      // unconditionally rejecting the value, so fields saved with an unrecognized
+      // format remain signable.
+      errors.push(`Value ${value} is not a valid number`);
     }
   }
 

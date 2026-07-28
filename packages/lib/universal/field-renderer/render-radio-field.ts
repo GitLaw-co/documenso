@@ -3,6 +3,7 @@ import { match } from 'ts-pattern';
 
 import { DEFAULT_STANDARD_FONT_SIZE } from '../../constants/pdf';
 import type { TRadioFieldMeta } from '../../types/field-meta';
+import { normalizeCheckboxRadioValues } from '../../utils/fields';
 import {
   createFieldHoverInteraction,
   konvaTextFill,
@@ -25,7 +26,7 @@ export const renderRadioFieldElement = (field: FieldToRender, options: RenderFie
   const { pageWidth, pageHeight, pageLayer, mode, color } = options;
 
   const radioMeta: TRadioFieldMeta | null = (field.fieldMeta as TRadioFieldMeta) || null;
-  const radioValues = radioMeta?.values || [];
+  const radioValues = normalizeCheckboxRadioValues(radioMeta?.values);
 
   const isFirstRender = !pageLayer.findOne(`#${field.renderId}`);
 

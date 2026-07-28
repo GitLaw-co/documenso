@@ -1,7 +1,7 @@
 import { validateCheckboxLength } from '@documenso/lib/advanced-fields-validation/validate-checkbox';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import type { TFieldCheckbox } from '@documenso/lib/types/field';
-import { parseCheckboxCustomText } from '@documenso/lib/utils/fields';
+import { normalizeCheckboxRadioValues, parseCheckboxCustomText } from '@documenso/lib/utils/fields';
 import type { TSignEnvelopeFieldValue } from '@documenso/trpc/server/envelope-router/sign-envelope-field.types';
 import { checkboxValidationSigns } from '@documenso/ui/primitives/document-flow/field-items-advanced-settings/constants';
 import { FieldType } from '@prisma/client';
@@ -24,8 +24,12 @@ export const handleCheckboxFieldClick = async (
     });
   }
 
-  const { values = [], validationRule, validationLength } = field.fieldMeta;
+  const { validationRule, validationLength } = field.fieldMeta;
   const { customText } = field;
+
+  // Must match the fallback the canvas renderer uses, otherwise the clicked
+  // index and the values list drift apart.
+  const values = normalizeCheckboxRadioValues(field.fieldMeta.values);
 
   const currentCheckedIndices: number[] = customText ? parseCheckboxCustomText(customText) : [];
 
@@ -74,7 +78,7 @@ export const handleCheckboxFieldClick = async (
     // Only render validation dialog if validation is invalid.
     if (!isValid) {
       checkedValues = await SignFieldCheckboxDialog.call({
-        fieldMeta: field.fieldMeta,
+        fieldMeta: { ...field.fieldMeta, values },
         validationRule: checkboxValidationRule.value,
         validationLength,
         preselectedIndices: checkedValues,
