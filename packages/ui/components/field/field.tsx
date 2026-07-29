@@ -124,10 +124,11 @@ export function FieldRootContainer({ field, children, color, className, readonly
             'px-2': field.type !== FieldType.SIGNATURE && field.type !== FieldType.FREE_SIGNATURE,
             'justify-center': !field.inserted,
             'ring-orange-300': isValidating && isFieldUnsignedAndRequired(field),
-            // Signed fields read as complete: a consistent green fill + ring
-            // once inserted, so a field visibly "turns green" after it is filled
-            // (GHT-5703), regardless of the recipient's assigned color.
-            'bg-recipient-green/15 ring-recipient-green': field.inserted,
+            // Signed fields read as complete: a stronger green fill + ring once
+            // inserted (deeper than the light recipient tint on empty fields),
+            // so a field visibly "turns green" after it is filled (GHT-5703),
+            // regardless of the recipient's assigned color.
+            'bg-recipient-green/30 ring-recipient-green': field.inserted,
           },
           className,
         )}
