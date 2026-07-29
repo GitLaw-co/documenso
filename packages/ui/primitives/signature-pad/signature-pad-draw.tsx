@@ -79,6 +79,15 @@ export const SignaturePadDraw = ({ className, value, onChange, ...props }: Signa
       event.preventDefault();
     }
 
+    // A previously-saved signature was loaded onto the pad. Starting a fresh
+    // stroke replaces it rather than drawing on top of it (GHT-5841), so clear
+    // the loaded image once at the start of a new drawing session.
+    if ($imageData.current && lines.length === 0 && $el.current) {
+      const ctx = $el.current.getContext('2d');
+      ctx?.clearRect(0, 0, $el.current.width, $el.current.height);
+      $imageData.current = null;
+    }
+
     setIsPressed(true);
 
     const point = Point.fromEvent(event, SIGNATURE_CANVAS_DPI, $el.current);
