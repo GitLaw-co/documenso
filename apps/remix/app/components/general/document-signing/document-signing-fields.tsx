@@ -11,9 +11,7 @@ export const DocumentSigningFieldsLoader = () => {
 
 export const DocumentSigningFieldsUninserted = ({ children }: { children: React.ReactNode }) => {
   return (
-    <p className="whitespace-pre-wrap text-[clamp(0.425rem,25cqw,0.825rem)] text-foreground duration-200 group-hover:text-recipient-green">
-      {children}
-    </p>
+    <p className="whitespace-pre-wrap text-[clamp(0.425rem,25cqw,0.825rem)] text-foreground duration-200">{children}</p>
   );
 };
 
