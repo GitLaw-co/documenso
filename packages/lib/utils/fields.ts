@@ -97,6 +97,27 @@ export const mapFieldToLegacyField = (field: Field, envelope: Pick<Envelope, 'ty
   };
 };
 
+type TCheckboxRadioFieldMetaValue = { id: number; checked: boolean; value: string };
+
+/**
+ * A checkbox or radio field saved with fieldMeta present but no values would
+ * otherwise render zero options, leaving the signer unable to select anything.
+ *
+ * The v2 canvas path is index-based: the renderer draws one item per value, the
+ * click handlers derive the signed value from the clicked item index, and the
+ * server validates those indices against the same values list. All of them must
+ * use this normalization so the fallback cannot diverge between them.
+ */
+export const normalizeCheckboxRadioValues = (
+  values: TCheckboxRadioFieldMetaValue[] | undefined,
+): TCheckboxRadioFieldMetaValue[] => {
+  if (values && values.length > 0) {
+    return values;
+  }
+
+  return [{ id: 1, checked: false, value: '' }];
+};
+
 export const parseCheckboxCustomText = (customText: string): number[] => {
   if (!customText) {
     return [];

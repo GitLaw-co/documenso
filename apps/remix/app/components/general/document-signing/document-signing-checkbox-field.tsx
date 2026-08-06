@@ -51,7 +51,14 @@ export const DocumentSigningCheckboxField = ({
     },
   );
 
-  const values = parsedFieldMeta.values?.map((item) => ({
+  // A checkbox field saved with fieldMeta present but no values would otherwise
+  // render zero checkboxes, leaving the signer unable to check anything.
+  const fieldMetaValues =
+    parsedFieldMeta.values && parsedFieldMeta.values.length > 0
+      ? parsedFieldMeta.values
+      : [{ id: 1, checked: false, value: '' }];
+
+  const values = fieldMetaValues.map((item) => ({
     ...item,
     value: item.value.length > 0 ? item.value : `empty-value-${item.id}`,
   }));

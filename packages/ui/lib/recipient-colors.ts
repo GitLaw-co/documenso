@@ -27,7 +27,7 @@ const RECIPIENT_COLOR_STYLES: Record<TRecipientColor, () => RecipientColorStyles
     baseTextHover: 'rgba(176, 176, 176, 1)',
     fieldButton: 'border-neutral-400 hover:border-neutral-400',
     fieldButtonText: '',
-    fieldItem: 'group/field-item rounded-[2px]',
+    fieldItem: 'group/field-item rounded-none',
     fieldItemInitials: '',
     comboBoxTrigger:
       'ring-2 ring-recipient-green shadow-[0_0_0_5px_hsl(var(--recipient-green)/10%),0_0_0_2px_hsl(var(--recipient-green)/60%),0_0_0_0.5px_hsl(var(--recipient-green))]',
@@ -50,13 +50,13 @@ const generateStyles = (recipientColor: TRecipientColor): RecipientColorStyles =
   const color = colord(`hsl(${value})`);
 
   return {
-    base: `${ring}-${name} ${hover}:${bg}-${name}/30`,
+    base: `${ring}-${name} ${bg}-${name}/15 ${hover}:${bg}-${name}/30`,
     baseRing: color.toRgbString(),
     baseRingHover: color.alpha(0.3).toRgbString(),
     baseTextHover: color.toRgbString(),
     fieldButton: `${hover}:${border}-${name} ${hover}:${bg}-${name}/30`,
     fieldButtonText: `${groupHover}:${text}-${name}`,
-    fieldItem: 'group/field-item rounded-[2px]',
+    fieldItem: 'group/field-item rounded-none',
     fieldItemInitials: `${groupHoverFieldItem}:${bg}-${name}`,
     comboBoxTrigger: `ring-2 ${ring}-${name} ${hover}:${bg}-${name}/15 ${active}:${bg}-${name}/15 shadow-[0_0_0_5px_hsl(var(--${name})/10%),0_0_0_2px_hsl(var(--${name})/60%),0_0_0_0.5px_hsl(var(--${name}))]`,
     comboBoxItem: `${hover}:${bg}-${name}/15 ${active}:${bg}-${name}/15`,

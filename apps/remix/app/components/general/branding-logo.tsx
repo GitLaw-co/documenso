@@ -1,3 +1,4 @@
+import { cn } from '@documenso/ui/lib/utils';
 import type { HTMLAttributes } from 'react';
 
 export type LogoProps = HTMLAttributes<HTMLDivElement>;
@@ -5,15 +6,15 @@ export type LogoProps = HTMLAttributes<HTMLDivElement>;
 /**
  * GitLaw full logo (icon + text)
  * Source: front-law/src/components/ui/logo.tsx
+ *
+ * The SVGs scale with the container height, so callers control the size by
+ * passing a height class (e.g. `h-6`, `h-3.5`) via `className`.
  */
 export const BrandingLogo = ({ className, ...props }: LogoProps) => {
   return (
-    <div
-      className={`inline-flex h-7 items-center gap-1 text-primary ${className ?? ''}`}
-      {...props}
-    >
+    <div className={cn('inline-flex h-7 items-center gap-1 text-primary', className)} {...props}>
       {/* LogoImage */}
-      <svg width="27" height="27" viewBox="0 0 219 218" fill="none">
+      <svg className="h-full w-auto" viewBox="0 0 219 218" fill="none">
         <g clipPath="url(#clip0_logo_image)">
           <rect x="51.5283" y="11.8906" width="43.6011" height="60.1166" fill="currentColor" />
           <rect x="125.519" y="145.336" width="43.6011" height="60.1166" fill="currentColor" />
@@ -73,7 +74,7 @@ export const BrandingLogo = ({ className, ...props }: LogoProps) => {
         </defs>
       </svg>
       {/* LogoText */}
-      <svg width="81" height="26" viewBox="0 98 670 133" fill="none">
+      <svg className="h-3/5 w-auto" viewBox="0 98 670 133" fill="none">
         <path
           d="M587.212 168.925L558.88 235.936L517.826 150.433L506.629 140.594H565.157L555.657 150.094L572.961 187.417H575.676L585.006 164.514L577.881 149.924L567.363 140.594H629.115L616.052 150.433L633.525 187.417H636.24L651.678 149.755L637.936 140.594H670L655.919 149.755L619.784 235.936L587.212 168.925Z"
           fill="currentColor"
