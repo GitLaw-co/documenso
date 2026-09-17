@@ -13,7 +13,18 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.comment.body, '/deploy')
+    # Restrict who can trigger a deploy. documenso is a PUBLIC repo, so the
+    # `issue_comment` event fires for ANY GitHub user — without this gate anyone
+    # could comment `/deploy stg` and kick off a (staging) deploy that runs with
+    # secrets.DEPLOY_TRIGERRER_TOKEN. Only org members, repo collaborators and
+    # owners are trusted. CONTRIBUTOR is intentionally EXCLUDED: on a public repo
+    # an external person with a merged PR is reported as CONTRIBUTOR. Org members
+    # who need `/deploy` must have a direct collaborator role on this repo (or
+    # public org membership); otherwise a private-membership member is reported
+    # as CONTRIBUTOR and will be blocked.
+    if: >
+      startsWith(github.event.comment.body, '/deploy') &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
 
     permissions:
       contents: read

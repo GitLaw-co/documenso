@@ -143,6 +143,10 @@ export const DocumentSigningAutoSign = ({ recipient, fields }: DocumentSigningAu
     }
 
     await revalidate();
+
+    // Close on the failure path too: that toast asks the signer to sign the
+    // remaining fields by hand, which they cannot do behind this dialog.
+    setOpen(false);
   };
 
   unsafe_useEffectOnce(() => {
