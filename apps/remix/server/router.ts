@@ -48,7 +48,9 @@ export interface HonoEnv {
   };
 }
 
-const app = new Hono<HonoEnv>();
+const basePath = (env('NEXT_PUBLIC_BASE_PATH') ?? '').replace(/\/$/, '');
+
+const app = new Hono<HonoEnv>().basePath(basePath || '/');
 
 /**
  * Wraps an existing middleware so that it short-circuits to `next()` for any

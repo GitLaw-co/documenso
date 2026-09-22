@@ -1,0 +1,172 @@
+/*
+ * GitLaw brand theme override.
+ *
+ * Loaded immediately after upstream's `theme.css`. Declared OUTSIDE `@layer base`
+ * on purpose: unlayered declarations win over any `@layer` rule regardless of
+ * selector specificity, so these values override upstream's layered defaults —
+ * including upstream's higher-specificity `.dark:not(.dark-mode-disabled)` block.
+ * That keeps the fork's palette and "force light always" behaviour out of
+ * upstream's `theme.css`, so upstream-sync no longer conflicts on it. See GHT-6734.
+ */
+  :root,
+  .dark-mode-disabled,
+  .dark {
+    /* GitLaw Light Theme — palette aligned with the platform's primary product. */
+    /* Force light mode always — no dark mode support. */
+    
+    /* lilac-50: #f7f6ff */
+    --background: 249 100% 98%;
+    /* stone-900 */
+    --foreground: 24 10% 10%;
+
+    /* stone-100 */
+    --muted: 60 5% 96%;
+    /* black-alpha-40 */
+    --muted-foreground: 0 0% 40%;
+
+    /* white */
+    --popover: 0 0% 100%;
+    /* stone-950 */
+    --popover-foreground: 20 15% 4%;
+
+    /* white */
+    --card: 0 0% 100%;
+    /* violetish-200: #e2ddff */
+    --card-border: 249 100% 93%;
+    --card-border-tint: 226 221 255;
+    /* stone-900 */
+    --card-foreground: 24 10% 10%;
+
+    /* violetish-100: #ebe7ff */
+    --field-card: 249 100% 95%;
+    /* violetish-700: #5e49d6 */
+    --field-card-border: 249 60% 56%;
+    --field-card-foreground: 24 10% 10%;
+
+    --widget: 0 0% 97%;
+    --widget-foreground: 0 0% 95%;
+
+    /* violetish-200: #e2ddff */
+    --border: 249 100% 93%;
+    /* white for inputs */
+    --input: 0 0% 100%;
+
+    /* violetish-700: #5e49d6 */
+    --primary: 249 60% 56%;
+    --primary-foreground: 0 0% 100%;
+
+    /* violetish-100: #ebe7ff */
+    --secondary: 249 100% 95%;
+    /* violetish-700: #5e49d6 */
+    --secondary-foreground: 249 60% 56%;
+
+    /* white */
+    --accent: 0 0% 100%;
+    /* violetish-700: #5e49d6 */
+    --accent-foreground: 249 60% 56%;
+
+    /* red-500 */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* stone-400 */
+    --ring: 24 6% 63%;
+
+    --radius: 0.5rem;
+
+    /* yellow */
+    --warning: 54 96% 45%;
+
+    --gold: 47.9 95.8% 53.1%;
+
+    --recipient-green: 100 48% 55%;
+    --recipient-blue: 212 56% 50%;
+    --recipient-purple: 266 100% 64%;
+    --recipient-orange: 36 92% 54%;
+    --recipient-yellow: 51 100% 43%;
+    --recipient-pink: 313 65% 57%;
+
+    /* Base - Neutral */
+    --new-neutral-50: 0, 0%, 96%;
+    --new-neutral-100: 0, 0%, 91%;
+    --new-neutral-200: 0, 0%, 82%;
+    --new-neutral-300: 0, 0%, 69%;
+    --new-neutral-400: 0, 0%, 53%;
+    --new-neutral-500: 0, 0%, 43%;
+    --new-neutral-600: 0, 0%, 36%;
+    --new-neutral-700: 0, 0%, 31%;
+    --new-neutral-800: 0, 0%, 27%;
+    --new-neutral-900: 0, 0%, 24%;
+    --new-neutral-950: 0, 0%, 9%;
+
+    /* Base - White */
+    --new-white-50: 0, 0%, 5%;
+    --new-white-60: 0, 0%, 6%;
+    --new-white-100: 0, 0%, 10%;
+    --new-white-200: 0, 0%, 20%;
+    --new-white-300: 0, 0%, 30%;
+    --new-white-400: 0, 0%, 40%;
+    --new-white-500: 0, 0%, 50%;
+    --new-white-600: 0, 0%, 60%;
+    --new-white-700: 0, 0%, 80%;
+    --new-white-800: 0, 0%, 90%;
+    --new-white-900: 0, 0%, 100%;
+
+    /* Primary - GitLaw Violet (violetish) */
+    --new-primary-50: 249, 100%, 97%;
+    --new-primary-100: 249, 100%, 95%;
+    --new-primary-200: 249, 80%, 87%;
+    --new-primary-300: 249, 70%, 81%;
+    --new-primary-400: 249, 65%, 74%;
+    --new-primary-500: 249, 60%, 67%;
+    --new-primary-600: 249, 60%, 60%;
+    --new-primary-700: 249, 60%, 56%;
+    --new-primary-800: 249, 60%, 47%;
+    --new-primary-900: 249, 60%, 35%;
+    --new-primary-950: 249, 60%, 20%;
+
+    /* Secondary - Info */
+    --new-info-50: 210, 54%, 95%;
+    --new-info-100: 211, 57%, 90%;
+    --new-info-200: 212, 55%, 80%;
+    --new-info-300: 212, 56%, 70%;
+    --new-info-400: 212, 56%, 60%;
+    --new-info-500: 212, 56%, 50%;
+    --new-info-600: 212, 56%, 40%;
+    --new-info-700: 212, 56%, 30%;
+    --new-info-800: 212, 55%, 20%;
+    --new-info-900: 211, 57%, 10%;
+    --new-info-950: 214, 54%, 5%;
+
+    /* Secondary - Error */
+    --new-error-50: 4, 80%, 96%;
+    --new-error-100: 3, 78%, 91%;
+    --new-error-200: 3, 79%, 83%;
+    --new-error-300: 3, 79%, 74%;
+    --new-error-400: 3, 79%, 66%;
+    --new-error-500: 4, 79%, 57%;
+    --new-error-600: 3, 79%, 46%;
+    --new-error-700: 3, 79%, 34%;
+    --new-error-800: 3, 79%, 23%;
+    --new-error-900: 3, 79%, 11%;
+    --new-error-950: 3, 80%, 6%;
+
+    /* Secondary - Warning */
+    --new-warning-50: 39, 100%, 96%;
+    --new-warning-100: 40, 100%, 93%;
+    --new-warning-200: 39, 100%, 86%;
+    --new-warning-300: 39, 100%, 79%;
+    --new-warning-400: 39, 100%, 71%;
+    --new-warning-500: 39, 100%, 64%;
+    --new-warning-600: 39, 100%, 57%;
+    --new-warning-700: 39, 100%, 43%;
+    --new-warning-800: 39, 100%, 29%;
+    --new-warning-900: 39, 100%, 14%;
+    --new-warning-950: 38, 100%, 7%;
+
+    /* Surface */
+    --new-surface-black: 0, 0%, 0%;
+    --new-surface-white: 0, 0%, 91%;
+
+    --envelope-editor-background: 210 40% 98.04%;
+  }
