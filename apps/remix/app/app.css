@@ -1,4 +1,5 @@
 @import "@documenso/ui/styles/theme.css";
+@import "@documenso/ui/styles/gitlaw-theme.css";
 
 /* Inter Variable Fonts - kept as fallback */
 @font-face {

@@ -1,0 +1,9 @@
+# GitLaw fork: CI workflows we intentionally diverge on — always keep our version
+# during upstream syncs. Requires: git config merge.ours.driver true (set in
+# sync-upstream.yml before merging). See FORK-DELTAS.md / GHT-6734.
+.github/workflows/codeql-analysis.yml merge=ours
+.github/workflows/publish.yml merge=ours
+.github/workflows/translations-pull.yml merge=ours
+.github/workflows/translations-force-pull.yml merge=ours
+.github/workflows/translations-upload.yml merge=ours
+.github/workflows/deploy.yml merge=ours
