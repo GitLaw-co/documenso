@@ -1,0 +1,11 @@
+# Disabled in the GitLaw fork. Upstream's version is intentionally not used here.
+# Kept as an inert stub (not deleted) so upstream-sync auto-resolves it via
+# .gitattributes `merge=ours` instead of raising a modify/delete conflict. See GHT-6734.
+name: translations upload (disabled in fork)
+on:
+  workflow_dispatch:
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Disabled in GitLaw fork."

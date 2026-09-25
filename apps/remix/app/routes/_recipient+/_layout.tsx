@@ -1,5 +1,7 @@
+import { useAnalytics } from '@documenso/lib/client-only/hooks/use-analytics';
 import { i18n } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
+import { useEffect } from 'react';
 import { Outlet, isRouteErrorResponse } from 'react-router';
 
 import { GenericErrorLayout } from '~/components/general/generic-error-layout';
@@ -32,7 +34,13 @@ export default function RecipientLayout() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  const analytics = useAnalytics();
+
   const errorCode = isRouteErrorResponse(error) ? error.status : 500;
+
+  useEffect(() => {
+    analytics.captureException(error, { source: 'signing', location: 'recipient_layout_boundary' });
+  }, [error]);
 
   return <GenericErrorLayout errorCode={errorCode} secondaryButton={null} primaryButton={null} />;
 }
