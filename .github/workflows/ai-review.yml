@@ -1,0 +1,87 @@
+name: AI Review
+
+# On-demand only: documenso is a vendored copy of upstream Documenso and takes large
+# upstream-merge PRs that are not team-authored. Auto-review would spend quota on foreign
+# code, so there is deliberately no `pull_request:` trigger — request a review by commenting
+# `/ci-review` on any PR (requires write access).
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  review:
+    if: >-
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/ci-review'
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+    # `@main` is deliberate and org-wide: the shared pipeline is an internal repo, and floating on
+    # main is what lets a pipeline fix reach every adopting repo at once. Pinning per repo would
+    # trade that for stale callers. Commenter write-access is enforced downstream by
+    # claude-code-action's checkWritePermissions, and the pipeline's guard independently
+    # re-resolves and rejects fork PRs.
+    uses: GitLaw-co/.github-private/.github/workflows/ai-review.yml@main
+    with:
+      repo_context: |
+        You are reviewing GitLaw's vendored copy of Documenso — the open-source e-signature
+        platform that backs GitLaw's document signing. This repo is a fork of
+        `documenso/documenso` carrying a small set of GitLaw customisations on top of a very
+        large upstream codebase. Read the live docs rather than trusting this summary:
+        `FORK-DELTAS.md` is the authoritative inventory of every fork deviation and its
+        conflict risk, `packages/trpc/server/admin-router/README-admin-api.md` is the
+        operational contract for the fork-only admin API, and `AGENTS.md` / `CODE_STYLE.md`
+        carry the code conventions.
+
+        CI hard-fails only on the full monorepo `npm run build` (turbo, which typechecks) and a
+        production Docker image build, plus a conventional-commit PR title — note that lint,
+        Prettier and E2E tests are deliberately NOT in CI here (they run only in local husky /
+        lint-staged hooks), so style and test regressions can reach `dev` unnoticed.
+
+        # What to Review
+
+        The single highest-value question on any PR here: **is this a GitLaw change to an
+        upstream-owned file, and did it have to be?**
+
+        - **Upstream files are merge-conflict debt.** `sync-upstream.yml` merges
+          `documenso/documenso@main` every Monday. Every edit to an upstream file is a conflict
+          the team pays for weekly, forever; a new fork-only file costs nothing. Prefer new
+          files over edits, and composition (wrapping an upstream factory at the call site) over
+          extending an upstream signature.
+        - **`FORK-DELTAS.md` must stay truthful.** A PR that introduces a new deviation without
+          adding its row and conflict red flag makes the next sync's conflict resolution guesswork
+          — the reviewer resolving it won't know whether a hunk was intentional or upstream drift.
+        - **Silent divergence is the real failure mode.** Team, webhook, api-token and open-api
+          upstream helpers are deliberately byte-for-byte identical to upstream. "Improving" one
+          converts a zero-conflict file into a permanent conflict site, and the improvement is
+          the thing most likely to be lost at the next merge.
+        - **Prisma schema and `packages/prisma/migrations/` are upstream-owned.** A GitLaw-added
+          migration interleaves into upstream's linear history and collides on the next sync;
+          fork features should be built without schema changes where at all possible.
+        - **The admin API (`/api/v2/admin/*`) is a privileged fork-only surface.** It authenticates
+          with one static bearer token and impersonates a fixed organisation owner, so anything
+          touching its auth middleware, its rate-limit bucket, or the `open-api-public.ts` filter
+          that keeps admin paths out of the public OpenAPI document widens a blast radius that
+          upstream has no concept of.
+        - **Secrets and log hygiene.** `DOCUMENSO_ADMIN_API_KEY`, API tokens (returned in
+          plaintext exactly once) and the signing `.p12` must never reach git, a response body, or
+          a log line. The pino `redact` config in `packages/lib/utils/logger.ts` is a fork delta
+          covering `Authorization` headers — an upstream logger change that drops it leaks bearer
+          tokens with nothing failing.
+        - **Signing and document integrity.** `packages/signing/` and the signing certificate are
+          the trust root of every executed document. Changes here affect the legal validity of
+          documents already signed, not just future ones.
+        - **The audit trail is evidence.** `DocumentAuditLog` is the record of who did what to a
+          document. FK-cascade child deletes already produce no audit entries; anything that
+          deletes, rewrites or skips audit rows destroys evidence that cannot be reconstructed.
+        - **Per-env teardown contracts are load-bearing.** `team/delete-by-url` is what
+          `env-cli delete` calls. Its idempotency shape (HTTP 200 with
+          `{deleted: false, reason: 'not_found'}`, never 404) and its documented orphan leaks are
+          deliberate trade-offs — changing either breaks the orchestrator or reintroduces fork
+          delta the team consciously refused.
+        - **`patches/` is patch-package.** A dependency bump can silently invalidate a patch that
+          nothing in CI re-verifies.
+    secrets:
+      claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      app_private_key: ${{ secrets.GITLAW_AUTOMATIONS_APP_PRIVATE_KEY }}
