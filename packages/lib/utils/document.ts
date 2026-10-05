@@ -46,6 +46,34 @@ export const resolveEnvelopeOwnerContact = (
   };
 };
 
+type SigningPageSenderSource = EnvelopeOwnerContactSource & {
+  team?: (Pick<Team, 'name'> & { teamEmail?: { email: string } | null }) | null;
+};
+
+/** Names the real owner when back-law supplied one; the service team is never an "on behalf of". */
+export const resolveSigningPageSender = (
+  document: SigningPageSenderSource,
+  includeSenderDetails: boolean,
+): { name: string; email: string; showOnBehalfOf: boolean } => {
+  const externalOwnerEmail = document.documentMeta?.externalOwnerEmail;
+
+  if (externalOwnerEmail) {
+    const externalOwnerName = document.documentMeta?.externalOwnerName?.trim();
+
+    return externalOwnerName
+      ? { name: externalOwnerName, email: `(${externalOwnerEmail})`, showOnBehalfOf: false }
+      : { name: externalOwnerEmail, email: '', showOnBehalfOf: false };
+  }
+
+  if (includeSenderDetails) {
+    const teamEmail = document.team?.teamEmail?.email;
+
+    return { name: document.team?.name ?? '', email: teamEmail ? `(${teamEmail})` : '', showOnBehalfOf: true };
+  }
+
+  return { name: document.user.name ?? '', email: `(${document.user.email})`, showOnBehalfOf: false };
+};
+
 /**
  * Extracts the derived document meta which should be used when creating a document
  * from scratch, or from a template.
