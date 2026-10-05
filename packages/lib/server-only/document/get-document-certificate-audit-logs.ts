@@ -1,6 +1,7 @@
 import { prisma } from '@documenso/prisma';
 
 import { DOCUMENT_AUDIT_LOG_TYPE, DOCUMENT_EMAIL_TYPE } from '../../types/document-audit-logs';
+import { isReminderEmailLog } from '../../utils/audit-trail';
 import { parseDocumentAuditLogData } from '../../utils/document-audit-logs';
 
 export type GetDocumentCertificateAuditLogsOptions = {
@@ -49,7 +50,8 @@ export const getDocumentCertificateAuditLogs = async ({ envelopeId }: GetDocumen
     [DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT]: auditLogs.filter(
       (log) =>
         log.type === DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT &&
-        log.data.emailType !== DOCUMENT_EMAIL_TYPE.DOCUMENT_COMPLETED,
+        log.data.emailType !== DOCUMENT_EMAIL_TYPE.DOCUMENT_COMPLETED &&
+        !isReminderEmailLog(log),
     ),
   } as const;
 
