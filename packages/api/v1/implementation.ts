@@ -7,6 +7,7 @@ import { match } from 'ts-pattern';
 import '@documenso/lib/constants/time-zones';
 import { DEFAULT_DOCUMENT_TIME_ZONE, TIME_ZONES } from '@documenso/lib/constants/time-zones';
 import { AppError } from '@documenso/lib/errors/app-error';
+import { isNotFoundError } from '@documenso/lib/errors/is-not-found-error';
 import { deleteDocument } from '@documenso/lib/server-only/document/delete-document';
 import { findDocuments } from '@documenso/lib/server-only/document/find-documents';
 import { rejectDocumentWithToken } from '@documenso/lib/server-only/document/reject-document-with-token';
@@ -338,10 +339,20 @@ export const ApiContractV1Implementation = tsr.router(ApiContractV1, {
         },
       };
     } catch (err) {
+      // GitLaw reads a 404 as "already deleted", so only a real not-found may answer it
+      if (isNotFoundError(err)) {
+        return {
+          status: 404,
+          body: {
+            message: 'Document not found',
+          },
+        };
+      }
+
       return {
-        status: 404,
+        status: 500,
         body: {
-          message: 'Document not found',
+          message: 'Error deleting the document. Please try again.',
         },
       };
     }
