@@ -12,6 +12,7 @@ import {
 } from '@documenso/lib/types/field-meta';
 import type { CompletedField } from '@documenso/lib/types/fields';
 import { isFieldUnsignedAndRequired } from '@documenso/lib/utils/advanced-fields-helpers';
+import { resolveSigningPageSender } from '@documenso/lib/utils/document';
 import { getDocumentDataUrlForPdfViewer } from '@documenso/lib/utils/envelope-download';
 import { validateFieldsInserted } from '@documenso/lib/utils/fields';
 import type { FieldWithSignatureAndFieldMeta } from '@documenso/prisma/types/field-with-signature-and-fieldmeta';
@@ -122,13 +123,11 @@ export const DocumentSigningPageViewV1 = ({
     }
   };
 
-  let senderName = document.user.name ?? '';
-  let senderEmail = `(${document.user.email})`;
-
-  if (includeSenderDetails) {
-    senderName = document.team?.name ?? '';
-    senderEmail = document.team?.teamEmail?.email ? `(${document.team.teamEmail.email})` : '';
-  }
+  const {
+    name: senderName,
+    email: senderEmail,
+    showOnBehalfOf,
+  } = resolveSigningPageSender(document, includeSenderDetails);
 
   const selectedSigner = allRecipients?.find((r) => r.id === selectedSignerId);
   const targetSigner = recipient.role === RecipientRole.ASSISTANT && selectedSigner ? selectedSigner : null;
@@ -188,7 +187,7 @@ export const DocumentSigningPageViewV1 = ({
             <span className="text-muted-foreground">
               {match(recipient.role)
                 .with(RecipientRole.VIEWER, () =>
-                  includeSenderDetails ? (
+                  showOnBehalfOf ? (
                     <Trans>
                       <span className="truncate" title={senderName}>
                         {senderName} {senderEmail}
@@ -205,7 +204,7 @@ export const DocumentSigningPageViewV1 = ({
                   ),
                 )
                 .with(RecipientRole.SIGNER, () =>
-                  includeSenderDetails ? (
+                  showOnBehalfOf ? (
                     <Trans>
                       <span className="truncate" title={senderName}>
                         {senderName} {senderEmail}
@@ -222,7 +221,7 @@ export const DocumentSigningPageViewV1 = ({
                   ),
                 )
                 .with(RecipientRole.APPROVER, () =>
-                  includeSenderDetails ? (
+                  showOnBehalfOf ? (
                     <Trans>
                       <span className="truncate" title={senderName}>
                         {senderName} {senderEmail}
@@ -239,7 +238,7 @@ export const DocumentSigningPageViewV1 = ({
                   ),
                 )
                 .with(RecipientRole.ASSISTANT, () =>
-                  includeSenderDetails ? (
+                  showOnBehalfOf ? (
                     <Trans>
                       <span className="truncate" title={senderName}>
                         {senderName} {senderEmail}

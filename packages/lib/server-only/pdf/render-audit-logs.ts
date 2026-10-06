@@ -18,6 +18,7 @@ import { APP_I18N_OPTIONS } from '../../constants/i18n';
 import { RECIPIENT_ROLES_DESCRIPTION } from '../../constants/recipient-roles';
 import type { TDocumentAuditLog } from '../../types/document-audit-logs';
 import { DOCUMENT_AUDIT_LOG_TYPE } from '../../types/document-audit-logs';
+import { isReminderEmailLog } from '../../utils/audit-trail';
 import { formatDocumentAuditLogAction } from '../../utils/document-audit-logs';
 import { ensureFontLibrary } from './helpers';
 
@@ -409,7 +410,9 @@ type RenderRowOptions = {
 const renderRow = (options: RenderRowOptions) => {
   const { auditLog, width, i18n } = options;
   const col3Width = width - col1Width - col2Width;
-  const { iconKey, label } = getAuditLogIconAndLabel(auditLog.type);
+  const { iconKey, label } = isReminderEmailLog(auditLog)
+    ? { iconKey: 'mail', label: 'REMINDED' }
+    : getAuditLogIconAndLabel(auditLog.type);
 
   const rowGroup = new Konva.Group();
   const rowPaddingTop = 12;
