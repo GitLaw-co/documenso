@@ -4,6 +4,7 @@ import { RECIPIENT_ROLE_TO_EMAIL_TYPE, RECIPIENT_ROLES_DESCRIPTION } from '@docu
 import { AppError } from '@documenso/lib/errors/app-error';
 import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import type { ApiRequestMetadata } from '@documenso/lib/universal/extract-request-metadata';
+import { buildDelegatedReminderAuditLogs } from '@documenso/lib/utils/audit-trail';
 import { createDocumentAuditLogData } from '@documenso/lib/utils/document-audit-logs';
 import { renderCustomEmailTemplate } from '@documenso/lib/utils/render-custom-email-template';
 import { prisma } from '@documenso/prisma';
@@ -163,6 +164,15 @@ export const resendDocument = async ({ id, userId, recipients, teamId, requestMe
   ).recipientSigningRequest;
 
   if (!isRecipientSigningRequestEmailEnabled) {
+    await prisma.documentAuditLog.createMany({
+      data: buildDelegatedReminderAuditLogs({
+        envelopeId: envelope.id,
+        documentMeta: envelope.documentMeta,
+        recipients: recipientsToRemind,
+        requestMetadata,
+      }),
+    });
+
     return envelope;
   }
 
