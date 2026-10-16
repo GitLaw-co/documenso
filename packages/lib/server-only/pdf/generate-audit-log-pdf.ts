@@ -5,6 +5,7 @@ import { PDF } from '@libpdf/core';
 import { i18n } from '@lingui/core';
 
 import { ZSupportedLanguageCodeSchema } from '../../constants/i18n';
+import { attributeApiActionsToExternalOwner, selectAuditTrailSendLogs } from '../../utils/audit-trail';
 import { parseDocumentAuditLogData } from '../../utils/document-audit-logs';
 import { getTranslations } from '../../utils/i18n';
 import { getOrganisationClaimByTeamId } from '../organisation/get-organisation-claims';
@@ -19,14 +20,17 @@ import { renderAuditLogs } from './render-audit-logs';
  * (sent / viewed / signed) plus document-level created and completed
  * milestones.
  *
- * EMAIL_SENT is the per-recipient "sent to recipient X" event, so
- * DOCUMENT_SENT (the envelope-level DRAFT -> PENDING transition) is
- * excluded to avoid each send appearing twice. Field-level
+ * EMAIL_SENT is the per-recipient "sent to recipient X" event and also
+ * records reminders. GitLaw turns Documenso's emails off, so its envelopes
+ * have no invitation EMAIL_SENT and DOCUMENT_SENT (the envelope-level
+ * DRAFT -> PENDING transition) is the send row; `selectAuditTrailSendLogs`
+ * drops DOCUMENT_SENT when invitation emails exist. Field-level
  * inserted/uninserted events are excluded — the benchmarks show a single
  * per-signer "Signed" row, which DOCUMENT_RECIPIENT_COMPLETED covers.
  */
 export const AUDIT_TRAIL_PDF_EVENT_TYPES: TDocumentAuditLogType[] = [
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_CREATED,
+  DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_SENT,
   DOCUMENT_AUDIT_LOG_TYPE.EMAIL_SENT,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_OPENED,
   DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_VIEWED,
@@ -68,7 +72,10 @@ export const generateAuditLogPdf = async (options: GenerateAuditLogPdfOptions) =
   const ownerName = envelope.documentMeta?.externalOwnerName || 'GitLaw';
   const ownerEmail = envelope.documentMeta?.externalOwnerEmail || '';
 
-  const auditLogs: TDocumentAuditLog[] = [...additionalAuditLogs, ...partialAuditLogs].reverse();
+  const auditLogs = attributeApiActionsToExternalOwner(
+    selectAuditTrailSendLogs([...additionalAuditLogs, ...partialAuditLogs].reverse()),
+    envelope.documentMeta,
+  );
 
   const auditLogPages = await renderAuditLogs({
     envelope,
