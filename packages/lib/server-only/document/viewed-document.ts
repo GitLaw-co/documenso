@@ -99,9 +99,13 @@ export const viewedDocument = async ({ token, recipientAccessAuth, requestMetada
     },
   });
 
+  // The envelope payload lists every recipient's readStatus but not who opened; GitLaw's webhook needs the actor
   await triggerWebhook({
     event: WebhookTriggerEvents.DOCUMENT_OPENED,
-    data: ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(envelope)),
+    data: {
+      ...ZWebhookDocumentSchema.parse(mapEnvelopeToWebhookDocumentPayload(envelope)),
+      openedByRecipientId: recipient.id,
+    },
     userId: envelope.userId,
     teamId: envelope.teamId,
   });
