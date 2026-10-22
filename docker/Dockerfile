@@ -1,7 +1,7 @@
 ###########################
 #     BASE CONTAINER      #
 ###########################
-FROM node:24-alpine3.23 AS base
+FROM node:24.22.1-alpine3.23 AS base
 
 RUN apk add --no-cache openssl
 RUN apk add --no-cache font-freefont
