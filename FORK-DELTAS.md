@@ -46,6 +46,7 @@ Ordered by conflict-resolution risk during upstream sync.
 | --- | --- | --- |
 | `packages/trpc/server/trpc.ts` | Appended `adminTokenMiddleware` + `adminTokenProcedure` at end of file | Upstream edits the import block or inserts its own new middleware at the end |
 | `apps/remix/server/router.ts` | Added `bypassForPathPrefixes` helper, `/api/v2/admin/*` mount, imports `openApiDocument` from `open-api-public.ts` instead of `open-api.ts` | Upstream reshuffles the rate-limit mounting order or changes how openApiDocument is consumed |
+| `docker/Dockerfile` | Security pin for the eMudhra intermediate CA compromise (GHT-7191): base image `node:24.22.1-alpine3.23` instead of upstream's floating `node:24-alpine3.23`. Drop the pin once upstream's base image is at Node >= 24.22.1 | Upstream edits the `FROM node:` line (it bumps the base image regularly). Never resolve to a Node below 24.22.1 |
 
 All other team, webhook, api-token, and open-api upstream helpers are **byte-for-byte identical to upstream**. We intentionally avoid modifying them so upstream-sync PRs that touch those files cannot conflict with our fork.
 
