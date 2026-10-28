@@ -11,6 +11,7 @@ import { deleteApiTokenForPlatformRoute } from './delete-api-token-for-platform'
 import { deleteDocumentRoute } from './delete-document';
 import { deleteOrganisationRoute } from './delete-organisation';
 import { deleteAdminOrganisationMemberRoute } from './delete-organisation-member';
+import { deleteRecipientRoute } from './delete-recipient';
 import { deleteSubscriptionClaimRoute } from './delete-subscription-claim';
 import { deleteTeamByUrlForPlatformRoute } from './delete-team-by-url-for-platform';
 import { deleteTeamForPlatformRoute } from './delete-team-for-platform';
@@ -107,6 +108,7 @@ export const adminRouter = router({
   },
   recipient: {
     update: updateRecipientRoute,
+    delete: deleteRecipientRoute,
   },
   emailDomain: {
     find: findEmailDomainsRoute,
