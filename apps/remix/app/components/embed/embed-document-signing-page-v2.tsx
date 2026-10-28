@@ -15,23 +15,32 @@ import { EmbedClientLoading } from './embed-client-loading';
 import { EmbedDocumentCompleted } from './embed-document-completed';
 import { EmbedDocumentRejected } from './embed-document-rejected';
 import { EmbedSigningProvider } from './embed-signing-context';
+import { usePersistEmbedSignature } from './use-persist-embed-signature';
 
 export type EmbedSignDocumentV2ClientPageProps = {
   hidePoweredBy?: boolean;
   allowWhitelabelling?: boolean;
+  clientUserId?: string | null;
 };
 
 export const EmbedSignDocumentV2ClientPage = ({
   hidePoweredBy = false,
   allowWhitelabelling = false,
+  clientUserId = null,
 }: EmbedSignDocumentV2ClientPageProps) => {
   const { _ } = useLingui();
   const analytics = useAnalytics();
 
-  const { envelope, recipient, envelopeData, setFullName, setEmail, fullName, email } =
+  const { envelope, recipient, envelopeData, setFullName, setEmail, fullName, email, signature } =
     useRequiredEnvelopeSigningContext();
 
   const { isCompleted, isRejected, recipientSignature } = envelopeData;
+
+  const { persistSignature } = usePersistEmbedSignature({
+    token: recipient.token,
+    clientUserId,
+    initialSignature: signature,
+  });
 
   // !: Not used at the moment, may be removed in the future.
   // const [hasDocumentLoaded, setHasDocumentLoaded] = useState(false);
@@ -40,12 +49,18 @@ export const EmbedSignDocumentV2ClientPage = ({
   const [isNameLocked, setIsNameLocked] = useState(false);
   const [isEmailLocked, setIsEmailLocked] = useState(envelope.type === EnvelopeType.DOCUMENT && !!email);
 
+  // The signing provider's envelope data isn't refreshed on revalidation.
+  const [hasCompletedDocument, setHasCompletedDocument] = useState(isCompleted);
+  const [hasRejectedDocument, setHasRejectedDocument] = useState(isRejected);
+
   const onDocumentCompleted = (data: {
     token: string;
     documentId: number;
     envelopeId: string;
     recipientId: number;
   }) => {
+    setHasCompletedDocument(true);
+
     if (window.parent) {
       window.parent.postMessage(
         {
@@ -112,6 +127,8 @@ export const EmbedSignDocumentV2ClientPage = ({
     recipientId: number;
     reason?: string;
   }) => {
+    setHasRejectedDocument(true);
+
     if (window.parent) {
       window.parent.postMessage(
         {
@@ -219,23 +236,26 @@ export const EmbedSignDocumentV2ClientPage = ({
     }
   }, [isRejected, envelope.id, recipient.id, recipient.token]);
 
-  if (isRejected) {
+  if (hasRejectedDocument) {
     return <EmbedDocumentRejected />;
   }
 
-  if (isCompleted) {
+  if (hasCompletedDocument) {
+    const completedSignature =
+      recipient.fields.find((field) => field.signature)?.signature ?? recipientSignature ?? null;
+
     return (
       <EmbedDocumentCompleted
         name={fullName}
         signature={
-          recipientSignature
+          completedSignature
             ? {
                 id: 1,
                 fieldId: 1,
                 recipientId: recipient.id,
                 created: new Date(),
-                signatureImageAsBase64: recipientSignature.signatureImageAsBase64,
-                typedSignature: recipientSignature.typedSignature,
+                signatureImageAsBase64: completedSignature.signatureImageAsBase64,
+                typedSignature: completedSignature.typedSignature,
               }
             : undefined
         }
@@ -255,6 +275,7 @@ export const EmbedSignDocumentV2ClientPage = ({
       onDocumentReady={onDocumentReady}
       onFieldSigned={onFieldSigned}
       onFieldUnsigned={onFieldUnsigned}
+      onSignatureChanged={persistSignature}
     >
       <div className="embed--Root relative">
         {!hasFinishedInit && <EmbedClientLoading />}
