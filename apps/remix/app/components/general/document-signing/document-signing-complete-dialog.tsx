@@ -266,7 +266,7 @@ export const DocumentSigningCompleteDialog = ({
         </DialogHeader>
 
         <div className="rounded-lg border border-border bg-muted/50 p-4 text-center">
-          <p className="font-medium text-muted-foreground text-sm">{documentTitle}</p>
+          <p className="font-medium text-muted-foreground text-sm [overflow-wrap:anywhere]">{documentTitle}</p>
         </div>
 
         {!showTwoFactorForm && (
