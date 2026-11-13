@@ -23,7 +23,9 @@ concurrency:
 jobs:
   build_app:
     name: Build App
-    runs-on: ubuntu-latest
+    # ubuntu-latest is now 26.04, which Playwright 1.56.1's chromium postinstall (run by npm ci) doesn't support.
+    # Remove this pin once Playwright is >= 1.61.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - name: Checkout
